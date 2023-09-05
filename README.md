@@ -32,7 +32,7 @@ chmod 755 /path/to/elmx
 
 ### Windows
 
-At the moment I don't have a Windows machine so can't compile to Windows OS. So if you work on Windows, and want to use this tool, you'll have to compile it yourself. Sorry about that. If you do compile it, please consider submitting a PR to add the binary to the Releases page so that others can benefit from your work. Place the binary somewhere on your PATH, and you're good to go.
+At the moment I don't have a Windows machine so can't compile to Windows OS. So if you work on Windows, and want to use this tool, you'll have to compile it yourself. Sorry about that. If you do compile it, please consider submitting a PR to add the binary to the Releases page so that others can benefit from your work.
 
 ### Any other OS
 
