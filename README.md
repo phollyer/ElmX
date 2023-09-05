@@ -20,7 +20,11 @@ The last step is to navigate to the directory where you've placed the binary, in
 
 ### Linux
 
-Head over to the [Releases](https://github.com/phollyer/elmx/releases) page and grab the binary for your Linux distro. Place the binary somewhere on your PATH, and you be good to go. If you're not sure where to place the binary, you can place it in `/usr/local/bin`, which is a good place for user installed binaries. You'll need to make the binary executable, so open a terminal and run the following command:
+Head over to the [Releases](https://github.com/phollyer/elmx/releases) page and grab the binary for your Linux distro. Place the binary somewhere on your PATH, and you should be good to go. 
+
+If you're not sure where to place the binary, you can place it in `/usr/local/bin`, which is a good place for user installed binaries.
+
+You'll need to make the binary executable, so open a terminal and run the following command:
 
 ``` shell
 chmod 755 /path/to/elmx
