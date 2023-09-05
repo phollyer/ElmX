@@ -46,6 +46,8 @@ If you want to compile from source, you'll need to have [dotnet](https://dotnet.
 dotnet publish -r <runtime-target> -c Publish --self-contained
 ```
 
+Where `<runtime-target>` is the runtime you want to target. For example, if you want to target OSX, you would use `osx-x64`. For a full list of runtime targets, see [this page](https://docs.microsoft.com/en-us/dotnet/core/rid-catalog).
+
 You can then find the binary in the `bin/Publish/net<dotnet-version>/<runtime-target>/publish` folder.
 
 ### Any Questions
