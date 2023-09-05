@@ -10,11 +10,21 @@ However, I intend to continue developing this further, and add many more feature
 
 ### OSX
 
-Head over to the [Releases](https://github.com/phollyer/elmx/releases) page and grab the binary for your Mac - both x64 and arm64 are supported. Place the binary somewhere on your PATH, and you're good to go.
+Head over to the [Releases](https://github.com/phollyer/elmx/releases) page and grab the binary for your Mac - both x64 and arm64 are supported. Place the binary somewhere on your PATH, and you're good to go - except for Apples security settings. You'll need to enable the binary to run by making it executable. To do this, open a terminal and run the following command:
+
+``` shell
+chmod 755 /path/to/elmx
+```
+
+The last step is to navigate to the directory where you've placed the binary, in `Finder`, right click and select Open, this will allow you to run `elmx` from that point on.
 
 ### Linux
 
-Head over to the [Releases](https://github.com/phollyer/elmx/releases) page and grab the binary for your Linux distro. Place the binary somewhere on your PATH, and you're good to go.
+Head over to the [Releases](https://github.com/phollyer/elmx/releases) page and grab the binary for your Linux distro. Place the binary somewhere on your PATH, and you be good to go. If you're not sure where to place the binary, you can place it in `/usr/local/bin`, which is a good place for user installed binaries. You'll need to make the binary executable, so open a terminal and run the following command:
+
+``` shell
+chmod 755 /path/to/elmx
+```
 
 ### Windows
 
@@ -23,6 +33,16 @@ At the moment I don't have a Windows machine so can't compile to Windows OS. So 
 ### Any other OS
 
 If you require a binary for an OS that isn't listed above, please open an issue and I'll see what I can do. If I'm not able to compile to your OS, then you'll have to compile it yourself. Sorry about that. If you do compile it, please consider submitting a PR to add the binary to the Releases page so that others can benefit from your work. However, I may be able to help you compile it if you're not sure how to do it yourself, so please ask.
+
+### Compiling from source
+
+If you want to compile from source, you'll need to have [dotnet](https://dotnet.microsoft.com/download) installed. Once you have that, clone this repo, and run the following command from the root of the repo:
+
+``` shell
+dotnet publish -r <runtime-target> -c Publish --self-contained
+```
+
+You can then find the binary in the `bin/Publish/net<dotnet-version>/<runtime-target>/publish` folder.
 
 ### Any Questions
 
