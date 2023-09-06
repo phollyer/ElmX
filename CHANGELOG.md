@@ -6,7 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [unreleased]
 
-- Nothing
+### Improved
+
+- Finding unused modules is now much faster. On an Elm project with 286 unique imports across 223 files, the processing time is reduced from an average of 15 seconds to 0.5 seconds.
 
 ## [1.0.1] - 2023-09-06
 

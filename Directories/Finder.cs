@@ -39,8 +39,8 @@ namespace ElmX.Directories
         private readonly string[] _defaultExcludes = new string[]
             { "elm-stuff"
             , "node_modules"
-            , "review"
-            , "tests"
+            //, "review"
+            //, "tests"
             };
 
         /// <summary>

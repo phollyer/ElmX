@@ -60,7 +60,14 @@ namespace ElmX.UnusedModules
                                  Line = line[7..].Split(" ")[0].Replace(".", Path.DirectorySeparatorChar.ToString()) + ".elm",
                              };
 
-                var lines = _lines.Distinct();
+                List<string> sortedLines = new();
+
+                foreach (var line in _lines.Distinct())
+                {
+                    sortedLines.Add(line.Line);
+                }
+
+                sortedLines.Sort();
 
                 List<string> sortedFiles = new();
 
@@ -75,8 +82,8 @@ namespace ElmX.UnusedModules
 
                 Writer.WriteLine($"Searching: {dir}");
                 Writer.WriteLine($"Excluding: {string.Join(", ", excludedDirs)}");
-                Writer.WriteLine($"Found: {lines.Count()} unique imports");
-                Writer.WriteLine($"Found: {files.Count()} files");
+                Writer.WriteLine($"Found: {sortedLines.Count()} unique imports");
+                Writer.WriteLine($"Found: {sortedFiles.Count()} files");
 
                 int fileCount = 0;
 
@@ -87,14 +94,19 @@ namespace ElmX.UnusedModules
                     Writer.WriteAt($"Checking file {fileCount}", 0, 4);
                     Writer.WriteLine("");
 
-                    if (lines.Any(line => file.Contains(line.Line)) || file.Contains(entryFile))
+                    bool found = false;
+                    foreach (var line in sortedLines)
                     {
-                        continue;
+                        if (file.Contains(line) || file.Contains(entryFile))
+                        {
+                            found = true;
+                            break;
+                        }
                     }
-                    else
+
+                    if (!found)
                     {
                         Unused.Add(file);
-                        break;
                     }
                 }
 
