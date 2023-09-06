@@ -1,5 +1,5 @@
 // A class that finds all Elm files in a given directory and its subdirectories
-// and returns a list of all the imported modules in those files.
+// and stores a list of all the unused modules in those directories.
 
 using ElmX.Console;
 
