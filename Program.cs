@@ -1,5 +1,6 @@
 ﻿using ElmX.Console;
 using ElmX.Options;
+using System.Reflection;
 
 namespace ElmX
 {
@@ -24,7 +25,18 @@ namespace ElmX
 
             if (options.Version)
             {
-                Writer.WriteLine("ElmX version 1.0.0");
+                Assembly? assembly = Assembly.GetEntryAssembly();
+                AssemblyName? assemblyName = assembly?.GetName();
+                Version? version = assemblyName?.Version;
+                if (version is not null)
+                {
+                    Writer.WriteLine(version.ToString());
+                }
+                else
+                {
+                    Writer.WriteLine("I don't know what version I am.");
+                }
+
                 Environment.Exit(0);
             }
 

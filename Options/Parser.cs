@@ -53,6 +53,10 @@ namespace ElmX.Options
                 case "--help":
                     Help = true;
                     break;
+                case "-v":
+                case "--version":
+                    Version = true;
+                    break;
                 default:
                     break;
             }
