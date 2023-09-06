@@ -36,7 +36,7 @@ namespace ElmX.Json
             }
             catch (FileNotFoundException ex)
             {
-                Writer.WriteLine($"I could not find an {ex.FileName} therefore I am assuming {Entry} is your entry point.");
+                _ = ex;
             }
         }
     }
