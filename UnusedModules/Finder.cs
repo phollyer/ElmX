@@ -78,8 +78,6 @@ namespace ElmX.UnusedModules
 
                 sortedFiles.Sort();
 
-                List<string> unusedFiles = new();
-
                 Writer.WriteLine($"Searching: {dir}");
                 Writer.WriteLine($"Excluding: {string.Join(", ", excludedDirs)}");
                 Writer.WriteLine($"Found: {sortedLines.Count()} unique imports");
