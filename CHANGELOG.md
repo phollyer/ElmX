@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [unreleased]
 
+- Nothing
+
+## [1.0.2] - 2023-09-06
+
 ### Improved
 
 - Finding unused modules is now much faster. On an Elm project with 286 unique imports across 223 files, the processing time is reduced from an average of 15 seconds to 0.5 seconds.
@@ -22,5 +26,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Initial Commit.
 
+[1.0.2]: https://github.com/phollyer/elmx/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/phollyer/elmx/compare/1.0.0...v1.0.1
 [1.0.0]: https://github.com/phollyer/elmx/releases/tag/1.0.0
