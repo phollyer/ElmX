@@ -20,7 +20,7 @@ The last step is to navigate to the directory where you've placed the binary, in
 
 ### Linux
 
-Head over to the [Releases](https://github.com/phollyer/elmx/releases) page and grab the binary for your Linux distro. Place the binary somewhere on your PATH, and you should be good to go. 
+Head over to the [Releases](https://github.com/phollyer/elmx/releases) page and grab the binary for your Linux distro. Place the binary somewhere on your PATH, and you should be good to go.
 
 If you're not sure where to place the binary, you can place it in `/usr/local/bin`, which is a good place for user installed binaries.
 
@@ -56,9 +56,32 @@ Please start a discussion.
 
 ## Usage
 
-### Find unused modules
+### Initial setup
 
-This the only feature available at this time.
+Before you can use ElmX, you'll need to create a config file (`elmx.json`). This is a simple JSON file that tells ElmX the following information:
+
+- "entryFile": The name of your entry module. This defaults to `Main.elm`, but if you use a different name, you can specify it here.
+- "excludedDirs": A list of directories to exclude from the search. This defaults to `["elm-stuff", "node_modules", "review", "tests"]`, but you can add to this list if you want to exclude more directories.
+- "excludedFiles": A list of files to exclude from the search. This is useful if you have one or more modules that you are working on but are not yet `import`ed into any of your project files.
+
+Once this has been created, you can edit it to suit your needs at any time.
+
+``` shell
+# First
+cd /path/to/your/elm/project # this is the root of your Elm project, where your elm.json file resides
+
+# Then create the config file with the default values
+elmx init
+
+# or, if you want to specify the values when creating the config file the following options are available for the init command
+-e, --entry-file <file>                         Specify the entry file of the Elm project.
+-d, --exclude-dirs <dir> <dir> <dir>...         Exclude the specified directories from the search.
+-f, --exclude-files <file> <file> <file>...     Exclude the specified files from the search.
+```
+
+Once your `elmx.json` file has been created you can then use the following commands.
+
+### Find unused modules
 
 The simplest way is to `cd` to the root of your Elm project (where your `elm.json` resides), and run:
 

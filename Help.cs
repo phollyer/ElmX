@@ -39,8 +39,8 @@ namespace ElmX
             Writer.WriteLine("init-options");
             Writer.EmptyLine();
             Writer.WriteLine("-e, --entry-file <file>\t\t\t\tSpecify the entry file of the Elm project.");
-            Writer.WriteLine("-d, --exclude-dir <dir> <dir> <dir>...\t\tExclude the specified directories from the search.");
-            Writer.WriteLine("-f, --exclude-file <file> <file> <file>...\tExclude the specified files from the search.");
+            Writer.WriteLine("-d, --exclude-dirs <dir> <dir> <dir>...\t\tExclude the specified directories from the search.");
+            Writer.WriteLine("-f, --exclude-files <file> <file> <file>...\tExclude the specified files from the search.");
             Writer.EmptyLine();
 
             Writer.WriteLine("[unused-modules-options]");
