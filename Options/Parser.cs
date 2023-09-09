@@ -1,19 +1,39 @@
 // A Class that parses and records the command line arguments as detailed in Help.cs
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using ElmX.Console;
 
 namespace ElmX.Options
 {
     class Parser
     {
-        public bool Delete { get; private set; }
+        // Help Intro Option - set to true if the user runs only `elmx` with no arguments
+        public bool HelpIntro { get; private set; }
 
+        // No Cmd Options
         public bool Help { get; private set; }
 
-        public bool HelpIntro { get; private set; }
+        public bool Version { get; private set; }
+
+
+        // The Command to be run
+        public Cmd Cmd { get; private set; }
+
+        // Init Options
+        public string EntryFile { get; private set; } = "Main.elm";
+
+        public List<string> ExcludedDirs { get; private set; } = new List<string>()
+            { "elm-stuff"
+            , "node_modules"
+            , "review"
+            , "tests"
+            };
+
+        public List<string> ExcludedFiles { get; private set; } = new List<string>();
+
+
+        // Unused Modules Options
+
+        public bool Delete { get; private set; }
 
         public bool Pause { get; private set; }
 
@@ -21,13 +41,13 @@ namespace ElmX.Options
 
         public bool Show { get; private set; }
 
-        public bool UnusedModules { get; private set; }
+        // Unknowns
 
-        public bool Version { get; private set; }
+        public string UnknownCmd { get; private set; } = "";
+
+        public List<string> UnknownNoCmdArgs { get; private set; } = new List<string>();
 
         public string Dir { get; private set; } = ".";
-
-        public List<string> ExcludedDirs { get; private set; } = new List<string>();
 
         public Parser(string[] args)
         {
@@ -35,33 +55,113 @@ namespace ElmX.Options
             {
                 HelpIntro = true;
             }
+            else if (args[0].StartsWith("-"))
+            {
+                ParseNoCmdArgs(args);
+            }
             else
             {
-                ParseArgs(args);
+                ParseCmd(args[0]);
+
+                if (Cmd != Cmd.Unknown)
+                {
+                    ParseCommandArgs(args.Skip(1).ToList());
+                }
             }
         }
 
-        private void ParseArgs(string[] args)
+        private void ParseNoCmdArgs(string[] args)
         {
-            switch (args[0])
+            foreach (string arg in args)
             {
-                case "unused-modules":
-                    UnusedModules = true;
-                    ParseUnusedModulesOptions(args.Skip(1).ToList());
+                switch (arg)
+                {
+                    case "-h":
+                    case "--help":
+                        Help = true;
+                        break;
+                    case "-v":
+                    case "--version":
+                        Version = true;
+                        break;
+                    case "-vh":
+                    case "-hv":
+                        Help = true;
+                        Version = true;
+                        break;
+                    default:
+                        UnknownNoCmdArgs.Add(arg);
+                        break;
+                }
+            }
+        }
+
+        private void ParseCmd(string cmd)
+        {
+            Cmd = cmd switch
+            {
+                "init" => Cmd.Init,
+                "unused-modules" => Cmd.UnusedModules,
+                _ => Cmd.Unknown,
+            };
+        }
+
+        private void ParseCommandArgs(List<string> args)
+        {
+            switch (Cmd)
+            {
+                case Cmd.Init:
+                    ParseInitOptions(args);
                     break;
-                case "-h":
-                case "--help":
-                    Help = true;
+                case Cmd.UnusedModules:
+                    ParseUnusedModulesOptions(args);
                     break;
-                case "-v":
-                case "--version":
-                    Version = true;
-                    break;
-                default:
+                case Cmd.Unknown:
+                    UnknownCmd = args[0];
                     break;
             }
         }
 
+        private void ParseInitOptions(List<string> args)
+        {
+            short index = 0;
+
+            foreach (string arg in args)
+            {
+                if (arg.StartsWith("-"))
+                {
+                    switch (arg)
+                    {
+                        case "-e":
+                        case "--entry-file":
+                            EntryFile = args[index + 1];
+                            break;
+                        case "-d":
+                        case "--exclude-dirs":
+                            foreach (string dir in args.Skip(index + 1))
+                            {
+                                if (dir.StartsWith("-"))
+                                    break;
+
+                                ExcludedDirs.Add(dir);
+                            }
+                            break;
+                        case "-f":
+                        case "--exclude-files":
+                            foreach (string item in args.Skip(index + 1))
+                            {
+                                if (item.StartsWith("-"))
+                                    break;
+
+                                ExcludedFiles.Add(item);
+                            }
+                            break;
+                    }
+                }
+
+                index++;
+            }
+        }
         private void ParseUnusedModulesOptions(List<string> args)
         {
             short counter = 0;
@@ -111,5 +211,35 @@ namespace ElmX.Options
             }
         }
 
+    }
+
+    enum Cmd
+    {
+        Init,
+        UnusedModules,
+
+        Unknown
+    }
+
+    enum NoCmdOptions
+    {
+        Help,
+        Version,
+
+        Unknown
+    }
+
+    enum InitOptions
+    {
+        // The starting point for an Elm project, usually Main.elm, but may be changed by the user.
+        EntryFile,
+
+        // Directories to exclude from the search. 
+        //  The defaults are 'elm-stuff', 'node_modules', 'review', and 'tests'.
+        ExcludedDirs,
+
+        // Files to exclude from the search.
+        // This is useful if the user is working on one or more modules that are not yet used in the project.
+        ExludedFiles
     }
 }
