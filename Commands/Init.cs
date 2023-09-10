@@ -2,12 +2,14 @@
 // that contains the entry file and the excluded directories and files.
 
 using ElmX.Console;
-using System.Text.Json;
+using ElmX.Json;
 
-namespace ElmX.Init
+namespace ElmX.Commands
 {
-    class Runner
+    static class Init
     {
+        static ElmX_Json? Json { get; set; }
+
         /// <summary>
         /// Create the elmx.json file.
         /// </summary>
@@ -22,22 +24,8 @@ namespace ElmX.Init
         /// </param>
         public static void Run(string entryFile, List<string> excludedDirs, List<string> excludedFiles)
         {
-            if (File.Exists("elmx.json"))
-            {
-                Writer.WriteLine("The elmx.json file already exists.");
-                Environment.Exit(0);
-            }
-
-            var json = new
-            {
-                entryFile = entryFile,
-                excludedDirs = excludedDirs,
-                excludedFiles = excludedFiles,
-            };
-
-            string jsonStr = JsonSerializer.Serialize(json, new JsonSerializerOptions { WriteIndented = true });
-
-            File.WriteAllText("elmx.json", jsonStr);
+            ElmX_Json Json = new();
+            Json.Create(entryFile, excludedDirs, excludedFiles);
 
             Writer.WriteLine("The elmx.json file has been created.");
         }

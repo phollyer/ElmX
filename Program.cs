@@ -53,13 +53,13 @@ namespace ElmX
 
             if (options.Cmd == Cmd.Init)
             {
-                Init.Runner.Run(options.EntryFile, options.ExcludedDirs, options.ExcludedFiles);
+                Commands.Init.Run(options.EntryFile, options.ExcludedDirs, options.ExcludedFiles);
                 Environment.Exit(0);
             }
 
             if (options.Cmd == Cmd.UnusedModules)
             {
-                UnusedModules.Runner.Run(options);
+                Commands.UnusedModules.Run(options);
                 Environment.Exit(0);
             }
 

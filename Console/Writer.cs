@@ -11,6 +11,15 @@ namespace ElmX.Console
         }
 
         /// <summary>
+        /// Write to the console.
+        /// </summary>
+        /// <param name="txt"></param> 
+        static public void Write(string txt)
+        {
+            System.Console.Write(txt);
+        }
+
+        /// <summary>
         /// Write to the console and then move to the next line.
         /// </summary>
         /// <param name="line"></param>
