@@ -1,6 +1,6 @@
+using ElmX.Commands.Options;
 using ElmX.Console;
 using ElmX.Json;
-using ElmX.Options;
 
 namespace ElmX.Commands
 {
@@ -12,7 +12,7 @@ namespace ElmX.Commands
         /// <param name="options">
         /// The command line options.
         /// </param>
-        public static void Run(Parser options)
+        public static void Run(UnusedModulesOptions options)
         {
 
             if (!options.Show && !options.Delete && !options.Pause && !options.Rename)

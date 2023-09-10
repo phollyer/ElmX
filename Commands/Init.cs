@@ -3,6 +3,7 @@
 
 using ElmX.Console;
 using ElmX.Json;
+using ElmX.Commands.Options;
 
 namespace ElmX.Commands
 {
@@ -22,12 +23,45 @@ namespace ElmX.Commands
         /// <param name="excludedFiles">
         /// The list of files to exclude.
         /// </param>
-        public static void Run(string entryFile, List<string> excludedDirs, List<string> excludedFiles)
+        public static void Run(InitOptions options)
         {
             ElmX_Json Json = new();
-            Json.Create(entryFile, excludedDirs, excludedFiles);
 
-            Writer.WriteLine("The elmx.json file has been created.");
+            if (Json.Exists)
+            {
+                Writer.EmptyLine();
+                Writer.WriteLine("The elmx.json file already exists.");
+                Writer.EmptyLine();
+
+                Writer.Write("Do you want to overwrite the current elmx.json file? (y/n) ");
+
+                string key = Reader.ReadKey();
+
+                if (key == "y")
+                {
+                    File.Delete("elmx.json");
+
+                    Writer.EmptyLine();
+
+                    Json.Create(options.EntryFile, options.ExcludedDirs, options.ExcludedFiles);
+
+                    Writer.EmptyLine();
+                    Writer.WriteLine("A fresh elmx.json has been created.");
+                }
+                else
+                {
+                    Writer.EmptyLine();
+                    Writer.WriteLine("Exiting...");
+                    Environment.Exit(0);
+                }
+            }
+            else
+            {
+                Json.Create(options.EntryFile, options.ExcludedDirs, options.ExcludedFiles);
+
+                Writer.EmptyLine();
+                Writer.WriteLine("elmx.json has been created.");
+            }
         }
     }
 }

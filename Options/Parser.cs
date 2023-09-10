@@ -1,6 +1,8 @@
 // A Class that parses and records the command line arguments as detailed in Help.cs
 
 using ElmX.Console;
+using ElmX.Commands.Options;
+using ElmX.Commands;
 
 namespace ElmX.Options
 {
@@ -18,28 +20,13 @@ namespace ElmX.Options
         // The Command to be run
         public Cmd Cmd { get; private set; }
 
-        // Init Options
-        public string EntryFile { get; private set; } = "Main.elm";
+        // Options
+        public InitOptions InitOptions { get; private set; } = new();
 
-        public List<string> ExcludedDirs { get; private set; } = new List<string>()
-            { "elm-stuff"
-            , "node_modules"
-            , "review"
-            , "tests"
-            };
-
-        public List<string> ExcludedFiles { get; private set; } = new List<string>();
+        public UnusedModulesOptions UnusedModulesOptions { get; private set; } = new();
 
 
         // Unused Modules Options
-
-        public bool Delete { get; private set; }
-
-        public bool Pause { get; private set; }
-
-        public bool Rename { get; private set; }
-
-        public bool Show { get; private set; }
 
         // Unknowns
 
@@ -47,7 +34,6 @@ namespace ElmX.Options
 
         public List<string> UnknownNoCmdArgs { get; private set; } = new List<string>();
 
-        public string Dir { get; private set; } = ".";
 
         public Parser(string[] args)
         {
@@ -111,106 +97,16 @@ namespace ElmX.Options
             switch (Cmd)
             {
                 case Cmd.Init:
-                    ParseInitOptions(args);
+                    InitOptions.Parse(args);
                     break;
                 case Cmd.UnusedModules:
-                    ParseUnusedModulesOptions(args);
+                    UnusedModulesOptions.Parse(args);
                     break;
                 case Cmd.Unknown:
                     UnknownCmd = args[0];
                     break;
             }
         }
-
-        private void ParseInitOptions(List<string> args)
-        {
-            short index = 0;
-
-            foreach (string arg in args)
-            {
-                if (arg.StartsWith("-"))
-                {
-                    switch (arg)
-                    {
-                        case "-e":
-                        case "--entry-file":
-                            EntryFile = args[index + 1];
-                            break;
-                        case "-d":
-                        case "--exclude-dirs":
-                            foreach (string dir in args.Skip(index + 1))
-                            {
-                                if (dir.StartsWith("-"))
-                                    break;
-
-                                ExcludedDirs.Add(dir);
-                            }
-                            break;
-                        case "-f":
-                        case "--exclude-files":
-                            foreach (string item in args.Skip(index + 1))
-                            {
-                                if (item.StartsWith("-"))
-                                    break;
-
-                                ExcludedFiles.Add(item);
-                            }
-                            break;
-                    }
-                }
-
-                index++;
-            }
-        }
-        private void ParseUnusedModulesOptions(List<string> args)
-        {
-            short counter = 0;
-
-            foreach (string arg in args)
-            {
-                if (arg.StartsWith("-"))
-                {
-                    switch (arg)
-                    {
-                        case "-D":
-                        case "--dir":
-                            Dir = args[counter + 1];
-                            break;
-                        case "-d":
-                        case "--delete":
-                            Delete = true;
-                            break;
-                        case "-e":
-                        case "--exclude":
-                            List<string> remainder = args.Skip(counter + 1).ToList();
-                            foreach (string item in remainder)
-                            {
-                                if (item.StartsWith("-"))
-                                    break;
-
-                                ExcludedDirs.Add(item);
-                            }
-                            Writer.WriteLine($"Excluding: {string.Join(", ", ExcludedDirs)}");
-                            break;
-                        case "-p":
-                        case "--pause":
-                            Pause = true;
-                            break;
-                        case "-r":
-                        case "--rename":
-                            Rename = true;
-                            break;
-                        case "-s":
-                        case "--show":
-                            Show = true;
-                            break;
-
-                    }
-                }
-                counter++;
-            }
-        }
-
     }
 
     enum Cmd
@@ -227,19 +123,5 @@ namespace ElmX.Options
         Version,
 
         Unknown
-    }
-
-    enum InitOptions
-    {
-        // The starting point for an Elm project, usually Main.elm, but may be changed by the user.
-        EntryFile,
-
-        // Directories to exclude from the search. 
-        //  The defaults are 'elm-stuff', 'node_modules', 'review', and 'tests'.
-        ExcludedDirs,
-
-        // Files to exclude from the search.
-        // This is useful if the user is working on one or more modules that are not yet used in the project.
-        ExludedFiles
     }
 }

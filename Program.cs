@@ -1,4 +1,5 @@
-﻿using ElmX.Console;
+﻿using ElmX.Commands.Options;
+using ElmX.Console;
 using ElmX.Options;
 using System.Reflection;
 
@@ -53,13 +54,13 @@ namespace ElmX
 
             if (options.Cmd == Cmd.Init)
             {
-                Commands.Init.Run(options.EntryFile, options.ExcludedDirs, options.ExcludedFiles);
+                Commands.Init.Run(options.InitOptions);
                 Environment.Exit(0);
             }
 
             if (options.Cmd == Cmd.UnusedModules)
             {
-                Commands.UnusedModules.Run(options);
+                Commands.UnusedModules.Run(options.UnusedModulesOptions);
                 Environment.Exit(0);
             }
 

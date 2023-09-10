@@ -16,51 +16,28 @@ namespace ElmX.Json
     }
     class ElmX_Json
     {
-        public readonly Json? Json;
+        public Json Json = new();
 
-        private readonly bool Exists = false;
+        public readonly bool Exists = false;
 
         public ElmX_Json()
         {
             if (File.Exists("elmx.json"))
             {
                 Exists = true;
-                Json Json = Read();
             }
 
         }
 
         public void Create(string entryFile, List<string> excludedDirs, List<string> excludedFiles)
         {
-            if (Exists && Json != null)
-            {
-                PrintExistingValues(Json);
+            Json.EntryFile = entryFile;
+            Json.ExcludedDirs = excludedDirs;
+            Json.ExcludedFiles = excludedFiles;
 
-                Writer.Write("Do you want to overwrite the elmx.json file? (y/n) ");
+            string jsonStr = JsonSerializer.Serialize(Json, new JsonSerializerOptions { WriteIndented = true });
 
-                string key = Reader.ReadKey();
-
-                if (key == "y")
-                {
-                    File.Delete("elmx.json");
-
-                    Json.EntryFile = entryFile;
-                    Json.ExcludedDirs = excludedDirs;
-                    Json.ExcludedFiles = excludedFiles;
-
-                    string jsonStr = JsonSerializer.Serialize(Json, new JsonSerializerOptions { WriteIndented = true });
-
-                    File.WriteAllText("elmx.json", jsonStr);
-
-                    Writer.EmptyLine();
-                }
-                else
-                {
-                    Writer.EmptyLine();
-                    Writer.WriteLine("Exiting...");
-                    Environment.Exit(0);
-                }
-            }
+            File.WriteAllText("elmx.json", jsonStr);
         }
 
         public Json Read()
@@ -75,7 +52,7 @@ namespace ElmX.Json
 
                 if (_json != null)
                 {
-                    json = _json;
+                    Json = _json;
                 }
             }
             catch (Exception e)
@@ -89,22 +66,6 @@ namespace ElmX.Json
             }
 
             return json;
-        }
-
-        private void PrintExistingValues(Json json)
-        {
-            Writer.WriteLine("The elmx.json file already exists with following values:");
-            Writer.EmptyLine();
-            Writer.WriteLine($"Entry File: {json.EntryFile}");
-            Writer.EmptyLine();
-            Writer.WriteLine("Excluded Directories:");
-            Writer.EmptyLine();
-            Writer.WriteLines(json.ExcludedDirs);
-            Writer.EmptyLine();
-            Writer.WriteLine("Excluded Files:");
-            Writer.EmptyLine();
-            Writer.WriteLines(json.ExcludedFiles);
-            Writer.EmptyLine();
         }
     }
 }
