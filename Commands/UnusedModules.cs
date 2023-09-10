@@ -25,6 +25,7 @@ namespace ElmX.Commands
             Writer.Clear();
 
             ElmX_Json elmxJson = new();
+            elmxJson.Read();
 
             if (elmxJson.Json == null)
             {

@@ -52,16 +52,18 @@ namespace ElmX
                 Environment.Exit(0);
             }
 
-            if (options.Cmd == Cmd.Init)
+            switch (options.Cmd)
             {
-                Commands.Init.Run(options.InitOptions);
-                Environment.Exit(0);
-            }
-
-            if (options.Cmd == Cmd.UnusedModules)
-            {
-                Commands.UnusedModules.Run(options.UnusedModulesOptions);
-                Environment.Exit(0);
+                case Cmd.Init:
+                    Commands.Init.Run(options.InitOptions);
+                    Environment.Exit(0);
+                    break;
+                case Cmd.UnusedModules:
+                    Commands.UnusedModules.Run(options.UnusedModulesOptions);
+                    Environment.Exit(0);
+                    break;
+                default:
+                    break;
             }
 
             Writer.EmptyLine();
