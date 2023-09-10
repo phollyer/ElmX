@@ -37,27 +37,33 @@ namespace ElmX.Commands
 
                 string key = Reader.ReadKey();
 
-                if (key == "y")
+                switch (key)
                 {
-                    File.Delete("elmx.json");
+                    case "y":
+                        File.Delete("elmx.json");
 
-                    Writer.EmptyLine();
+                        Writer.EmptyLine();
 
-                    Json.Create(options.EntryFile, options.ExcludedDirs, options.ExcludedFiles);
+                        Json.Create(options);
 
-                    Writer.EmptyLine();
-                    Writer.WriteLine("A fresh elmx.json has been created.");
-                }
-                else
-                {
-                    Writer.EmptyLine();
-                    Writer.WriteLine("Exiting...");
-                    Environment.Exit(0);
+                        Writer.EmptyLine();
+                        Writer.WriteLine("A fresh elmx.json has been created.");
+                        break;
+                    case "n":
+                        Writer.EmptyLine();
+                        Writer.WriteLine("Exiting...");
+                        Environment.Exit(0);
+                        break;
+                    default:
+                        Writer.EmptyLine();
+                        Writer.WriteLine("Exiting...");
+                        Environment.Exit(0);
+                        break;
                 }
             }
             else
             {
-                Json.Create(options.EntryFile, options.ExcludedDirs, options.ExcludedFiles);
+                Json.Create(options);
 
                 Writer.EmptyLine();
                 Writer.WriteLine("elmx.json has been created.");

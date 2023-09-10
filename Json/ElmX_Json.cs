@@ -1,5 +1,6 @@
 // A class that reads and writes the ElmX options to a JSON file.
 
+using ElmX.Commands.Options;
 using ElmX.Console;
 using System.Text.Json;
 
@@ -29,11 +30,11 @@ namespace ElmX.Json
 
         }
 
-        public void Create(string entryFile, List<string> excludedDirs, List<string> excludedFiles)
+        public void Create(InitOptions options)
         {
-            Json.EntryFile = entryFile;
-            Json.ExcludedDirs = excludedDirs;
-            Json.ExcludedFiles = excludedFiles;
+            Json.EntryFile = options.EntryFile;
+            Json.ExcludedDirs = options.ExcludedDirs;
+            Json.ExcludedFiles = options.ExcludedFiles;
 
             string jsonStr = JsonSerializer.Serialize(Json, new JsonSerializerOptions { WriteIndented = true });
 
