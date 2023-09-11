@@ -1,6 +1,5 @@
 ﻿using ElmX.Commands.Options;
 using ElmX.Console;
-using ElmX.Options;
 using System.Reflection;
 
 namespace ElmX

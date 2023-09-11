@@ -1,10 +1,6 @@
 // A Class that parses and records the command line arguments as detailed in Help.cs
 
-using ElmX.Console;
-using ElmX.Commands.Options;
-using ElmX.Commands;
-
-namespace ElmX.Options
+namespace ElmX.Commands.Options
 {
     class Parser
     {
