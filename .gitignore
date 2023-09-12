@@ -3,8 +3,10 @@
 .DS_Store
 
 elmx.json
+elm.json
 
-elm*
+elm
+elm-stuff
 
 bin
 
