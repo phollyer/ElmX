@@ -48,6 +48,19 @@ namespace ElmX.Commands
             if (options.Show)
             {
                 Finder files = new(elmJson.Json.SourceDirs, elmxJson.Json.EntryFile, elmxJson.Json.ExcludedDirs);
+
+                if (files.Unused.Count == 0)
+                {
+                    Writer.EmptyLine();
+                    Writer.WriteLine("I did not find any unused modules.");
+                    Environment.Exit(0);
+                }
+
+                Writer.WriteLine("You asked me to show you the unused modules. I will do that now.");
+
+                ShowUnusedModules(files.Unused);
+
+                Environment.Exit(0);
             }
 
             //
@@ -154,21 +167,6 @@ namespace ElmX.Commands
             //Environment.Exit(0);
             //}
             //
-            //if (options.Show)
-            //{
-            //if (files.Unused.Count == 0)
-            //{
-            //Writer.EmptyLine();
-            //Writer.WriteLine("I did not find any unused modules.");
-            //Environment.Exit(0);
-            //}
-            //
-            //Writer.WriteLine("You asked me to show you the unused modules. I will do that now.");
-            //
-            //ShowUnusedModules(files.Unused);
-            //
-            //Environment.Exit(0);
-            //}
         }
 
         /// <summary>
@@ -371,7 +369,7 @@ namespace ElmX.Commands
                     bool found = false;
                     foreach (var line in sortedLines)
                     {
-                        if (file == line || file == entryFile)
+                        if (file == line || file == Path.Join(dir, entryFile))
                         {
                             found = true;
                             break;
