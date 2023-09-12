@@ -12,7 +12,7 @@ namespace ElmX.Commands
         static ElmX_Json? Json { get; set; }
 
         /// <summary>
-        /// Create the elmx.json file.
+        /// Run the init command in the current directory.
         /// </summary>
         /// <param name="entryFile">
         /// The entry file of the Elm project.
