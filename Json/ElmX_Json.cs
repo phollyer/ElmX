@@ -7,7 +7,7 @@ using System.Text.Json;
 namespace ElmX.Json
 {
 
-    class Json
+    class ElmXJson
     {
         public string EntryFile { get; set; } = "";
 
@@ -17,7 +17,7 @@ namespace ElmX.Json
     }
     class ElmX_Json
     {
-        public Json Json = new();
+        public ElmXJson Json = new();
 
         public readonly bool Exists = false;
 
@@ -41,15 +41,15 @@ namespace ElmX.Json
             File.WriteAllText("elmx.json", jsonStr);
         }
 
-        public Json Read()
+        public ElmXJson Read()
         {
             string jsonStr = File.ReadAllText("elmx.json");
 
-            Json json = new();
+            ElmXJson json = new();
 
             try
             {
-                Json? _json = JsonSerializer.Deserialize<Json>(jsonStr);
+                ElmXJson? _json = JsonSerializer.Deserialize<ElmXJson>(jsonStr);
 
                 if (_json != null)
                 {
