@@ -7,22 +7,24 @@ namespace ElmX.Commands
     static class UnusedModules
     {
         /// <summary>
-        /// Run the program.
+        /// Run the unused-modules command in the current directory.
         /// </summary>
         /// <param name="options">
         /// The command line options.
         /// </param>
         public static void Run(UnusedModulesOptions options)
         {
+            Writer.Clear();
 
-            if (!options.Show && !options.Delete && !options.Pause && !options.Rename)
+            Elm_Json elmJson = new();
+            elmJson.Read();
+
+            if (elmJson.Json == null)
             {
                 Writer.EmptyLine();
-                Writer.WriteLine("You asked me to find the unused modules, but you didn't tell me what to do with them. Please use the -h or --help option to see what your options are.");
+                Writer.WriteLine("I could not find an elm.json file in the current directory.");
                 Environment.Exit(0);
             }
-
-            Writer.Clear();
 
             ElmX_Json elmxJson = new();
             elmxJson.Read();
@@ -34,111 +36,19 @@ namespace ElmX.Commands
                 Environment.Exit(0);
             }
 
-            Directories.Finder dirs = new(options.Dir, options.ExcludedDirs);
-
-            Finder files = new(options.Dir, elmxJson.Json.EntryFile, dirs.Excluded);
-
-            if (options.Show && options.Pause)
+            if (!options.Show && !options.Delete && !options.Pause && !options.Rename)
             {
-                if (files.Unused.Count == 0)
-                {
-                    Writer.EmptyLine();
-                    Writer.WriteLine("I did not find any unused modules.");
-                    Environment.Exit(0);
-                }
-
-                Writer.WriteLine("You asked me to show you the unused modules and then pause before deleting them. I will do that now.");
-
-                ShowUnusedModules(files.Unused);
-                PauseUnusedModules(files.Unused);
-
+                Writer.EmptyLine();
+                Writer.WriteLine("You asked me to find the unused modules, but you didn't tell me what to do with them. Please use the -h or --help option to see what your options are.");
                 Environment.Exit(0);
             }
 
-            if (options.Show && options.Delete)
-            {
-                if (files.Unused.Count == 0)
-                {
-                    Writer.EmptyLine();
-                    Writer.WriteLine("I did not find any unused modules.");
-                    Environment.Exit(0);
-                }
-
-                Writer.WriteLine("You asked me to show you the unused modules and then delete them. I will do that now.");
-
-                ShowUnusedModules(files.Unused);
-                DeleteUnusedModules(files.Unused);
-
-                Environment.Exit(0);
-            }
-
-            if (options.Show && options.Rename)
-            {
-                if (files.Unused.Count == 0)
-                {
-                    Writer.EmptyLine();
-                    Writer.WriteLine("I did not find any unused modules.");
-                    Environment.Exit(0);
-                }
-
-                Writer.WriteLine("You asked me to show you the unused modules and then rename them. I will do that now.");
-
-                ShowUnusedModules(files.Unused);
-                Rename(files.Unused);
-
-                Environment.Exit(0);
-            }
-
-            if (options.Delete)
-            {
-                if (files.Unused.Count == 0)
-                {
-                    Writer.EmptyLine();
-                    Writer.WriteLine("I did not find any unused modules.");
-                    Environment.Exit(0);
-                }
-
-                Writer.WriteLine("You asked me to delete the unused modules. I will do that now.");
-
-                DeleteUnusedModules(files.Unused);
-
-                Environment.Exit(0);
-            }
-
-            if (options.Pause)
-            {
-                if (files.Unused.Count == 0)
-                {
-                    Writer.EmptyLine();
-                    Writer.WriteLine("I did not find any unused modules.");
-                    Environment.Exit(0);
-                }
-
-                Writer.WriteLine("You asked me to pause before deleting the unused modules. I will do that now.");
-
-                PauseUnusedModules(files.Unused);
-
-                Environment.Exit(0);
-            }
-
-            if (options.Rename)
-            {
-                if (files.Unused.Count == 0)
-                {
-                    Writer.EmptyLine();
-                    Writer.WriteLine("I did not find any unused modules.");
-                    Environment.Exit(0);
-                }
-
-                Writer.WriteLine("You asked me to rename the unused modules. I will do that now.");
-
-                Rename(files.Unused);
-
-                Environment.Exit(0);
-            }
+            Writer.WriteLine("I will now search for unused modules.");
 
             if (options.Show)
             {
+                Finder files = new(elmJson.Json.SourceDirs, elmxJson.Json.EntryFile, elmxJson.Json.ExcludedDirs);
+
                 if (files.Unused.Count == 0)
                 {
                     Writer.EmptyLine();
@@ -152,6 +62,111 @@ namespace ElmX.Commands
 
                 Environment.Exit(0);
             }
+
+            //
+            //Directories.Finder dirs = new(options.Dir, options.ExcludedDirs);
+            //
+            //Finder files = new(options.Dir, elmxJson.Json.EntryFile, dirs.Excluded);
+            //
+            //if (options.Show && options.Pause)
+            //{
+            //if (files.Unused.Count == 0)
+            //{
+            //Writer.EmptyLine();
+            //Writer.WriteLine("I did not find any unused modules.");
+            //Environment.Exit(0);
+            //}
+            //
+            //Writer.WriteLine("You asked me to show you the unused modules and then pause before deleting them. I will do that now.");
+            //
+            //ShowUnusedModules(files.Unused);
+            //PauseUnusedModules(files.Unused);
+            //
+            //Environment.Exit(0);
+            //}
+            //
+            //if (options.Show && options.Delete)
+            //{
+            //if (files.Unused.Count == 0)
+            //{
+            //Writer.EmptyLine();
+            //Writer.WriteLine("I did not find any unused modules.");
+            //Environment.Exit(0);
+            //}
+            //
+            //Writer.WriteLine("You asked me to show you the unused modules and then delete them. I will do that now.");
+            //
+            //ShowUnusedModules(files.Unused);
+            //DeleteUnusedModules(files.Unused);
+            //
+            //Environment.Exit(0);
+            //}
+            //
+            //if (options.Show && options.Rename)
+            //{
+            //if (files.Unused.Count == 0)
+            //{
+            //Writer.EmptyLine();
+            //Writer.WriteLine("I did not find any unused modules.");
+            //Environment.Exit(0);
+            //}
+            //
+            //Writer.WriteLine("You asked me to show you the unused modules and then rename them. I will do that now.");
+            //
+            //ShowUnusedModules(files.Unused);
+            //Rename(files.Unused);
+            //
+            //Environment.Exit(0);
+            //}
+            //
+            //if (options.Delete)
+            //{
+            //if (files.Unused.Count == 0)
+            //{
+            //Writer.EmptyLine();
+            //Writer.WriteLine("I did not find any unused modules.");
+            //Environment.Exit(0);
+            //}
+            //
+            //Writer.WriteLine("You asked me to delete the unused modules. I will do that now.");
+            //
+            //DeleteUnusedModules(files.Unused);
+            //
+            //Environment.Exit(0);
+            //}
+            //
+            //if (options.Pause)
+            //{
+            //if (files.Unused.Count == 0)
+            //{
+            //Writer.EmptyLine();
+            //Writer.WriteLine("I did not find any unused modules.");
+            //Environment.Exit(0);
+            //}
+            //
+            //Writer.WriteLine("You asked me to pause before deleting the unused modules. I will do that now.");
+            //
+            //PauseUnusedModules(files.Unused);
+            //
+            //Environment.Exit(0);
+            //}
+            //
+            //if (options.Rename)
+            //{
+            //if (files.Unused.Count == 0)
+            //{
+            //Writer.EmptyLine();
+            //Writer.WriteLine("I did not find any unused modules.");
+            //Environment.Exit(0);
+            //}
+            //
+            //Writer.WriteLine("You asked me to rename the unused modules. I will do that now.");
+            //
+            //Rename(files.Unused);
+            //
+            //Environment.Exit(0);
+            //}
+            //
         }
 
         /// <summary>
@@ -280,9 +295,12 @@ namespace ElmX.Commands
         /// <param name="excludedDirs">
         /// The list of directories to exclude.
         /// </param>
-        public Finder(string dir, string entryFile, List<string> excludedDirs)
+        public Finder(List<string> srcDirectories, string entryFile, List<string> excludedDirs)
         {
-            Search(dir, entryFile, excludedDirs);
+            foreach (string dir in srcDirectories)
+            {
+                Search(dir, entryFile, excludedDirs);
+            }
         }
 
         /// <summary>
@@ -313,7 +331,7 @@ namespace ElmX.Commands
                              where line.Contains("import")
                              select new
                              {
-                                 Line = line[7..].Split(" ")[0].Replace(".", Path.DirectorySeparatorChar.ToString()) + ".elm",
+                                 Line = Path.Join(dir, line[7..].Split(" ")[0].Replace(".", Path.DirectorySeparatorChar.ToString()) + ".elm"),
                              };
 
                 List<string> sortedLines = new();
@@ -351,7 +369,7 @@ namespace ElmX.Commands
                     bool found = false;
                     foreach (var line in sortedLines)
                     {
-                        if (file.Contains(line) || file.Contains(entryFile))
+                        if (file == line || file == Path.Join(dir, entryFile))
                         {
                             found = true;
                             break;
@@ -366,6 +384,10 @@ namespace ElmX.Commands
 
                 Writer.WriteAt($"Found: {Unused.Count().ToString()} unused files", 0, 4);
                 Writer.WriteLine("");
+            }
+            catch (DirectoryNotFoundException dirEx)
+            {
+                Writer.WriteLine(dirEx.Message);
             }
             catch (UnauthorizedAccessException uAEx)
             {
