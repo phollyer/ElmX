@@ -6,7 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [unreleased]
 
-- Nothing
+- ### Fixed
+
+- Now using the `source-directories` property from the `elm.json` to ensure unused modules are found correctly. Currenty this has only been tested on a single project, so please raise an issue if you find any problems. Many thanks to [lydell](https://github.com/lydell/) for pointing out the problem.
+
 
 ## [1.0.2] - 2023-09-06
 
