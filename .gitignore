@@ -1,6 +1,7 @@
 .vs
 .vscode
 .DS_Store
+.markdownlint.json
 
 elmx.json
 elm.json
