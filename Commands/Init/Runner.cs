@@ -5,9 +5,9 @@ using ElmX.Console;
 using ElmX.Json;
 using ElmX.Commands.Options;
 
-namespace ElmX.Commands
+namespace ElmX.Commands.Init
 {
-    static class Init
+    static class Runner
     {
         static ElmX_Json? Json { get; set; }
 

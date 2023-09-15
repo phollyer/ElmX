@@ -54,11 +54,11 @@ namespace ElmX
             switch (options.Cmd)
             {
                 case Cmd.Init:
-                    Commands.Init.Run(options.InitOptions);
+                    ElmX.Commands.Init.Runner.Run(options.InitOptions);
                     Environment.Exit(0);
                     break;
                 case Cmd.UnusedModules:
-                    Commands.UnusedModules.Run(options.UnusedModulesOptions);
+                    ElmX.Commands.UnusedModules.Runner.Run(options.UnusedModulesOptions);
                     Environment.Exit(0);
                     break;
                 default:

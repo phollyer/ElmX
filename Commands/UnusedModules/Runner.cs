@@ -2,9 +2,9 @@ using ElmX.Commands.Options;
 using ElmX.Console;
 using ElmX.Json;
 
-namespace ElmX.Commands
+namespace ElmX.Commands.UnusedModules
 {
-    static class UnusedModules
+    static class Runner
     {
         /// <summary>
         /// Run the unused-modules command in the current directory.
@@ -45,22 +45,40 @@ namespace ElmX.Commands
 
             Writer.WriteLine("I will now search for unused modules.");
 
+            Finder? files = null;
+
             if (options.Show)
             {
-                Finder files = new(elmJson.Json.SourceDirs, elmxJson.Json.EntryFile, elmxJson.Json.ExcludedDirs);
+                if (elmJson.Json.projectType == ProjectType.Application && elmJson.Json.Application != null)
+                {
+                    files = new(elmJson.Json.Application.SourceDirs, elmxJson.Json.EntryFile, elmxJson.Json.ExcludedDirs);
+                }
+                else if (elmJson.Json.projectType == ProjectType.Package && elmJson.Json.Package != null)
+                {
+                    files = new(elmJson.Json.Package.Src, elmJson.Json.Package.ExposedModules, elmxJson.Json.ExcludedDirs);
+                }
+                else
+                {
+                    Writer.EmptyLine();
+                    Writer.WriteLine("I could not find the source directories for this project.");
+                    Environment.Exit(0);
+                }
 
-                if (files.Unused.Count == 0)
+                if (files != null && files.Unused.Count == 0)
                 {
                     Writer.EmptyLine();
                     Writer.WriteLine("I did not find any unused modules.");
                     Environment.Exit(0);
                 }
+                else if (files != null)
+                {
 
-                Writer.WriteLine("You asked me to show you the unused modules. I will do that now.");
+                    Writer.WriteLine("You asked me to show you the unused modules. I will do that now.");
 
-                ShowUnusedModules(files.Unused);
+                    ShowUnusedModules(files.Unused);
 
-                Environment.Exit(0);
+                    Environment.Exit(0);
+                }
             }
 
             //
@@ -286,6 +304,23 @@ namespace ElmX.Commands
         /// <summary>
         /// Constructor
         /// </summary>
+        /// <param name="src">
+        /// The directory to search.
+        /// </param>
+        /// <param name="entryFile">
+        /// The entry file of the Elm project.
+        /// </param>
+        /// <param name="excludedDirs">
+        /// The list of directories to exclude.
+        /// </param>
+        public Finder(string src, List<string> exposedModules, List<string> excludedDirs)
+        {
+            SearchPackage(src, exposedModules, excludedDirs);
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
         /// <param name="dir">
         /// The directory to search.
         /// </param>
@@ -297,29 +332,32 @@ namespace ElmX.Commands
         /// </param>
         public Finder(List<string> srcDirectories, string entryFile, List<string> excludedDirs)
         {
+            SearchApplication searchApplication = new();
+
             foreach (string dir in srcDirectories)
             {
-                Search(dir, entryFile, excludedDirs);
+                searchApplication.Run(dir, entryFile, excludedDirs);
             }
         }
 
         /// <summary>
-        /// Search for all the Elm files in a given directory and its subdirectories.
+        /// Search for all the Elm files in a Package.
         /// </summary>
-        /// <param name="dir">
-        /// The directory to search.
+        /// <param name="srcDir">
+        /// The source-directory containing the Elm files for the Package.
         /// </param>
-        /// <param name="entryFile">
-        /// The entry file of the Elm project.
+        /// <param name="exposedModules">
+        /// The Elm files that are exposed by the Package. These are top level files that are not necessarily imported by any other files in the Package
+        /// As a result they should not be considered unused.
         /// </param>
         /// <param name="excludedDirs">
         /// The list of directories to exclude.
         /// </param>
-        private void Search(string dir, string entryFile, List<string> excludedDirs)
+        private void SearchPackage(string srcDir, List<string> exposedModules, List<string> excludedDirs)
         {
             try
             {
-                var files = from file in Directory.EnumerateFiles(dir, "*.elm", SearchOption.AllDirectories)
+                var files = from file in Directory.EnumerateFiles(srcDir, "*.elm", SearchOption.AllDirectories)
                             where IsNotExcluded(file, excludedDirs)
                             select new
                             {
@@ -331,7 +369,7 @@ namespace ElmX.Commands
                              where line.Contains("import")
                              select new
                              {
-                                 Line = Path.Join(dir, line[7..].Split(" ")[0].Replace(".", Path.DirectorySeparatorChar.ToString()) + ".elm"),
+                                 Line = Path.Join(srcDir, line[7..].Split(" ")[0].Replace(".", Path.DirectorySeparatorChar.ToString()) + ".elm"),
                              };
 
                 List<string> sortedLines = new();
@@ -352,7 +390,7 @@ namespace ElmX.Commands
 
                 sortedFiles.Sort();
 
-                Writer.WriteLine($"Searching: {dir}");
+                Writer.WriteLine($"Searching: {srcDir}");
                 Writer.WriteLine($"Excluding: {string.Join(", ", excludedDirs)}");
                 Writer.WriteLine($"Found: {sortedLines.Count()} unique imports");
                 Writer.WriteLine($"Found: {sortedFiles.Count()} files");
@@ -369,7 +407,7 @@ namespace ElmX.Commands
                     bool found = false;
                     foreach (var line in sortedLines)
                     {
-                        if (file == line || file == Path.Join(dir, entryFile))
+                        if (file == line || exposedModules.Contains(file))
                         {
                             found = true;
                             break;
