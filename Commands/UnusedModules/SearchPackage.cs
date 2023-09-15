@@ -2,23 +2,24 @@ using ElmX.Console;
 
 namespace ElmX.Commands.UnusedModules
 {
-    public class SearchApplication
+    public class SearchPackage
     {
         public List<string> Unused { get; set; } = new List<string>();
 
         /// <summary>
-        /// Search for all the Elm files in an Application.
+        /// Search for all the Elm files in a Package.
         /// </summary>
         /// <param name="srcDir">
-        /// The source-directory containing the Elm files for the Application.
+        /// The source-directory containing the Elm files for the Package.
         /// </param>
-        /// <param name="entryFile">
-        /// The entry file of the Elm Application.
+        /// <param name="exposedModules">
+        /// The Elm files that are exposed by the Package. These are top level files that are not necessarily imported by any other files in the Package
+        /// As a result they should not be considered unused.
         /// </param>
         /// <param name="excludedDirs">
         /// The list of directories to exclude.
         /// </param>
-        public void Run(string srcDir, string entryFile, List<string> excludedDirs)
+        public void Run(string srcDir, List<string> exposedModules, List<string> excludedDirs)
         {
             try
             {
@@ -72,7 +73,7 @@ namespace ElmX.Commands.UnusedModules
                     bool found = false;
                     foreach (var line in sortedLines)
                     {
-                        if (file == line || file == Path.Join(srcDir, entryFile))
+                        if (file == line || exposedModules.Contains(file))
                         {
                             found = true;
                             break;
@@ -157,5 +158,4 @@ namespace ElmX.Commands.UnusedModules
             Writer.WriteLines(files);
         }
     }
-
 }
