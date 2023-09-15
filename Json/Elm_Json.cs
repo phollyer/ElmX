@@ -14,7 +14,8 @@ namespace ElmX.Json
 
     class Type
     {
-        public string type = "";
+        [JsonPropertyName("type")]
+        public string type { get; set; } = "";
     }
 
     class Application
@@ -24,6 +25,9 @@ namespace ElmX.Json
 
         [JsonPropertyName("elm-version")]
         public string ElmVersion { get; set; } = "";
+
+        [JsonPropertyName("source-directories")]
+        public List<string> SourceDirs { get; set; } = new List<string>();
 
         [JsonPropertyName("dependencies")]
         public Dependencies Dependencies { get; set; } = new Dependencies();
@@ -43,6 +47,8 @@ namespace ElmX.Json
 
     class Package
     {
+        public readonly string Src = "src";
+
         [JsonPropertyName("type")]
         public string Type { get; set; } = "";
 
@@ -63,9 +69,6 @@ namespace ElmX.Json
 
         [JsonPropertyName("elm-version")]
         public string ElmVersion { get; set; } = "";
-
-        [JsonPropertyName("source-directories")]
-        public List<string> SourceDirs { get; set; } = new List<string>();
 
         [JsonPropertyName("dependencies")]
         public Dictionary<string, string> Dependencies { get; set; } = new();
@@ -108,7 +111,7 @@ namespace ElmX.Json
 
                     if (Type != null)
                     {
-                        if (Type.type == "Application")
+                        if (Type.type == "application")
                         {
                             Json.projectType = ProjectType.Application;
 
@@ -119,7 +122,7 @@ namespace ElmX.Json
                                 Json.Application = applicaton;
                             }
                         }
-                        else if (Type.type == "Package")
+                        else if (Type.type == "package")
                         {
                             Json.projectType = ProjectType.Package;
 
