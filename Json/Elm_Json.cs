@@ -90,71 +90,72 @@ namespace ElmX.Json
     {
         public ElmJson Json = new();
 
-        public readonly bool Exists = false;
         public Elm_Json()
         {
-            if (File.Exists("elm.json"))
+            if (!File.Exists("elm.json"))
             {
-                Exists = true;
+                Writer.EmptyLine();
+                Writer.WriteLine("I could not find an elm.json file in the current directory.");
+                Writer.EmptyLine();
+                Writer.WriteLine("Exiting...");
+                Writer.EmptyLine();
+                Environment.Exit(0);
             }
         }
 
         public void Read()
         {
-            if (File.Exists("elm.json"))
+            string jsonStr = File.ReadAllText("elm.json");
+
+            try
             {
-                string jsonStr = File.ReadAllText("elm.json");
+                Type? Type = JsonSerializer.Deserialize<Type>(jsonStr);
 
-                try
+                if (Type != null)
                 {
-                    Type? Type = JsonSerializer.Deserialize<Type>(jsonStr);
-
-                    if (Type != null)
+                    if (Type.type == "application")
                     {
-                        if (Type.type == "application")
+                        Json.projectType = ProjectType.Application;
+
+                        Application? applicaton = JsonSerializer.Deserialize<Application>(jsonStr);
+
+                        if (applicaton != null)
                         {
-                            Json.projectType = ProjectType.Application;
-
-                            Application? applicaton = JsonSerializer.Deserialize<Application>(jsonStr);
-
-                            if (applicaton != null)
-                            {
-                                Json.Application = applicaton;
-                            }
-                        }
-                        else if (Type.type == "package")
-                        {
-                            Json.projectType = ProjectType.Package;
-
-                            Package? package = JsonSerializer.Deserialize<Package>(jsonStr);
-
-                            if (package != null)
-                            {
-                                Json.Package = package;
-                            }
-                        }
-                        else
-                        {
-                            Writer.EmptyLine();
-                            Writer.WriteLine($"This project is of type '{Type.type}'.");
-                            Writer.WriteLine("But I only know about Application and Package projects.");
-                            Writer.EmptyLine();
-                            Writer.WriteLine($"If {Type.type} as a valid Elm project, please raise an issue and I'll add support for it.");
-                            Writer.WriteLine("Exiting...");
-                            Writer.EmptyLine();
-                            Environment.Exit(0);
+                            Json.Application = applicaton;
                         }
                     }
+                    else if (Type.type == "package")
+                    {
+                        Json.projectType = ProjectType.Package;
+
+                        Package? package = JsonSerializer.Deserialize<Package>(jsonStr);
+
+                        if (package != null)
+                        {
+                            Json.Package = package;
+                        }
+                    }
+                    else
+                    {
+                        Writer.EmptyLine();
+                        Writer.WriteLine($"This project is of type '{Type.type}'.");
+                        Writer.WriteLine("But I only know about Application and Package projects.");
+                        Writer.EmptyLine();
+                        Writer.WriteLine($"If {Type.type} as a valid Elm project, please raise an issue and I'll add support for it.");
+                        Writer.WriteLine("Exiting...");
+                        Writer.EmptyLine();
+                        Environment.Exit(0);
+                    }
                 }
-                catch (Exception e)
-                {
-                    Writer.EmptyLine();
-                    Writer.WriteLine("There was an error reading the elm.json file.");
-                    Writer.WriteLine(e.Message);
-                    Writer.EmptyLine();
-                    Writer.WriteLine("Exiting...");
-                    Environment.Exit(1);
-                }
+            }
+            catch (Exception e)
+            {
+                Writer.EmptyLine();
+                Writer.WriteLine("There was an error reading the elm.json file.");
+                Writer.WriteLine(e.Message);
+                Writer.EmptyLine();
+                Writer.WriteLine("Exiting...");
+                Environment.Exit(1);
             }
         }
     }
