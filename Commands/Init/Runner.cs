@@ -49,11 +49,6 @@ namespace ElmX.Commands.Init
                         Writer.EmptyLine();
                         Writer.WriteLine("A fresh elmx.json has been created.");
                         break;
-                    case "n":
-                        Writer.EmptyLine();
-                        Writer.WriteLine("Exiting...");
-                        Environment.Exit(0);
-                        break;
                     default:
                         Writer.EmptyLine();
                         Writer.WriteLine("Exiting...");
