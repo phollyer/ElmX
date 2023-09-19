@@ -1,4 +1,4 @@
-using ElmX.Console;
+using ElmX.Core.Console;
 
 namespace ElmX.Commands.Options
 {

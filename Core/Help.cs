@@ -1,6 +1,6 @@
 // A class that writes the Help text for all the available Options to the console
 
-using ElmX.Console;
+using ElmX.Core.Console;
 
 namespace ElmX.Core
 {

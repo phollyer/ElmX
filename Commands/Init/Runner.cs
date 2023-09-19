@@ -1,15 +1,15 @@
 // A class that takes the Init options and creates an elmx.json file in the current directory
 // that contains the entry file and the excluded directories and files.
 
-using ElmX.Console;
-using ElmX.Json;
+using ElmX.Core.Console;
+using ElmX.Core;
 using ElmX.Commands.Options;
 
 namespace ElmX.Commands.Init
 {
     static class Runner
     {
-        static ElmX_Json? Json { get; set; }
+        static Json? Json { get; set; }
 
         /// <summary>
         /// Run the init command in the current directory.
@@ -25,7 +25,7 @@ namespace ElmX.Commands.Init
         /// </param>
         public static void Run(InitOptions options)
         {
-            ElmX_Json Json = new();
+            Json Json = new();
 
             if (Json.Exists)
             {

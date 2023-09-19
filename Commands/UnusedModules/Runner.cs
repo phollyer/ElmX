@@ -1,6 +1,5 @@
 using ElmX.Commands.Options;
-using ElmX.Console;
-using ElmX.Core;
+using ElmX.Core.Console;
 using ElmX.Elm;
 
 namespace ElmX.Commands.UnusedModules
@@ -52,7 +51,7 @@ namespace ElmX.Commands.UnusedModules
             {
                 if (ElmJson.json.projectType == ProjectType.Application && ElmJson.json.Application != null)
                 {
-                    Elm.Application.Application application = new(ElmJson.json.Application);
+                    Elm.Application application = new(ElmJson.json.Application);
 
                     SearchApplication searchApplication = new();
 
