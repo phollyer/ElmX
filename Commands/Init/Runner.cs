@@ -3,7 +3,6 @@
 
 using ElmX.Core.Console;
 using ElmX.Core;
-using ElmX.Commands.Options;
 
 namespace ElmX.Commands.Init
 {
@@ -14,16 +13,10 @@ namespace ElmX.Commands.Init
         /// <summary>
         /// Run the init command in the current directory.
         /// </summary>
-        /// <param name="entryFile">
-        /// The entry file of the Elm project.
+        /// <param name="options">
+        /// The options supplied by the user on the command line.
         /// </param>
-        /// <param name="excludedDirs">
-        /// The list of directories to exclude.
-        /// </param>
-        /// <param name="excludedFiles">
-        /// The list of files to exclude.
-        /// </param>
-        public static void Run(InitOptions options)
+        public static void Run(Options options)
         {
             Json Json = new();
 

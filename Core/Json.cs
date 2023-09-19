@@ -1,4 +1,4 @@
-using ElmX.Commands.Options;
+using ElmX.Commands.Init;
 using ElmX.Core.Console;
 using System.Text.Json;
 
@@ -19,7 +19,7 @@ namespace ElmX.Core
 
         }
 
-        public void Create(InitOptions options)
+        public void Create(Options options)
         {
             json.EntryFile = options.EntryFile;
             json.ExcludedDirs = options.ExcludedDirs;
