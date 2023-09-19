@@ -1,8 +1,8 @@
-// A Class that parses and records the command line arguments as detailed in Help.cs
+using ElmX.Commands;
 
-namespace ElmX.Commands.Options
+namespace ElmX.Commands
 {
-    class Parser
+    class OptionsParser
     {
         // Help Intro Option - set to true if the user runs only `elmx` with no arguments
         public bool HelpIntro { get; private set; }
@@ -17,9 +17,9 @@ namespace ElmX.Commands.Options
         public Cmd Cmd { get; private set; }
 
         // Options
-        public InitOptions InitOptions { get; private set; } = new();
+        public Init.Options InitOptions { get; private set; } = new();
 
-        public UnusedModulesOptions UnusedModulesOptions { get; private set; } = new();
+        public UnusedModules.Options UnusedModulesOptions { get; private set; } = new();
 
 
         // Unused Modules Options
@@ -31,7 +31,7 @@ namespace ElmX.Commands.Options
         public List<string> UnknownNoCmdArgs { get; private set; } = new List<string>();
 
 
-        public Parser(string[] args)
+        public OptionsParser(string[] args)
         {
             if (args.Length == 0)
             {

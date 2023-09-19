@@ -1,8 +1,8 @@
 using ElmX.Core.Console;
 
-namespace ElmX.Commands.Options
+namespace ElmX.Commands.UnusedModules
 {
-    public class UnusedModulesOptions
+    public class Options
     {
         public bool Delete { get; private set; }
         public string Dir { get; private set; } = ".";

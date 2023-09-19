@@ -1,4 +1,3 @@
-using ElmX.Commands.Options;
 using ElmX.Core.Console;
 using ElmX.Elm;
 
@@ -16,7 +15,7 @@ namespace ElmX.Commands.UnusedModules
         /// <param name="options">
         /// The command line options.
         /// </param>
-        public static void Run(UnusedModulesOptions options)
+        public static void Run(Options options)
         {
             Writer.Clear();
 

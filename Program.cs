@@ -1,4 +1,4 @@
-﻿using ElmX.Commands.Options;
+﻿using ElmX.Commands;
 using ElmX.Core;
 using ElmX.Core.Console;
 using System.Reflection;
@@ -9,7 +9,7 @@ namespace ElmX
     {
         static void Main(string[] args)
         {
-            Parser options = new(args);
+            OptionsParser options = new(args);
 
             if (options.HelpIntro)
             {
