@@ -1,4 +1,4 @@
-namespace ElmX.Console
+namespace ElmX.Core.Console
 {
     static class Reader
     {

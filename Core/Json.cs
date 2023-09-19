@@ -1,27 +1,16 @@
-// A class that reads and writes the ElmX options to a JSON file.
-
 using ElmX.Commands.Options;
-using ElmX.Console;
+using ElmX.Core.Console;
 using System.Text.Json;
 
-namespace ElmX.Json
+namespace ElmX.Core
 {
-
-    class ElmXJson
+    class Json
     {
-        public string EntryFile { get; set; } = "";
-
-        public List<string> ExcludedDirs { get; set; } = new List<string>();
-
-        public List<string> ExcludedFiles { get; set; } = new List<string>();
-    }
-    class ElmX_Json
-    {
-        public ElmXJson Json = new();
+        public ElmXJson json = new();
 
         public readonly bool Exists = false;
 
-        public ElmX_Json()
+        public Json()
         {
             if (File.Exists("elmx.json"))
             {
@@ -32,11 +21,11 @@ namespace ElmX.Json
 
         public void Create(InitOptions options)
         {
-            Json.EntryFile = options.EntryFile;
-            Json.ExcludedDirs = options.ExcludedDirs;
-            Json.ExcludedFiles = options.ExcludedFiles;
+            json.EntryFile = options.EntryFile;
+            json.ExcludedDirs = options.ExcludedDirs;
+            json.ExcludedFiles = options.ExcludedFiles;
 
-            string jsonStr = JsonSerializer.Serialize(Json, new JsonSerializerOptions { WriteIndented = true });
+            string jsonStr = JsonSerializer.Serialize(json, new JsonSerializerOptions { WriteIndented = true });
 
             File.WriteAllText("elmx.json", jsonStr);
         }
@@ -53,7 +42,7 @@ namespace ElmX.Json
 
                 if (_json != null)
                 {
-                    Json = _json;
+                    this.json = _json;
                 }
             }
             catch (Exception e)
@@ -68,5 +57,13 @@ namespace ElmX.Json
 
             return json;
         }
+    }
+    class ElmXJson
+    {
+        public string EntryFile { get; set; } = "";
+
+        public List<string> ExcludedDirs { get; set; } = new List<string>();
+
+        public List<string> ExcludedFiles { get; set; } = new List<string>();
     }
 }

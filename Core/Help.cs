@@ -2,7 +2,7 @@
 
 using ElmX.Console;
 
-namespace ElmX
+namespace ElmX.Core
 {
     static class Help
     {

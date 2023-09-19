@@ -1,11 +1,16 @@
 using ElmX.Commands.Options;
 using ElmX.Console;
-using ElmX.Json;
+using ElmX.Core;
+using ElmX.Elm;
 
 namespace ElmX.Commands.UnusedModules
 {
     static class Runner
     {
+        static private Elm.Json ElmJson = new();
+
+        static private Core.Json ElmX_Json = new();
+
         /// <summary>
         /// Run the unused-modules command in the current directory.
         /// </summary>
@@ -16,20 +21,18 @@ namespace ElmX.Commands.UnusedModules
         {
             Writer.Clear();
 
-            Elm_Json elmJson = new();
-            elmJson.Read();
+            ElmJson.Read();
 
-            if (elmJson.Json == null)
+            if (ElmJson.json == null)
             {
                 Writer.EmptyLine();
                 Writer.WriteLine("I could not find an elm.json file in the current directory.");
                 Environment.Exit(0);
             }
 
-            ElmX_Json elmxJson = new();
-            elmxJson.Read();
+            ElmX_Json.Read();
 
-            if (elmxJson.Json == null)
+            if (ElmX_Json.json == null)
             {
                 Writer.EmptyLine();
                 Writer.WriteLine("I could not find an elmx.json file in the current directory. Please run the init command first.");
@@ -45,22 +48,23 @@ namespace ElmX.Commands.UnusedModules
 
             Writer.WriteLine("I will now search for unused modules.");
 
-
             if (options.Show)
             {
-                if (elmJson.Json.projectType == ProjectType.Application && elmJson.Json.Application != null)
+                if (ElmJson.json.projectType == ProjectType.Application && ElmJson.json.Application != null)
                 {
+                    Elm.Application.Application application = new(ElmJson.json.Application);
+
                     SearchApplication searchApplication = new();
 
-                    foreach (string dir in elmJson.Json.Application.SourceDirs)
+                    foreach (string dir in ElmJson.json.Application.SourceDirs)
                     {
-                        searchApplication.Run(dir, elmxJson.Json.EntryFile, elmxJson.Json.ExcludedDirs);
+                        searchApplication.Run(dir, ElmX_Json.json.EntryFile, ElmX_Json.json.ExcludedDirs);
                     }
                 }
-                else if (elmJson.Json.projectType == ProjectType.Package && elmJson.Json.Package != null)
+                else if (ElmJson.json.projectType == ProjectType.Package && ElmJson.json.Package != null)
                 {
                     SearchPackage searchPackage = new();
-                    searchPackage.Run(elmJson.Json.Package.Src, elmJson.Json.Package.ExposedModules, elmxJson.Json.ExcludedDirs);
+                    searchPackage.Run(ElmJson.json.Package.Src, ElmJson.json.Package.ExposedModules, ElmX_Json.json.ExcludedDirs);
                 }
                 else
                 {
