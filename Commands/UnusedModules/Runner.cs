@@ -50,14 +50,7 @@ namespace ElmX.Commands.UnusedModules
             {
                 if (ElmJson.json.projectType == ProjectType.Application && ElmJson.json.Application != null)
                 {
-                    Elm.Application application = new(ElmJson.json.Application);
-
-                    SearchApplication searchApplication = new();
-
-                    foreach (string dir in ElmJson.json.Application.SourceDirs)
-                    {
-                        searchApplication.Run(dir, ElmX_Json.json.EntryFile, ElmX_Json.json.ExcludedDirs);
-                    }
+                    Elm.Application application = new(ElmJson.json.Application, ElmX_Json);
                 }
                 else if (ElmJson.json.projectType == ProjectType.Package && ElmJson.json.Package != null)
                 {

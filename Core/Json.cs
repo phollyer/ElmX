@@ -1,10 +1,9 @@
-using ElmX.Commands.Init;
 using ElmX.Core.Console;
 using System.Text.Json;
 
 namespace ElmX.Core
 {
-    class Json
+    public class Json
     {
         public ElmXJson json = new();
 
@@ -12,14 +11,10 @@ namespace ElmX.Core
 
         public Json()
         {
-            if (File.Exists("elmx.json"))
-            {
-                Exists = true;
-            }
-
+            Exists = File.Exists("elmx.json");
         }
 
-        public void Create(Options options)
+        public void Create(Commands.Init.Options options)
         {
             json.EntryFile = options.EntryFile;
             json.ExcludedDirs = options.ExcludedDirs;
@@ -30,11 +25,9 @@ namespace ElmX.Core
             File.WriteAllText("elmx.json", jsonStr);
         }
 
-        public ElmXJson Read()
+        public void Read()
         {
             string jsonStr = File.ReadAllText("elmx.json");
-
-            ElmXJson json = new();
 
             try
             {
@@ -42,7 +35,12 @@ namespace ElmX.Core
 
                 if (_json != null)
                 {
-                    this.json = _json;
+                    json = _json;
+                }
+                else
+                {
+                    Writer.WriteLine("There was an error reading the elmx.json file.");
+                    Environment.Exit(1);
                 }
             }
             catch (Exception e)
@@ -54,11 +52,9 @@ namespace ElmX.Core
                 Writer.WriteLine("Exiting...");
                 Environment.Exit(1);
             }
-
-            return json;
         }
     }
-    class ElmXJson
+    public class ElmXJson
     {
         public string EntryFile { get; set; } = "";
 
