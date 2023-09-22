@@ -53,6 +53,7 @@ namespace ElmX.Elm
                         Module module = new(file.File);
                         module.ParseImports();
                         Modules.Add(module);
+                        Writer.WriteLine($"Entry module: {module.ToString()}");
                     }
                 }
 
