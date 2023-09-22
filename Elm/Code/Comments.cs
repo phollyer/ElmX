@@ -20,7 +20,15 @@ namespace ElmX.Elm.Code
 
             for (int i = 0; i < lines.Length; i++)
             {
-                if (lines[i].Contains("--"))
+                if (lines[i].StartsWith("--"))
+                {
+                    lines[i] = lines[i].Replace("--", "");
+                }
+                else if (lines[i].StartsWith("{-"))
+                {
+                    lines[i] = lines[i].Replace("{-", "").Replace("-}", "");
+                }
+                else if (lines[i].Contains("--"))
                 {
                     lines[i] = RemoveSingleLineComment(lines[i]);
                 }

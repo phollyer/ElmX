@@ -12,8 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Import statements that span multiple lines are now handled correctly.
 - Import statements that have a trailing single line comment are now handled correctly.
+- Imports that are commented out with a single line comment are now handled correctly, provided the import statement is directly preceded by the comment.
 - Import statements that include a multiline comment are now handled correctly, whether the multiline comment is on a single line or spanning multiple lines.
 - Import statements that are commented out with a multline comment are now handled correctly when the comment is spanning multiple lines.
+- Import statements that are commented out with a multiline comment are now handled correctly when the comment is a single line provided the import statement is directly preceeded by the oppening comment.
 - Import statements inside a multiline string are now handled correctly.
 
 Many thanks to [lydell](https://github.com/lydell/) for pointing out the problems [here](https://discourse.elm-lang.org/t/elmx-find-and-delete-unused-modules/9309/7).

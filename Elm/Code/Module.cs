@@ -73,6 +73,16 @@ namespace ElmX.Elm.Code
             }
         }
 
+        private int[] GetImportLineNumbers(string[] lines)
+        {
+            int[] lineNumbers =
+                lines
+                .Select((line, index) => line.StartsWith("import") || line.StartsWith("-- import") || line.StartsWith("{- import") ? index + 1 : -1)
+                .Where(index => index != -1).ToArray();
+
+            return lineNumbers;
+        }
+
         private int GetLastLineNumberOfLastImport(string[] lines, int lineNumber)
         {
             for (int i = 1; i < lines.Length; i++)
@@ -159,17 +169,6 @@ namespace ElmX.Elm.Code
                 import.Exposing.Add(part);
             }
         }
-
-        private int[] GetImportLineNumbers(string[] lines)
-        {
-            int[] lineNumbers =
-                lines
-                .Select((line, index) => line.StartsWith("import") ? index + 1 : -1)
-                .Where(index => index != -1).ToArray();
-
-            return lineNumbers;
-        }
-
         public override string ToString()
         {
             string str = "";
