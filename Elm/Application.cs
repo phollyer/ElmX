@@ -6,6 +6,9 @@ namespace ElmX.Elm
 {
     public class Application
     {
+        // Source Directory
+        public string SourceDir { get; private set; } = "";
+
         // Metadata
         public Metadata Metadata { get; private set; }
 
@@ -21,13 +24,73 @@ namespace ElmX.Elm
         {
             Metadata = new Metadata(json);
 
-            foreach (string dir in json.SourceDirs)
-            {
-                SearchFiles(dir, elmxJson.json.EntryFile, elmxJson.json.ExcludedDirs);
-            }
+            SourceDir = json.SourceDirs[0];
+
+            FindModules(SourceDir, elmxJson.json.EntryFile, elmxJson.json.ExcludedDirs);
         }
 
-        private void SearchFiles(string srcDir, string entryFile, List<string> excludedDirs)
+        public List<string> FindUnusedModules()
+        {
+            List<string> importPaths = new();
+
+            foreach (Import import in EntryModule.Imports)
+            {
+                string importPath = Path.Join(SourceDir, import.Name.Replace(".", Path.DirectorySeparatorChar.ToString()) + ".elm");
+                importPaths.Add(importPath);
+            }
+
+            foreach (Module module in Modules)
+            {
+                foreach (Import import in module.Imports)
+                {
+                    string importPath = Path.Join(SourceDir, import.Name.Replace(".", Path.DirectorySeparatorChar.ToString()) + ".elm");
+                    importPaths.Add(importPath);
+                }
+            }
+
+            importPaths = importPaths.Distinct().ToList();
+            importPaths.Sort();
+
+            List<string> modulePaths = new();
+
+            foreach (Module module in Modules)
+            {
+                modulePaths.Add(module.Path);
+            }
+
+            modulePaths.Sort();
+
+            List<string> Unused = new();
+
+            int fileCount = 0;
+
+            foreach (var filePath in modulePaths)
+            {
+                fileCount++;
+
+                Writer.WriteAt($"Checking file {fileCount}", 0, 4);
+                Writer.WriteLine("");
+
+                bool found = false;
+                foreach (var importPath in importPaths)
+                {
+                    if (filePath == importPath || filePath == EntryModule.Path)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                {
+                    Unused.Add(filePath);
+                }
+            }
+
+            return Unused;
+        }
+
+        private void FindModules(string srcDir, string entryFile, List<string> excludedDirs)
         {
             try
             {
@@ -46,14 +109,12 @@ namespace ElmX.Elm
                     {
                         EntryModule = new Module(entryFilePath);
                         EntryModule.ParseImports();
-                        Writer.WriteLine($"Entry module: {EntryModule.ToString()}");
                     }
                     else
                     {
                         Module module = new(file.File);
                         module.ParseImports();
                         Modules.Add(module);
-                        Writer.WriteLine($"Entry module: {module.ToString()}");
                     }
                 }
 
