@@ -64,12 +64,18 @@ namespace ElmX.Elm
 
             int fileCount = 0;
 
+            Writer.EmptyLine();
+            Writer.WriteLine($"Searching: {SourceDir}");
+            Writer.WriteLine($"Excluding: {string.Join(", ", ExcludedDirs)}");
+            Writer.WriteLine($"Found: {importPaths.Count()} unique imports");
+            Writer.WriteLine($"Found: {modulePaths.Count()} files");
+
             foreach (var filePath in modulePaths)
             {
                 fileCount++;
 
-                Writer.WriteAt($"Checking file {fileCount}", 0, 4);
-                Writer.WriteLine("");
+                Writer.WriteAt($"Checking file {fileCount}", 0, 6);
+                Writer.EmptyLine();
 
                 bool found = false;
                 foreach (var importPath in importPaths)
@@ -86,6 +92,9 @@ namespace ElmX.Elm
                     Unused.Add(filePath);
                 }
             }
+
+            Writer.WriteAt($"Found: {Unused.Count().ToString()} unused files", 0, 6);
+            Writer.EmptyLine();
 
             return Unused;
         }

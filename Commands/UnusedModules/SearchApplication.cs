@@ -55,19 +55,11 @@ namespace ElmX.Commands.UnusedModules
 
                 sortedFiles.Sort();
 
-                Writer.WriteLine($"Searching: {srcDir}");
-                Writer.WriteLine($"Excluding: {string.Join(", ", excludedDirs)}");
-                Writer.WriteLine($"Found: {sortedLines.Count()} unique imports");
-                Writer.WriteLine($"Found: {sortedFiles.Count()} files");
-
                 int fileCount = 0;
 
                 foreach (var file in sortedFiles)
                 {
                     fileCount++;
-
-                    Writer.WriteAt($"Checking file {fileCount}", 0, 4);
-                    Writer.WriteLine("");
 
                     bool found = false;
                     foreach (var line in sortedLines)

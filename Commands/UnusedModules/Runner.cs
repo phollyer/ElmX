@@ -55,9 +55,6 @@ namespace ElmX.Commands.UnusedModules
                     Elm.Application application = new(ElmJson.json.Application, ElmX_Json);
                     unusedModules = application.FindUnusedModules();
 
-                    Writer.WriteAt($"Found: {unusedModules.Count().ToString()} unused files", 0, 4);
-                    Writer.WriteLine("");
-
                     if (unusedModules.Count == 0)
                     {
                         Writer.EmptyLine();
@@ -66,9 +63,9 @@ namespace ElmX.Commands.UnusedModules
                     }
                     else
                     {
-
+                        Writer.EmptyLine();
                         Writer.WriteLine("You asked me to show you the unused modules. I will do that now.");
-
+                        Writer.EmptyLine();
                         Writer.WriteLines(unusedModules);
 
                         Environment.Exit(0);
