@@ -59,7 +59,6 @@ namespace ElmX.Commands.UnusedModules
                     {
                         Writer.EmptyLine();
                         Writer.WriteLine("I did not find any unused modules.");
-                        Environment.Exit(0);
                     }
                     else
                     {
@@ -68,8 +67,8 @@ namespace ElmX.Commands.UnusedModules
                         Writer.EmptyLine();
                         Writer.WriteLines(unusedModules);
 
-                        Environment.Exit(0);
                     }
+                    Environment.Exit(0);
                 }
                 else if (ElmJson.json.projectType == ProjectType.Package && ElmJson.json.Package != null)
                 {
