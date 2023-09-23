@@ -9,6 +9,9 @@ namespace ElmX.Elm
         // Source Directory
         public string SourceDir { get; private set; } = "";
 
+        // Excluded Directories
+        public List<string> ExcludedDirs { get; private set; } = new();
+
         // Metadata
         public Metadata Metadata { get; private set; }
 
@@ -26,7 +29,9 @@ namespace ElmX.Elm
 
             SourceDir = json.SourceDirs[0];
 
-            FindModules(SourceDir, elmxJson.json.EntryFile, elmxJson.json.ExcludedDirs);
+            ExcludedDirs = elmxJson.json.ExcludedDirs;
+
+            FindModules(SourceDir, elmxJson.json.EntryFile, ExcludedDirs);
         }
 
         public List<string> FindUnusedModules()
