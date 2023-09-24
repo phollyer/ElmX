@@ -45,7 +45,7 @@ namespace ElmX.Elm
 
             string entryFile = elmxJson.json.EntryFile;
 
-            Module? entryModule = FindEntryModule(SourceDirs, entryFile);
+            Module? entryModule = FindEntryModule(entryFile);
 
             if (entryModule is not null)
             {
@@ -91,31 +91,13 @@ namespace ElmX.Elm
             ModulePaths.Sort();
         }
 
-        private Module? FindEntryModule(List<string> srcDirs, string entryFile)
+        private Module? FindEntryModule(string entryFile)
         {
             Module? entryModule = null;
 
-            foreach (string srcDir in srcDirs)
+            if (File.Exists(entryFile))
             {
-                entryModule = FindEntryModule(srcDir, entryFile);
-
-                if (entryModule is not null)
-                {
-                    break;
-                }
-            }
-            return entryModule;
-        }
-
-        private Module? FindEntryModule(string srcDir, string entryFile)
-        {
-            Module? entryModule = null;
-
-            string entryFilePath = Path.Join(srcDir, entryFile);
-
-            if (File.Exists(entryFilePath))
-            {
-                entryModule = new(entryFilePath);
+                entryModule = new(entryFile);
 
             }
 
