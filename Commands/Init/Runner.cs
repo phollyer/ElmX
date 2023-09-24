@@ -15,6 +15,12 @@ namespace ElmX.Commands.Init
         /// </param>
         public static void Run(Options options)
         {
+            if (options.ShowHelp)
+            {
+                Help.ShowInitOptions();
+                Environment.Exit(0);
+            }
+
             Json Json = new();
 
             if (Json.Exists)

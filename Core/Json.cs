@@ -28,10 +28,11 @@ namespace ElmX.Core
 
         public void Read()
         {
-            string jsonStr = File.ReadAllText("elmx.json");
 
             try
             {
+                string jsonStr = File.ReadAllText("elmx.json");
+
                 ElmXJson? _json = JsonSerializer.Deserialize<ElmXJson>(jsonStr);
 
                 if (_json != null)
@@ -43,6 +44,19 @@ namespace ElmX.Core
                     Writer.WriteLine("There was an error reading the elmx.json file.");
                     Environment.Exit(1);
                 }
+            }
+            catch (FileNotFoundException)
+            {
+                Writer.WriteLine("The elmx.json file does not exist.");
+                Writer.EmptyLine();
+                Writer.WriteLine("Run 'elmx init' to create a new elmx.json file with default values. (You can edit the default values manually yourself, later).");
+                Writer.EmptyLine();
+                Writer.WriteLine("Alternatively,");
+                Writer.EmptyLine();
+                Writer.WriteLine("Run 'elmx init -h' for more information.");
+                Writer.EmptyLine();
+                Writer.WriteLine("Exiting...");
+                Environment.Exit(1);
             }
             catch (Exception e)
             {

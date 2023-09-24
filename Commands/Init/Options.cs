@@ -2,6 +2,7 @@ namespace ElmX.Commands.Init
 {
     public class Options
     {
+        public bool ShowHelp { get; set; } = false;
         public string EntryFile { get; set; } = "src/Main.elm";
 
         public List<string> ExcludeDirs { get; set; } = new List<string>()
@@ -22,6 +23,11 @@ namespace ElmX.Commands.Init
                 {
                     switch (arg)
                     {
+                        case "-h":
+                        case "--help":
+                            ShowHelp = true;
+                            break;
+
                         case "-e":
                         case "--entry-file":
                             EntryFile = args[index + 1];

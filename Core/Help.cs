@@ -23,6 +23,16 @@ namespace ElmX.Core
             Writer.EmptyLine();
         }
 
+        static public void ShowInitOptions()
+        {
+            Writer.WriteLine("init-options");
+            Writer.EmptyLine();
+            Writer.WriteLine("-e, --entry-file <file>\t\t\t\tSpecify the entry file of the Elm project - an example would be 'src/Main.elm'.");
+            Writer.WriteLine("-d, --exclude-dirs <dir> <dir> <dir>...\t\tExclude the specified directories from the search.");
+            Writer.WriteLine("-f, --exclude-files <file> <file> <file>...\tExclude the specified files from the search.");
+            Writer.EmptyLine();
+        }
+
         /// <summary>
         /// Show the help text for the unused-modules command.
         /// </summary>
@@ -34,12 +44,7 @@ namespace ElmX.Core
             Writer.WriteLine("unused-modules\tFind and remove unused modules in an Elm project.");
             Writer.EmptyLine();
 
-            Writer.WriteLine("init-options");
-            Writer.EmptyLine();
-            Writer.WriteLine("-e, --entry-file <file>\t\t\t\tSpecify the entry file of the Elm project.");
-            Writer.WriteLine("-d, --exclude-dirs <dir> <dir> <dir>...\t\tExclude the specified directories from the search.");
-            Writer.WriteLine("-f, --exclude-files <file> <file> <file>...\tExclude the specified files from the search.");
-            Writer.EmptyLine();
+            ShowInitOptions();
 
             Writer.WriteLine("[unused-modules-options]");
             Writer.EmptyLine();

@@ -2,21 +2,23 @@
 
 ElmX is a command line tool for helping with Elm development.
 
-Currently it can be used to find all unused modules in an Elm project, which is useful for cleaning up said project.
+Currently it can be used to find all unused modules in an Elm project, which is useful for cleaning up said project. At the moment, ElmX supports projects of type `application`, as defined in your projects' `elm.json` file, `package`s are next on the list.
 
-However, I intend to continue developing this further, and add many more features, so please see the TODO list below for more information on this. The end goal is to add a GUI wrapper around it, so that it can also be used by folks who prefer not to use the command line.
+For details on features that are planned once `packages` are supported, see the [TODO](#todo) section below.
 
 ## Installation
 
 ### OSX
 
-Head over to the [Releases](https://github.com/phollyer/elmx/releases) page and grab the binary for your Mac - both x64 and arm64 are supported. Place the binary somewhere on your PATH, and you're good to go - except for Apples security settings. You'll need to enable the binary to run by making it executable. To do this, open a terminal and run the following command:
+Head over to the [Releases](https://github.com/phollyer/elmx/releases) page and grab the binary for your Mac - both x64 and arm64 are supported. Place the binary somewhere on your PATH, and you should be good to go.
+
+If you need to make the binary executable, open a terminal and run the following command:
 
 ``` shell
 chmod 755 /path/to/elmx
 ```
 
-The last step is to navigate to the directory where you've placed the binary, in `Finder`, right click and select Open, this will allow you to run `elmx` from that point on.
+If you have any problems with Apple's security settings refusing to allow the binary to run, you'll need to navigate to the directory where you've placed the binary, (you must do this in `Finder`), then right click the binary and select Open, this will allow you to run `elmx` from that point on.
 
 ### Linux
 
@@ -24,7 +26,7 @@ Head over to the [Releases](https://github.com/phollyer/elmx/releases) page and 
 
 If you're not sure where to place the binary, you can place it in `/usr/local/bin`, which is a good place for user installed binaries.
 
-You'll need to make the binary executable, so open a terminal and run the following command:
+If you need to make the binary executable, open a terminal and run the following command:
 
 ``` shell
 chmod 755 /path/to/elmx
@@ -32,7 +34,9 @@ chmod 755 /path/to/elmx
 
 ### Windows
 
-At the moment I don't have a Windows machine so can't compile to Windows OS. So if you work on Windows, and want to use this tool, you'll have to compile it yourself. Sorry about that. If you do compile it, please consider submitting a PR to add the binary to the Releases page so that others can benefit from your work.
+At the moment I don't have a Windows machine and therefore I can't compile to Windows OS. So if you work on Windows, and want to use this tool, you'll have to compile it yourself. Sorry about that. If you do compile it, please consider submitting a PR to add the binary to the Releases page so that others can benefit from your work.
+
+I do intend to get a Windows machine as soon as I am financially able to do so, so that I can compile to Windows OS, but I don't know when that will be.
 
 ### Any other OS
 
@@ -60,7 +64,7 @@ Please start a discussion.
 
 Before you can use ElmX, you'll need to create a config file (`elmx.json`). This is a simple JSON file that tells ElmX the following information:
 
-- "entryFile": The name of your entry module. This defaults to `Main.elm`, but if you use a different name, you can specify it here.
+- "entryFile": The name of your entry module. This defaults to `src/Main.elm`, but if you use a different name, you can specify it here.
 - "excludedDirs": A list of directories to exclude from the search. This defaults to `["elm-stuff", "node_modules", "review", "tests"]`, but you can add to this list if you want to exclude more directories.
 - "excludedFiles": A list of files to exclude from the search. This is useful if you have one or more modules that you are working on but are not yet `import`ed into any of your project files.
 
