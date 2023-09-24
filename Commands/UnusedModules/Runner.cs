@@ -48,145 +48,105 @@ namespace ElmX.Commands.UnusedModules
 
             Writer.WriteLine("I will now search for unused modules.");
 
-            if (options.Show)
+            if (ElmJson.json.projectType == ProjectType.Application && ElmJson.json.Application != null)
             {
-                if (ElmJson.json.projectType == ProjectType.Application && ElmJson.json.Application != null)
-                {
-                    Elm.Application application = new(ElmJson.json.Application, ElmX_Json);
-                    unusedModules = application.FindUnusedModules();
-
-                    if (unusedModules.Count == 0)
-                    {
-                        Writer.EmptyLine();
-                        Writer.WriteLine("I did not find any unused modules.");
-                    }
-                    else
-                    {
-                        Writer.EmptyLine();
-                        Writer.WriteLine("You asked me to show you the unused modules. I will do that now.");
-                        Writer.EmptyLine();
-                        Writer.WriteLines(unusedModules);
-
-                    }
-                    Environment.Exit(0);
-                }
-                else if (ElmJson.json.projectType == ProjectType.Package && ElmJson.json.Package != null)
-                {
-                    SearchPackage searchPackage = new();
-                    searchPackage.Run(ElmJson.json.Package.Src, ElmJson.json.Package.ExposedModules, ElmX_Json.json.ExcludedDirs);
-                }
-                else
-                {
-                    Writer.EmptyLine();
-                    Writer.WriteLine("I could not find the source directories for this project.");
-                    Environment.Exit(0);
-                }
+                Elm.Application application = new(ElmJson.json.Application, ElmX_Json);
+                unusedModules = application.FindUnusedModules();
+            }
+            else if (ElmJson.json.projectType == ProjectType.Package && ElmJson.json.Package != null)
+            {
+                SearchPackage searchPackage = new();
+                searchPackage.Run(ElmJson.json.Package.Src, ElmJson.json.Package.ExposedModules, ElmX_Json.json.ExcludedDirs);
+            }
+            else
+            {
+                Writer.EmptyLine();
+                Writer.WriteLine("I could not find the source directories for this project.");
+                Environment.Exit(0);
             }
 
-            //
-            //Directories.Finder dirs = new(options.Dir, options.ExcludedDirs);
-            //
-            //Finder files = new(options.Dir, elmxJson.Json.EntryFile, dirs.Excluded);
-            //
-            //if (options.Show && options.Pause)
-            //{
-            //if (files.Unused.Count == 0)
-            //{
-            //Writer.EmptyLine();
-            //Writer.WriteLine("I did not find any unused modules.");
-            //Environment.Exit(0);
-            //}
-            //
-            //Writer.WriteLine("You asked me to show you the unused modules and then pause before deleting them. I will do that now.");
-            //
-            //ShowUnusedModules(files.Unused);
-            //PauseUnusedModules(files.Unused);
-            //
-            //Environment.Exit(0);
-            //}
-            //
-            //if (options.Show && options.Delete)
-            //{
-            //if (files.Unused.Count == 0)
-            //{
-            //Writer.EmptyLine();
-            //Writer.WriteLine("I did not find any unused modules.");
-            //Environment.Exit(0);
-            //}
-            //
-            //Writer.WriteLine("You asked me to show you the unused modules and then delete them. I will do that now.");
-            //
-            //ShowUnusedModules(files.Unused);
-            //DeleteUnusedModules(files.Unused);
-            //
-            //Environment.Exit(0);
-            //}
-            //
-            //if (options.Show && options.Rename)
-            //{
-            //if (files.Unused.Count == 0)
-            //{
-            //Writer.EmptyLine();
-            //Writer.WriteLine("I did not find any unused modules.");
-            //Environment.Exit(0);
-            //}
-            //
-            //Writer.WriteLine("You asked me to show you the unused modules and then rename them. I will do that now.");
-            //
-            //ShowUnusedModules(files.Unused);
-            //Rename(files.Unused);
-            //
-            //Environment.Exit(0);
-            //}
-            //
-            //if (options.Delete)
-            //{
-            //if (files.Unused.Count == 0)
-            //{
-            //Writer.EmptyLine();
-            //Writer.WriteLine("I did not find any unused modules.");
-            //Environment.Exit(0);
-            //}
-            //
-            //Writer.WriteLine("You asked me to delete the unused modules. I will do that now.");
-            //
-            //DeleteUnusedModules(files.Unused);
-            //
-            //Environment.Exit(0);
-            //}
-            //
-            //if (options.Pause)
-            //{
-            //if (files.Unused.Count == 0)
-            //{
-            //Writer.EmptyLine();
-            //Writer.WriteLine("I did not find any unused modules.");
-            //Environment.Exit(0);
-            //}
-            //
-            //Writer.WriteLine("You asked me to pause before deleting the unused modules. I will do that now.");
-            //
-            //PauseUnusedModules(files.Unused);
-            //
-            //Environment.Exit(0);
-            //}
-            //
-            //if (options.Rename)
-            //{
-            //if (files.Unused.Count == 0)
-            //{
-            //Writer.EmptyLine();
-            //Writer.WriteLine("I did not find any unused modules.");
-            //Environment.Exit(0);
-            //}
-            //
-            //Writer.WriteLine("You asked me to rename the unused modules. I will do that now.");
-            //
-            //Rename(files.Unused);
-            //
-            //Environment.Exit(0);
-            //}
-            //
+            if (unusedModules.Count == 0)
+            {
+                Writer.EmptyLine();
+                Writer.WriteLine("I did not find any unused modules.");
+                Environment.Exit(0);
+            }
+
+            if (options.Show && options.Rename)
+            {
+                Writer.EmptyLine();
+                Writer.WriteLine("You asked me to show you the unused modules and then rename them. I will do that now.");
+                Writer.EmptyLine();
+                Writer.WriteLines(unusedModules);
+
+                Rename(unusedModules);
+
+                Environment.Exit(0);
+            }
+
+            if (options.Show && options.Pause)
+            {
+                Writer.EmptyLine();
+                Writer.WriteLine("You asked me to show you the unused modules and then pause before deleting them. I will do that now.");
+                Writer.EmptyLine();
+                Writer.WriteLines(unusedModules);
+
+                PauseUnusedModules(unusedModules);
+
+                Environment.Exit(0);
+            }
+
+            if (options.Show && options.Delete)
+            {
+                Writer.EmptyLine();
+                Writer.WriteLine("You asked me to show you the unused modules and then delete them. I will do that now.");
+                Writer.EmptyLine();
+                Writer.WriteLines(unusedModules);
+
+                DeleteUnusedModules(unusedModules);
+
+                Environment.Exit(0);
+            }
+
+            if (options.Delete)
+            {
+                Writer.EmptyLine();
+                Writer.WriteLine("You asked me to delete the unused modules. I will do that now.");
+
+                DeleteUnusedModules(unusedModules);
+
+                Environment.Exit(0);
+            }
+
+            if (options.Pause)
+            {
+                Writer.EmptyLine();
+                Writer.WriteLine("You asked me to pause before deleting the unused modules. I will do that now.");
+
+                PauseUnusedModules(unusedModules);
+
+                Environment.Exit(0);
+            }
+
+            if (options.Rename)
+            {
+                Writer.EmptyLine();
+                Writer.WriteLine("You asked me to rename the unused modules. I will do that now.");
+
+                Rename(unusedModules);
+
+                Environment.Exit(0);
+            }
+
+            if (options.Show)
+            {
+                Writer.EmptyLine();
+                Writer.WriteLine("You asked me to show you the unused modules. I will do that now.");
+                Writer.EmptyLine();
+                Writer.WriteLines(unusedModules);
+
+                Environment.Exit(0);
+            }
         }
 
         /// <summary>
