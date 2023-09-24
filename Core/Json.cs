@@ -1,5 +1,6 @@
 using ElmX.Core.Console;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ElmX.Core
 {
@@ -17,8 +18,8 @@ namespace ElmX.Core
         public void Create(Commands.Init.Options options)
         {
             json.EntryFile = options.EntryFile;
-            json.ExcludedDirs = options.ExcludedDirs;
-            json.ExcludedFiles = options.ExcludedFiles;
+            json.ExcludeDirs = options.ExcludeDirs;
+            json.ExcludeFiles = options.ExcludeFiles;
 
             string jsonStr = JsonSerializer.Serialize(json, new JsonSerializerOptions { WriteIndented = true });
 
@@ -56,10 +57,13 @@ namespace ElmX.Core
     }
     public class ElmXJson
     {
+        [JsonPropertyName("entry-file")]
         public string EntryFile { get; set; } = "";
 
-        public List<string> ExcludedDirs { get; set; } = new List<string>();
+        [JsonPropertyName("exclude-dirs")]
+        public List<string> ExcludeDirs { get; set; } = new List<string>();
 
-        public List<string> ExcludedFiles { get; set; } = new List<string>();
+        [JsonPropertyName("exclude-files")]
+        public List<string> ExcludeFiles { get; set; } = new List<string>();
     }
 }

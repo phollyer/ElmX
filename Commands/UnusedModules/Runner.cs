@@ -56,7 +56,7 @@ namespace ElmX.Commands.UnusedModules
             else if (ElmJson.json.projectType == ProjectType.Package && ElmJson.json.Package != null)
             {
                 SearchPackage searchPackage = new();
-                searchPackage.Run(ElmJson.json.Package.Src, ElmJson.json.Package.ExposedModules, ElmX_Json.json.ExcludedDirs);
+                searchPackage.Run(ElmJson.json.Package.Src, ElmJson.json.Package.ExposedModules, ElmX_Json.json.ExcludeDirs);
             }
             else
             {

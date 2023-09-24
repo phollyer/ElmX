@@ -2,16 +2,16 @@ namespace ElmX.Commands.Init
 {
     public class Options
     {
-        public string EntryFile { get; set; } = "Main.elm";
+        public string EntryFile { get; set; } = "src/Main.elm";
 
-        public List<string> ExcludedDirs { get; set; } = new List<string>()
+        public List<string> ExcludeDirs { get; set; } = new List<string>()
             { "elm-stuff"
             , "node_modules"
             , "review"
             , "tests"
             };
 
-        public List<string> ExcludedFiles { get; set; } = new List<string>();
+        public List<string> ExcludeFiles { get; set; } = new List<string>();
         public void Parse(List<string> args)
         {
             short index = 0;
@@ -33,7 +33,7 @@ namespace ElmX.Commands.Init
                                 if (dir.StartsWith("-"))
                                     break;
 
-                                ExcludedDirs.Add(dir);
+                                ExcludeDirs.Add(dir);
                             }
                             break;
                         case "-f":
@@ -43,7 +43,7 @@ namespace ElmX.Commands.Init
                                 if (item.StartsWith("-"))
                                     break;
 
-                                ExcludedFiles.Add(item);
+                                ExcludeFiles.Add(item);
                             }
                             break;
                     }

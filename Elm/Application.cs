@@ -10,7 +10,7 @@ namespace ElmX.Elm
         public List<string> SourceDirs { get; private set; } = new();
 
         // Excluded Directories
-        public List<string> ExcludedDirs { get; private set; } = new();
+        public List<string> ExcludeDirs { get; private set; } = new();
 
         // Metadata
         public Metadata Metadata { get; private set; }
@@ -38,7 +38,7 @@ namespace ElmX.Elm
                 }
             }
 
-            ExcludedDirs = elmxJson.json.ExcludedDirs;
+            ExcludeDirs = elmxJson.json.ExcludeDirs;
 
             string entryFile = elmxJson.json.EntryFile;
 
@@ -93,7 +93,7 @@ namespace ElmX.Elm
 
             foreach (string srcDir in SourceDirs)
             {
-                allFiles.AddRange(FindAllFiles(srcDir, EntryModule.Path, ExcludedDirs));
+                allFiles.AddRange(FindAllFiles(srcDir, EntryModule.Path, ExcludeDirs));
             }
 
             List<string> Unused = new();
@@ -102,7 +102,7 @@ namespace ElmX.Elm
 
             Writer.EmptyLine();
             Writer.WriteLine($"Searching: {string.Join(", ", SourceDirs)}");
-            Writer.WriteLine($"Excluding: {string.Join(", ", ExcludedDirs)}");
+            Writer.WriteLine($"Excluding: {string.Join(", ", ExcludeDirs)}");
             Writer.WriteLine($"Found: {ModulePaths.Count()} unique imports");
             Writer.WriteLine($"Found: {allFiles.Count()} files");
 
