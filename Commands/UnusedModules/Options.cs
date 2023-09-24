@@ -5,7 +5,6 @@ namespace ElmX.Commands.UnusedModules
     public class Options
     {
         public bool Delete { get; private set; }
-        public string Dir { get; private set; } = ".";
 
         public List<string> ExcludedDirs { get; private set; } = new List<string>()
             { "elm-stuff"
@@ -30,10 +29,6 @@ namespace ElmX.Commands.UnusedModules
                 {
                     switch (arg)
                     {
-                        case "-D":
-                        case "--dir":
-                            Dir = args[counter + 1];
-                            break;
                         case "-d":
                         case "--delete":
                             Delete = true;
