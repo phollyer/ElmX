@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Import statements that are commented out with a multline comment are now handled correctly when the comment is spanning multiple lines.
 - Import statements that are commented out with a multiline comment are now handled correctly when the comment is a single line provided the import statement is directly preceeded by the opening comment.
 - Import statements inside a multiline string are now handled correctly.
+- Cyclical imports are now handled correctly.
 
 Many thanks to [lydell](https://github.com/lydell/) for pointing out the edge cases [here](https://discourse.elm-lang.org/t/elmx-find-and-delete-unused-modules/9309/7).
 
