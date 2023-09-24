@@ -1,5 +1,3 @@
-using ElmX.Commands;
-
 namespace ElmX.Commands
 {
     class OptionsParser
@@ -109,14 +107,6 @@ namespace ElmX.Commands
     {
         Init,
         UnusedModules,
-
-        Unknown
-    }
-
-    enum NoCmdOptions
-    {
-        Help,
-        Version,
 
         Unknown
     }

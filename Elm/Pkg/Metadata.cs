@@ -1,5 +1,3 @@
-
-
 namespace ElmX.Elm.Pkg
 {
     public class Metadata

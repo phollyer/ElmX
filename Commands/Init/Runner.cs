@@ -1,6 +1,3 @@
-// A class that takes the Init options and creates an elmx.json file in the current directory
-// that contains the entry file and the excluded directories and files.
-
 using ElmX.Core.Console;
 using ElmX.Core;
 

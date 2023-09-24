@@ -6,7 +6,6 @@ namespace ElmX.Elm.Code
     {
         public string Path { get; private set; } = "";
 
-        // Code
         public List<Import> Imports { get; private set; } = new List<Import>();
 
         public List<UnionType> UnionTypes { get; private set; } = new List<UnionType>();
@@ -16,6 +15,7 @@ namespace ElmX.Elm.Code
         public List<Function> Functions { get; private set; } = new List<Function>();
 
         public Module() { }
+
         public Module(string path)
         {
             Path = path;
