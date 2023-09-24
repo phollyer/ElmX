@@ -7,7 +7,7 @@ namespace ElmX.Elm
     public class Application
     {
         // Source Directory
-        public string SourceDir { get; private set; } = "";
+        public List<string> SourceDirs { get; private set; } = new();
 
         // Excluded Directories
         public List<string> ExcludedDirs { get; private set; } = new();
@@ -33,13 +33,19 @@ namespace ElmX.Elm
         {
             Metadata = new Metadata(json);
 
-            SourceDir = json.SourceDirs[0];
+            foreach (string srcDir in json.SourceDirs)
+            {
+                if (!srcDir.StartsWith(".."))
+                {
+                    SourceDirs.Add(srcDir);
+                }
+            }
 
             ExcludedDirs = elmxJson.json.ExcludedDirs;
 
             string entryFile = elmxJson.json.EntryFile;
 
-            Module? entryModule = FindEntryModule(SourceDir, entryFile);
+            Module? entryModule = FindEntryModule(SourceDirs, entryFile);
 
             if (entryModule is not null)
             {
@@ -52,7 +58,7 @@ namespace ElmX.Elm
             else
             {
                 Writer.EmptyLine();
-                Writer.WriteLine($"I could not find the entry file '{entryFile}' in the source directory '{SourceDir}'.");
+                Writer.WriteLine($"I could not find the entry file '{entryFile}' in the following source directories '{string.Join(", ", SourceDirs)}'.");
                 Writer.EmptyLine();
                 Writer.WriteLine("Exiting...");
                 Writer.EmptyLine();
@@ -64,29 +70,48 @@ namespace ElmX.Elm
                 Imports.Add(import);
             }
 
-            foreach (Import import in Imports)
+            foreach (string srcDir in SourceDirs)
             {
-                string modulePath = Path.Join(SourceDir, import.Name.Replace(".", Path.DirectorySeparatorChar.ToString()) + ".elm");
-                if (File.Exists(modulePath))
+                foreach (Import import in Imports)
                 {
-                    Module module = new(modulePath);
-                    module.ParseImports();
-                    Modules.Add(module);
+                    string modulePath = Path.Join(srcDir, import.Name.Replace(".", Path.DirectorySeparatorChar.ToString()) + ".elm");
+                    if (File.Exists(modulePath))
+                    {
+                        Module module = new(modulePath);
+                        module.ParseImports();
+                        Modules.Add(module);
 
-                    ModulePaths.Add(module.Path);
+                        ModulePaths.Add(module.Path);
 
-                    ExtractImports(module);
+                        ExtractImports(srcDir, module);
+                    }
                 }
             }
 
             ModulePaths.Sort();
         }
 
+        private Module? FindEntryModule(List<string> srcDirs, string entryFile)
+        {
+            Module? entryModule = null;
+
+            foreach (string srcDir in srcDirs)
+            {
+                entryModule = FindEntryModule(srcDir, entryFile);
+
+                if (entryModule is not null)
+                {
+                    break;
+                }
+            }
+            return entryModule;
+        }
+
         private Module? FindEntryModule(string srcDir, string entryFile)
         {
-            string entryFilePath = Path.Join(srcDir, entryFile);
-
             Module? entryModule = null;
+
+            string entryFilePath = Path.Join(srcDir, entryFile);
 
             if (File.Exists(entryFilePath))
             {
@@ -97,11 +122,11 @@ namespace ElmX.Elm
             return entryModule;
         }
 
-        private void ExtractImports(Module module)
+        private void ExtractImports(string srcDir, Module module)
         {
             foreach (Import import in module.Imports)
             {
-                string modulePath = Path.Join(SourceDir, import.Name.Replace(".", Path.DirectorySeparatorChar.ToString()) + ".elm");
+                string modulePath = Path.Join(srcDir, import.Name.Replace(".", Path.DirectorySeparatorChar.ToString()) + ".elm");
 
                 if (ModulePaths.IndexOf(modulePath) == -1 && File.Exists(modulePath))
                 {
@@ -111,7 +136,7 @@ namespace ElmX.Elm
 
                     ModulePaths.Add(_module.Path);
 
-                    ExtractImports(_module);
+                    ExtractImports(srcDir, _module);
 
                 }
             }
@@ -119,14 +144,19 @@ namespace ElmX.Elm
 
         public List<string> FindUnusedModules()
         {
-            List<string> allFiles = FindAllFiles(SourceDir, EntryModule.Path, ExcludedDirs);
+            List<string> allFiles = new();
+
+            foreach (string srcDir in SourceDirs)
+            {
+                allFiles.AddRange(FindAllFiles(srcDir, EntryModule.Path, ExcludedDirs));
+            }
 
             List<string> Unused = new();
 
             int fileCount = 0;
 
             Writer.EmptyLine();
-            Writer.WriteLine($"Searching: {SourceDir}");
+            Writer.WriteLine($"Searching: {string.Join(", ", SourceDirs)}");
             Writer.WriteLine($"Excluding: {string.Join(", ", ExcludedDirs)}");
             Writer.WriteLine($"Found: {ModulePaths.Count()} unique imports");
             Writer.WriteLine($"Found: {allFiles.Count()} files");
