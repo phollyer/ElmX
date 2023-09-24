@@ -97,5 +97,4 @@ namespace ElmX.Elm
 
         public Pkg.Json? Package;
     }
-
 }

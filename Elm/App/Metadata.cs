@@ -1,4 +1,3 @@
-
 namespace ElmX.Elm.App
 {
     public class Metadata

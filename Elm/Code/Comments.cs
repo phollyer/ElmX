@@ -1,5 +1,3 @@
-using ElmX.Core.Console;
-
 namespace ElmX.Elm.Code
 {
     public class Comments
@@ -102,26 +100,19 @@ namespace ElmX.Elm.Code
                 line = line.Remove(startIndex, endIndex - startIndex);
                 line = line.Replace("{-", "");
                 line = line.Replace("-}", "");
-
-                line = line.Trim();
             }
             else if (startIndex > -1)
             {
                 line = line.Remove(startIndex);
                 line = line.Replace("{-", "");
-
-                line = line.Trim();
             }
             else if (endIndex > -1)
             {
                 line = line.Remove(endIndex);
                 line = line.Replace("-}", "");
-
-                line = line.Trim();
             }
 
-            return line;
+            return line.Trim();
         }
-
     }
 }

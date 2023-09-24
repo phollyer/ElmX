@@ -1,5 +1,3 @@
-
-
 namespace ElmX.Elm.Code
 {
     public class Import
@@ -30,5 +28,4 @@ namespace ElmX.Elm.Code
             }
         }
     }
-
 }
