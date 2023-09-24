@@ -20,6 +20,12 @@ namespace ElmX.Elm
         public Module EntryModule { get; private set; } = new();
         public List<Module> Modules { get; private set; } = new();
 
+        public List<string> ModulePaths { get; private set; } = new();
+
+        // Imports
+
+        public List<Import> Imports { get; private set; } = new();
+
         // External Packages
         public List<Package> Packages { get; private set; } = new();
 
@@ -31,39 +37,89 @@ namespace ElmX.Elm
 
             ExcludedDirs = elmxJson.json.ExcludedDirs;
 
-            FindModules(SourceDir, elmxJson.json.EntryFile, ExcludedDirs);
+            string entryFile = elmxJson.json.EntryFile;
+
+            Module? entryModule = FindEntryModule(SourceDir, entryFile);
+
+            if (entryModule is not null)
+            {
+                EntryModule = entryModule;
+                EntryModule.ParseImports();
+
+                ModulePaths.Add(EntryModule.Path);
+
+            }
+            else
+            {
+                Writer.EmptyLine();
+                Writer.WriteLine($"I could not find the entry file '{entryFile}' in the source directory '{SourceDir}'.");
+                Writer.EmptyLine();
+                Writer.WriteLine("Exiting...");
+                Writer.EmptyLine();
+                Environment.Exit(0);
+            }
+
+            foreach (Import import in EntryModule.Imports)
+            {
+                Imports.Add(import);
+            }
+
+            foreach (Import import in Imports)
+            {
+                string modulePath = Path.Join(SourceDir, import.Name.Replace(".", Path.DirectorySeparatorChar.ToString()) + ".elm");
+                if (File.Exists(modulePath))
+                {
+                    Module module = new(modulePath);
+                    module.ParseImports();
+                    Modules.Add(module);
+
+                    ModulePaths.Add(module.Path);
+
+                    ExtractImports(module);
+                }
+            }
+
+            ModulePaths.Sort();
+        }
+
+        private Module? FindEntryModule(string srcDir, string entryFile)
+        {
+            string entryFilePath = Path.Join(srcDir, entryFile);
+
+            Module? entryModule = null;
+
+            if (File.Exists(entryFilePath))
+            {
+                entryModule = new(entryFilePath);
+
+            }
+
+            return entryModule;
+        }
+
+        private void ExtractImports(Module module)
+        {
+            foreach (Import import in module.Imports)
+            {
+                string modulePath = Path.Join(SourceDir, import.Name.Replace(".", Path.DirectorySeparatorChar.ToString()) + ".elm");
+
+                if (ModulePaths.IndexOf(modulePath) == -1 && File.Exists(modulePath))
+                {
+                    Module _module = new(modulePath);
+                    _module.ParseImports();
+                    Modules.Add(_module);
+
+                    ModulePaths.Add(_module.Path);
+
+                    ExtractImports(_module);
+
+                }
+            }
         }
 
         public List<string> FindUnusedModules()
         {
-            List<string> importPaths = new();
-
-            foreach (Import import in EntryModule.Imports)
-            {
-                string importPath = Path.Join(SourceDir, import.Name.Replace(".", Path.DirectorySeparatorChar.ToString()) + ".elm");
-                importPaths.Add(importPath);
-            }
-
-            foreach (Module module in Modules)
-            {
-                foreach (Import import in module.Imports)
-                {
-                    string importPath = Path.Join(SourceDir, import.Name.Replace(".", Path.DirectorySeparatorChar.ToString()) + ".elm");
-                    importPaths.Add(importPath);
-                }
-            }
-
-            importPaths = importPaths.Distinct().ToList();
-            importPaths.Sort();
-
-            List<string> modulePaths = new();
-
-            foreach (Module module in Modules)
-            {
-                modulePaths.Add(module.Path);
-            }
-
-            modulePaths.Sort();
+            List<string> allFiles = FindAllFiles(SourceDir, EntryModule.Path, ExcludedDirs);
 
             List<string> Unused = new();
 
@@ -72,10 +128,10 @@ namespace ElmX.Elm
             Writer.EmptyLine();
             Writer.WriteLine($"Searching: {SourceDir}");
             Writer.WriteLine($"Excluding: {string.Join(", ", ExcludedDirs)}");
-            Writer.WriteLine($"Found: {importPaths.Count()} unique imports");
-            Writer.WriteLine($"Found: {modulePaths.Count()} files");
+            Writer.WriteLine($"Found: {ModulePaths.Count()} unique imports");
+            Writer.WriteLine($"Found: {allFiles.Count()} files");
 
-            foreach (var filePath in modulePaths)
+            foreach (var filePath in allFiles)
             {
                 fileCount++;
 
@@ -83,7 +139,7 @@ namespace ElmX.Elm
                 Writer.EmptyLine();
 
                 bool found = false;
-                foreach (var importPath in importPaths)
+                foreach (var importPath in ModulePaths)
                 {
                     if (filePath == importPath || filePath == EntryModule.Path)
                     {
@@ -104,34 +160,20 @@ namespace ElmX.Elm
             return Unused;
         }
 
-        private void FindModules(string srcDir, string entryFile, List<string> excludedDirs)
+        private List<string> FindAllFiles(string srcDir, string entryFile, List<string> excludedDirs)
         {
+            List<string> files = new();
             try
             {
-                var files = from file in Directory.EnumerateFiles(srcDir, "*.elm", SearchOption.AllDirectories)
-                            where IsNotExcluded(file, excludedDirs)
-                            select new
-                            {
-                                File = file,
-                            };
+                IEnumerable<string> _files = from file in Directory.EnumerateFiles(srcDir, "*.elm", SearchOption.AllDirectories)
+                                             where IsNotExcluded(file, excludedDirs)
+                                             where file != entryFile
+                                             select file;
 
-                string entryFilePath = Path.Join(srcDir, entryFile);
-
-                foreach (var file in files)
+                foreach (string file in _files)
                 {
-                    if (entryFilePath == file.File)
-                    {
-                        EntryModule = new Module(entryFilePath);
-                        EntryModule.ParseImports();
-                    }
-                    else
-                    {
-                        Module module = new(file.File);
-                        module.ParseImports();
-                        Modules.Add(module);
-                    }
+                    files.Add(file);
                 }
-
             }
             catch (DirectoryNotFoundException dirEx)
             {
@@ -145,6 +187,10 @@ namespace ElmX.Elm
             {
                 Writer.WriteLine(pathEx.Message);
             }
+
+            files.Sort();
+
+            return files;
         }
 
         /// <summary>

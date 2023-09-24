@@ -1,3 +1,4 @@
+using ElmX.Core.Console;
 using ElmX.Elm.Code;
 
 namespace ElmX.Core
