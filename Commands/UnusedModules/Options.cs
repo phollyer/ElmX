@@ -19,6 +19,8 @@ namespace ElmX.Commands.UnusedModules
 
         public bool Show { get; private set; }
 
+        public bool ShowHelp { get; private set; } = false;
+
         public void Parse(List<string> args)
         {
             short counter = 0;
@@ -29,6 +31,10 @@ namespace ElmX.Commands.UnusedModules
                 {
                     switch (arg)
                     {
+                        case "-h":
+                        case "--help":
+                            ShowHelp = true;
+                            break;
                         case "-d":
                         case "--delete":
                             Delete = true;

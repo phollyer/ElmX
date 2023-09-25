@@ -1,3 +1,4 @@
+using ElmX.Core;
 using ElmX.Core.Console;
 using ElmX.Elm;
 
@@ -17,6 +18,12 @@ namespace ElmX.Commands.UnusedModules
         /// </param>
         public static void Run(Options options)
         {
+            if (options.ShowHelp)
+            {
+                Help.ShowUnusedModulesOptions();
+                Environment.Exit(0);
+            }
+
             List<string> unusedModules = new();
 
             Writer.Clear();
