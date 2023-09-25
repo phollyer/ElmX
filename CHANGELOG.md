@@ -53,7 +53,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     }
     ```
 
-    Then `../some-other-dir` will not be searched, but `src` & `src2` will. In my opinion, the path `../some-other-dir` may be to a shared library across multiple projects, and therefore should not be searched. If you have a valid use case where this directory path should be searched, please start a discussion initially so that I can fully understand your requirements. If we are in agreement that your use case is a wothwhile endeavor to support, we can then raise an issue and I'll get to work on resolving it.
+    Then `../some-other-dir` will not be searched, but `src` & `src2` will. In my opinion, the path `../some-other-dir` may be to a shared library across multiple projects, and therefore should not be searched. If you have a valid use case where this directory path should be searched, please start a discussion initially so that I can fully understand your requirements. If we are in agreement that your use case is a worthwhile endeavour to support, we can then raise an issue and I'll get to work on resolving it.
 
 - Import statements that span multiple lines are now supported.
 
