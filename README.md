@@ -109,8 +109,6 @@ If you have any suggestions for features, please start a discussion.
 
 If you want to contribute, please do so. I'm happy to accept PRs.
 
- I'm not asking for much, just enough to buy me a beer every now and then. If you don't want to donate, that's fine too. I'm happy to provide this tool for free, and I'll continue to do so for as long as I can.
-
 ### Any Questions, Comments, Suggestions
 
 Please start a discussion.
