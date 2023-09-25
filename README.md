@@ -105,10 +105,6 @@ This will find all unused modules in your project, and perform the required task
 
 ---
 
-If you have any suggestions for features, please start a discussion.
-
-If you want to contribute, please do so. I'm happy to accept PRs.
-
 ### Any Questions, Comments, Suggestions
 
 Please start a discussion.
