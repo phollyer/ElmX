@@ -133,6 +133,6 @@ Please open an issue.
 
 I am currently, and have been for the last three years, full-time carer for my mother, who has Alzheimers. As a result I am forced to work close to home (in case I'm needed at home quickly), in a part-time job paying minimum wage, and I have very little time to work on my own projects. I am hoping that I can get enough support from the community to allow me to work from home on this project full-time, which will allow me to provide more features, faster, and to provide top-notch support.
 
-If you do use this tool, and find it useful, or you think it is a worthwhile project you would like to see flurrish in the Elm community, please consider [donating](https://github.com/sponsors/phollyer) to the project.
+If you do use this tool, and find it useful, or you think it is a worthwhile project you would like to see flourish in the Elm community, please consider [donating](https://github.com/sponsors/phollyer) to the project.
 
 It would make a world of difference, both to me and my mother - who would benefit immensely from me being able to work from home, and to the Elm community - who, dare I say it, would have a great tool to help them with their Elm development.
