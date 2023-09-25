@@ -12,6 +12,9 @@ namespace ElmX.Elm
         // Excluded Directories
         public List<string> ExcludeDirs { get; private set; } = new();
 
+        // Excluded Files
+        public List<string> ExcludeFiles { get; private set; } = new();
+
         // Metadata
         public Metadata Metadata { get; private set; }
 
@@ -39,6 +42,7 @@ namespace ElmX.Elm
             }
 
             ExcludeDirs = elmxJson.json.ExcludeDirs;
+            ExcludeFiles = elmxJson.json.ExcludeFiles;
 
             string entryFile = elmxJson.json.EntryFile;
 
@@ -101,16 +105,28 @@ namespace ElmX.Elm
             int fileCount = 0;
 
             Writer.EmptyLine();
-            Writer.WriteLine($"Searching: {string.Join(", ", SourceDirs)}");
-            Writer.WriteLine($"Excluding: {string.Join(", ", ExcludeDirs)}");
+            Writer.WriteLine("Searching Dirs:");
+            Writer.WriteLines("\t", SourceDirs);
+            Writer.EmptyLine();
+
+            Writer.WriteLine("Exclude Dirs:");
+            Writer.WriteLines("\t", ExcludeDirs);
+            Writer.EmptyLine();
+
+            Writer.WriteLine("Exclude Files:");
+            Writer.WriteLines("\t", ExcludeFiles);
+            Writer.EmptyLine();
+
             Writer.WriteLine($"Found: {ModulePaths.Count()} unique imports");
             Writer.WriteLine($"Found: {allFiles.Count()} files");
+
+            short lineNumberToWriteAt = (short)(10 + (short)SourceDirs.Count() + (short)ExcludeDirs.Count() + (short)ExcludeFiles.Count());
 
             foreach (var filePath in allFiles)
             {
                 fileCount++;
 
-                Writer.WriteAt($"Checking file {fileCount}", 0, 6);
+                Writer.WriteAt($"Checking file {fileCount}", 0, lineNumberToWriteAt);
                 Writer.EmptyLine();
 
                 bool found = false;
@@ -123,13 +139,13 @@ namespace ElmX.Elm
                     }
                 }
 
-                if (!found)
+                if (!found && !ExcludeFiles.Contains(filePath))
                 {
                     Unused.Add(filePath);
                 }
             }
 
-            Writer.WriteAt($"Found: {Unused.Count().ToString()} unused files", 0, 6);
+            Writer.WriteAt($"Found: {Unused.Count().ToString()} unused files", 0, lineNumberToWriteAt);
             Writer.EmptyLine();
 
             return Unused;

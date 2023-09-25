@@ -32,6 +32,18 @@ namespace ElmX.Core.Console
         /// Write a list of strings to the console.
         /// </summary>
         /// <param name="lines"></param>
+        static public void WriteLines(string pre, List<string> lines)
+        {
+            foreach (string line in lines)
+            {
+                System.Console.WriteLine($"{pre}{line}");
+            }
+        }
+
+        /// <summary>
+        /// Write a list of strings to the console.
+        /// </summary>
+        /// <param name="lines"></param>
         static public void WriteLines(List<string> lines)
         {
             foreach (string line in lines)

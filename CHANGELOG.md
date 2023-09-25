@@ -6,7 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [unreleased]
 
-- Nothing yet
+### Fixed
+
+- The "exclude-files" property of `elmx.json` is now correctly read and applied.
 
 ## [1.1.0] - 2023-09-25
 
