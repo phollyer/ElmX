@@ -82,6 +82,7 @@ namespace ElmX.Commands
             {
                 "init" => Cmd.Init,
                 "unused-modules" => Cmd.UnusedModules,
+                "unused-imports" => Cmd.UnusedImports,
                 _ => Cmd.Unknown,
             };
         }
@@ -96,6 +97,9 @@ namespace ElmX.Commands
                 case Cmd.UnusedModules:
                     UnusedModulesOptions.Parse(args);
                     break;
+                case Cmd.UnusedImports:
+                    //UnusedImportsOptions.Parse(args);
+                    break;
                 case Cmd.Unknown:
                     UnknownCmd = args[0];
                     break;
@@ -107,6 +111,8 @@ namespace ElmX.Commands
     {
         Init,
         UnusedModules,
+
+        UnusedImports,
 
         Unknown
     }

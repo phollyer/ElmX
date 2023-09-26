@@ -1,6 +1,6 @@
 using ElmX.Core.Console;
 
-namespace ElmX.Commands.UnusedModules
+namespace ElmX.Commands.UnusedImports
 {
     public class Options : ElmX.Commands.Options
     {

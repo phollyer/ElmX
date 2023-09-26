@@ -1,16 +1,8 @@
 namespace ElmX.Commands.Init
 {
-    public class Options
+    public class Options : ElmX.Commands.Options
     {
-        public bool ShowHelp { get; set; } = false;
         public string EntryFile { get; set; } = "src/Main.elm";
-
-        public List<string> ExcludeDirs { get; set; } = new List<string>()
-            { "elm-stuff"
-            , "node_modules"
-            , "review"
-            , "tests"
-            };
 
         public List<string> ExcludeFiles { get; set; } = new List<string>();
         public void Parse(List<string> args)
