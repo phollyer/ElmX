@@ -46,6 +46,18 @@ namespace ElmX.Core
             Writer.EmptyLine();
         }
 
+        static public void ShowUnusedImportsOptions()
+        {
+            Writer.WriteLine("[unused-imports-options]");
+            Writer.EmptyLine();
+            Writer.WriteLine("-d, --delete\t\t\t\tDelete the unused imports.");
+            Writer.WriteLine("-e, --exclude <dir> <dir> <dir>...\tExclude the specified directories from the search.");
+            Writer.WriteLine("-p, --pause\t\t\t\tPause before each deletion, requesting confirmation before deleting an import.");
+            Writer.WriteLine("-s, --show\t\t\t\tShow the unused imports.");
+
+            Writer.EmptyLine();
+        }
+
         /// <summary>
         /// Show the help text for the unused-modules command.
         /// </summary>
@@ -60,6 +72,8 @@ namespace ElmX.Core
             ShowInitOptions();
 
             ShowUnusedModulesOptions();
+
+            ShowUnusedImportsOptions();
         }
     }
 }
