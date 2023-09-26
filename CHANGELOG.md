@@ -6,9 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [unreleased]
 
+-- Nothing yet.
+
+## [1.1.1] - 2023-09-26
+
 ### Fixed
 
 - The "exclude-files" property of `elmx.json` is now correctly read and applied.
+
+### Added
+
+- Support for Elm Packages.
 
 ## [1.1.0] - 2023-09-25
 
@@ -164,6 +172,7 @@ Many thanks to [lydell](https://github.com/lydell/) for pointing out the edge ca
 
 - Initial Commit.
 
+[1.1.1]: https://github.com/phollyer/elmx/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/phollyer/elmx/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/phollyer/elmx/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/phollyer/elmx/compare/1.0.0...v1.0.1
