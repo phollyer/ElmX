@@ -5,10 +5,8 @@ namespace ElmX.Core
     public class Imports
     {
         private List<Import> List { get; set; } = new List<Import>();
-        public List<Import> Parse(string path)
+        public List<Import> Parse(string elmString)
         {
-            string elmString = File.ReadAllText(path);
-
             string[] lines = elmString.Split('\n');
 
             int[] lineNumbers = GetImportLineNumbers(lines);

@@ -23,7 +23,11 @@ namespace ElmX.Elm.Code
 
         public void ParseImports()
         {
-            Imports = new Imports().Parse(Path);
+            string elmString = File.ReadAllText(Path);
+
+            elmString = Comments.RemoveDocumentationComments(elmString);
+
+            Imports = new Imports().Parse(elmString);
         }
 
         public override string ToString()

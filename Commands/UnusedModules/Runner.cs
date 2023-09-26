@@ -26,8 +26,6 @@ namespace ElmX.Commands.UnusedModules
 
             List<string> unusedModules = new();
 
-            Writer.Clear();
-
             ElmJson.Read();
 
             if (ElmJson.json == null)
@@ -53,6 +51,7 @@ namespace ElmX.Commands.UnusedModules
                 Environment.Exit(0);
             }
 
+            Writer.Clear();
             Writer.WriteLine("I will now search for unused modules.");
 
             if (ElmJson.json.projectType == ProjectType.Application && ElmJson.json.Application != null)
@@ -62,8 +61,8 @@ namespace ElmX.Commands.UnusedModules
             }
             else if (ElmJson.json.projectType == ProjectType.Package && ElmJson.json.Package != null)
             {
-                SearchPackage searchPackage = new();
-                searchPackage.Run(ElmJson.json.Package.Src, ElmJson.json.Package.ExposedModules, ElmX_Json.AppJson.ExcludeDirs);
+                Elm.Package package = new(ElmJson.json.Package, ElmX_Json);
+                unusedModules = package.FindUnusedModules();
             }
             else
             {

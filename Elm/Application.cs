@@ -6,6 +6,10 @@ namespace ElmX.Elm
 {
     public class Application
     {
+
+        // Metadata
+        public Metadata Metadata { get; private set; }
+
         // Source Directories
         public List<string> SourceDirs { get; private set; } = new();
 
@@ -14,9 +18,6 @@ namespace ElmX.Elm
 
         // Excluded Files
         public List<string> ExcludeFiles { get; private set; } = new();
-
-        // Metadata
-        public Metadata Metadata { get; private set; }
 
         // Modules
 

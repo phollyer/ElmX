@@ -12,6 +12,74 @@ namespace ElmX.Elm.Code
             return elmString;
         }
 
+        static public string RemoveDocumentationComments(string elmString)
+        {
+            if (!elmString.Contains("{-|"))
+            {
+                return elmString;
+            }
+
+            string[] lines = elmString.Split('\n');
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                if (lines[i].StartsWith("{-|"))
+                {
+                    lines[i] = "";
+
+                    for (int j = i + 1; j < lines.Length; j++)
+                    {
+                        if (lines[j].EndsWith("-}"))
+                        {
+                            lines[j] = "";
+
+                            i = j;
+
+                            break;
+                        }
+                        else
+                        {
+                            lines[j] = "";
+                        }
+                    }
+                }
+            }
+
+            return string.Join("\n", lines);
+        }
+
+        static private string RemoveDocumentationComment(string line)
+        {
+            int startIndex = line.IndexOf("{-|");
+            int endIndex = line.IndexOf("-}");
+            int lastIndex = line.LastIndexOf("{-|");
+
+
+            if (lastIndex > startIndex)
+            {
+                line = line.Remove(lastIndex, line.Length - lastIndex);
+            }
+
+            if (startIndex > -1 && endIndex > -1)
+            {
+                line = line.Remove(startIndex, endIndex - startIndex);
+                line = line.Replace("{-|", "");
+                line = line.Replace("-}", "");
+            }
+            else if (startIndex > -1)
+            {
+                line = line.Remove(startIndex);
+                line = line.Replace("{-|", "");
+            }
+            else if (endIndex > -1)
+            {
+                line = line.Remove(endIndex);
+                line = line.Replace("-}", "");
+            }
+
+            return line.Trim();
+        }
+
         static private string RemoveSingleLineComments(string elmString)
         {
             string[] lines = elmString.Split('\n');
