@@ -41,10 +41,10 @@ namespace ElmX.Elm
                 }
             }
 
-            ExcludeDirs = elmxJson.json.ExcludeDirs;
-            ExcludeFiles = elmxJson.json.ExcludeFiles;
+            ExcludeDirs = elmxJson.AppJson.ExcludeDirs;
+            ExcludeFiles = elmxJson.AppJson.ExcludeFiles;
 
-            string entryFile = elmxJson.json.EntryFile;
+            string entryFile = elmxJson.AppJson.EntryFile;
 
             Module? entryModule = FindEntryModule(entryFile);
 

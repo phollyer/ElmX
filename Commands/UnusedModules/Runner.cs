@@ -39,7 +39,7 @@ namespace ElmX.Commands.UnusedModules
 
             ElmX_Json.Read();
 
-            if (ElmX_Json.json == null)
+            if (ElmX_Json.AppJson == null)
             {
                 Writer.EmptyLine();
                 Writer.WriteLine("I could not find an elmx.json file in the current directory. Please run the init command first.");
@@ -63,7 +63,7 @@ namespace ElmX.Commands.UnusedModules
             else if (ElmJson.json.projectType == ProjectType.Package && ElmJson.json.Package != null)
             {
                 SearchPackage searchPackage = new();
-                searchPackage.Run(ElmJson.json.Package.Src, ElmJson.json.Package.ExposedModules, ElmX_Json.json.ExcludeDirs);
+                searchPackage.Run(ElmJson.json.Package.Src, ElmJson.json.Package.ExposedModules, ElmX_Json.AppJson.ExcludeDirs);
             }
             else
             {

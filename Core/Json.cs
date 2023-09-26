@@ -6,7 +6,9 @@ namespace ElmX.Core
 {
     public class Json
     {
-        public ElmXJson json = new();
+        public ElmXJson_Application AppJson = new();
+
+        public ElmXJson_Package PkgJson = new();
 
         public readonly bool Exists = false;
 
@@ -17,13 +19,30 @@ namespace ElmX.Core
 
         public void Create(Commands.Init.Options options)
         {
-            json.EntryFile = options.EntryFile;
-            json.ExcludeDirs = options.ExcludeDirs;
-            json.ExcludeFiles = options.ExcludeFiles;
+            ElmX.Elm.Json elmJson = new();
+            elmJson.Read();
 
-            string jsonStr = JsonSerializer.Serialize(json, new JsonSerializerOptions { WriteIndented = true });
+            Writer.WriteLine(elmJson.json.projectType.ToString());
 
-            File.WriteAllText("elmx.json", jsonStr);
+            if (elmJson.json.projectType == Elm.ProjectType.Application)
+            {
+                AppJson.EntryFile = options.EntryFile;
+                AppJson.ExcludeDirs = options.ExcludeDirs;
+                AppJson.ExcludeFiles = options.ExcludeFiles;
+
+                string jsonStr = JsonSerializer.Serialize(AppJson, new JsonSerializerOptions { WriteIndented = true });
+
+                File.WriteAllText("elmx.json", jsonStr);
+            }
+            else if (elmJson.json.projectType == Elm.ProjectType.Package)
+            {
+                PkgJson.ExcludeDirs = options.ExcludeDirs;
+                PkgJson.ExcludeFiles = options.ExcludeFiles;
+
+                string jsonStr = JsonSerializer.Serialize(PkgJson, new JsonSerializerOptions { WriteIndented = true });
+
+                File.WriteAllText("elmx.json", jsonStr);
+            }
         }
 
         public void Read()
@@ -33,11 +52,11 @@ namespace ElmX.Core
             {
                 string jsonStr = File.ReadAllText("elmx.json");
 
-                ElmXJson? _json = JsonSerializer.Deserialize<ElmXJson>(jsonStr);
+                ElmXJson_Application? _json = JsonSerializer.Deserialize<ElmXJson_Application>(jsonStr);
 
                 if (_json != null)
                 {
-                    json = _json;
+                    AppJson = _json;
                 }
                 else
                 {
@@ -69,11 +88,19 @@ namespace ElmX.Core
             }
         }
     }
-    public class ElmXJson
+    public class ElmXJson_Application
     {
         [JsonPropertyName("entry-file")]
         public string EntryFile { get; set; } = "";
 
+        [JsonPropertyName("exclude-dirs")]
+        public List<string> ExcludeDirs { get; set; } = new List<string>();
+
+        [JsonPropertyName("exclude-files")]
+        public List<string> ExcludeFiles { get; set; } = new List<string>();
+    }
+    public class ElmXJson_Package
+    {
         [JsonPropertyName("exclude-dirs")]
         public List<string> ExcludeDirs { get; set; } = new List<string>();
 
