@@ -2,9 +2,9 @@
 
 ElmX is a command line tool for helping with Elm development.
 
-Currently it can be used to find all unused modules in an Elm project, which is useful for cleaning up said project. At the moment, ElmX supports projects of type `application`, as defined in your projects' `elm.json` file - `package`s are next on the list.
+Currently it can be used to find all unused modules in an Elm project, which is useful for cleaning up said project.
 
-For details on features that are planned once `packages` are supported, see the [TODO](#todo) section below.
+For details on features that are planned, see the [TODO](#todo) section below.
 
 ## Installation
 
