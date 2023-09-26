@@ -62,7 +62,7 @@ You can then find the binary in the `bin/Publish/net<dotnet-version>/<runtime-ta
 
 Before you can use ElmX, you'll need to create a config file (`elmx.json`). This is a simple JSON file that tells ElmX the following information:
 
-- "entry-file": The name of, and path to, your entry module from your `elm.json` file. This defaults to `src/Main.elm`, but if you use a different name or path, you can specify it here.
+- "entry-file": The name of, and path to, your entry module from your `elm.json` file (this is not applicable to packages). This defaults to `src/Main.elm`, but if you use a different name or path, you can specify it here.
 - "exclude-dirs": A list of directories to exclude from the search. This defaults to `["elm-stuff", "node_modules", "review", "tests"]`, but you can add to this list if you want to exclude more directories.
 - "exclude-files": A list of files to exclude from the search. This is useful if you have one or more modules that you are working on but that are not yet ready to `import` into any of your project files.
 
