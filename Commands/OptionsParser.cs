@@ -19,6 +19,8 @@ namespace ElmX.Commands
 
         public UnusedModules.Options UnusedModulesOptions { get; private set; } = new();
 
+        public UnusedImports.Options UnusedImportsOptions { get; private set; } = new();
+
 
         // Unused Modules Options
 
@@ -98,7 +100,7 @@ namespace ElmX.Commands
                     UnusedModulesOptions.Parse(args);
                     break;
                 case Cmd.UnusedImports:
-                    //UnusedImportsOptions.Parse(args);
+                    UnusedImportsOptions.Parse(args);
                     break;
                 case Cmd.Unknown:
                     UnknownCmd = args[0];

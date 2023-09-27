@@ -2,7 +2,7 @@ using ElmX.Core.Console;
 
 namespace ElmX.Commands.UnusedImports
 {
-    public class Options : ElmX.Commands.Options
+    public class Options : ElmX.Commands.OptionsBase
     {
         public bool Delete { get; private set; }
 

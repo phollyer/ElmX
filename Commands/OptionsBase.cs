@@ -1,6 +1,6 @@
 namespace ElmX.Commands
 {
-    public class Options
+    public class OptionsBase
     {
         public List<string> ExcludeDirs { get; set; } = new List<string>()
             { "elm-stuff"

@@ -14,6 +14,8 @@ namespace ElmX.Elm.Code
 
         public List<Function> Functions { get; private set; } = new List<Function>();
 
+        public string Content { get; private set; } = "";
+
         public Module() { }
 
         public Module(string path)
@@ -23,11 +25,11 @@ namespace ElmX.Elm.Code
 
         public void ParseImports()
         {
-            string elmString = File.ReadAllText(Path);
+            Content = File.ReadAllText(Path);
 
-            elmString = Comments.RemoveDocumentationComments(elmString);
+            Content = Comments.RemoveDocumentationComments(Content);
 
-            Imports = new Imports().Parse(elmString);
+            Imports = new Imports().Parse(Content);
         }
 
         public override string ToString()

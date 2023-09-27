@@ -1,6 +1,6 @@
 namespace ElmX.Commands.Init
 {
-    public class Options : ElmX.Commands.Options
+    public class Options : ElmX.Commands.OptionsBase
     {
         public string EntryFile { get; set; } = "src/Main.elm";
 
