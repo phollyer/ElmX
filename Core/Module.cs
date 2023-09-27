@@ -74,7 +74,7 @@ namespace ElmX.Core
         }
         static public List<string> FindUnused(Package pkg)
         {
-            foreach (string exposedModule in pkg.Metadata.ExposedModules)
+            foreach (string exposedModule in pkg.ExposedModules.Select(module => module.Path))
             {
                 string modulePath = System.IO.Path.Join("src", exposedModule.Replace(".", System.IO.Path.DirectorySeparatorChar.ToString()) + ".elm");
 
@@ -107,17 +107,15 @@ namespace ElmX.Core
 
             pkg.ModulePaths.Sort();
 
-            List<string> allFiles = FindAllFiles("src", pkg.ExposedModules.Select(module => module.Path).ToList(), pkg.ExcludeDirs);
-
             List<string> Unused = new();
 
             int fileCount = 0;
 
-            WriteSummary(new List<string>() { "src" }, pkg.ExcludeDirs, pkg.ExcludeFiles, pkg.ModulePaths, allFiles);
+            WriteSummary(new List<string>() { "src" }, pkg.ExcludeDirs, pkg.ExcludeFiles, pkg.ModulePaths, pkg.FileList);
 
             short lineNumberToWriteAt = (short)(10 + (short)pkg.ExcludeDirs.Count() + (short)pkg.ExcludeFiles.Count());
 
-            foreach (var filePath in allFiles)
+            foreach (var filePath in pkg.FileList)
             {
                 fileCount++;
 
@@ -183,70 +181,6 @@ namespace ElmX.Core
                     ExtractImports(pkg, srcDir, _module);
                 }
             }
-        }
-        static private List<string> FindAllFiles(string srcDir, string entryFile, List<string> excludedDirs)
-        {
-            List<string> files = new();
-            try
-            {
-                IEnumerable<string> _files = from file in Directory.EnumerateFiles(srcDir, "*.elm", SearchOption.AllDirectories)
-                                             where IsNotExcluded(file, excludedDirs)
-                                             where file != entryFile
-                                             select file;
-
-                foreach (string file in _files)
-                {
-                    files.Add(file);
-                }
-            }
-            catch (DirectoryNotFoundException dirEx)
-            {
-                Writer.WriteLine(dirEx.Message);
-            }
-            catch (UnauthorizedAccessException uAEx)
-            {
-                Writer.WriteLine(uAEx.Message);
-            }
-            catch (PathTooLongException pathEx)
-            {
-                Writer.WriteLine(pathEx.Message);
-            }
-
-            files.Sort();
-
-            return files;
-        }
-        static private List<string> FindAllFiles(string src, List<string> exposedModules, List<string> excludedDirs)
-        {
-            List<string> files = new();
-            try
-            {
-                IEnumerable<string> _files = from file in Directory.EnumerateFiles(src, "*.elm", SearchOption.AllDirectories)
-                                             where IsNotExcluded(file, excludedDirs)
-                                             where !exposedModules.Contains(file)
-                                             select file;
-
-                foreach (string file in _files)
-                {
-                    files.Add(file);
-                }
-            }
-            catch (DirectoryNotFoundException dirEx)
-            {
-                Writer.WriteLine(dirEx.Message);
-            }
-            catch (UnauthorizedAccessException uAEx)
-            {
-                Writer.WriteLine(uAEx.Message);
-            }
-            catch (PathTooLongException pathEx)
-            {
-                Writer.WriteLine(pathEx.Message);
-            }
-
-            files.Sort();
-
-            return files;
         }
         static private void WriteSummary(List<string> sourceDirs, List<string> excludeDirs, List<string> excludeFiles, List<string> modulePaths, List<string> allFiles)
         {

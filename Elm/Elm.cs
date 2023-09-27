@@ -15,7 +15,7 @@ namespace ElmX.Elm
 
         public List<Import> Imports { get; private set; } = new();
 
-        public List<string> FileList { get; private set; } = new();
+        public List<string> FileList { get; protected set; } = new();
 
         protected List<string> FindAllFiles(string srcDir, string entryFile, List<string> excludedDirs)
         {
@@ -25,6 +25,38 @@ namespace ElmX.Elm
                 IEnumerable<string> _files = from file in Directory.EnumerateFiles(srcDir, "*.elm", SearchOption.AllDirectories)
                                              where IsNotExcluded(file, excludedDirs)
                                              where file != entryFile
+                                             select file;
+
+                foreach (string file in _files)
+                {
+                    files.Add(file);
+                }
+            }
+            catch (DirectoryNotFoundException dirEx)
+            {
+                Writer.WriteLine(dirEx.Message);
+            }
+            catch (UnauthorizedAccessException uAEx)
+            {
+                Writer.WriteLine(uAEx.Message);
+            }
+            catch (PathTooLongException pathEx)
+            {
+                Writer.WriteLine(pathEx.Message);
+            }
+
+            files.Sort();
+
+            return files;
+        }
+        protected List<string> FindAllFiles(string src, List<string> exposedModules, List<string> excludedDirs)
+        {
+            List<string> files = new();
+            try
+            {
+                IEnumerable<string> _files = from file in Directory.EnumerateFiles(src, "*.elm", SearchOption.AllDirectories)
+                                             where IsNotExcluded(file, excludedDirs)
+                                             where !exposedModules.Contains(file)
                                              select file;
 
                 foreach (string file in _files)
