@@ -47,7 +47,6 @@ namespace ElmX.Core
         {
             WriteSummary(srcDirs, excludeDirs, excludeFiles, modulePaths, fileList);
 
-
             List<string> Unused = new();
 
             foreach (var filePath in fileList)
