@@ -22,34 +22,11 @@ namespace ElmX.Core
 
             List<string> Unused = new();
 
-            int fileCount = 0;
-
             WriteSummary(app.SourceDirs, app.ExcludeDirs, app.ExcludeFiles, app.ModulePaths, app.FileList);
 
             short lineNumberToWriteAt = (short)(10 + (short)app.SourceDirs.Count() + (short)app.ExcludeDirs.Count() + (short)app.ExcludeFiles.Count());
 
-            foreach (var filePath in app.FileList)
-            {
-                fileCount++;
-
-                Writer.WriteAt($"Checking file {fileCount}", 0, lineNumberToWriteAt);
-                Writer.EmptyLine();
-
-                bool found = false;
-                foreach (var importPath in app.ModulePaths)
-                {
-                    if (filePath == importPath || filePath == app.EntryModule.FilePath)
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found && !app.ExcludeFiles.Contains(filePath))
-                {
-                    Unused.Add(filePath);
-                }
-            }
+            Unused = FindUnused(app.FileList, app.ModulePaths, app.ExcludeFiles);
 
             Writer.WriteAt($"Found: {Unused.Count} unused files", 0, lineNumberToWriteAt);
             Writer.EmptyLine();
@@ -77,37 +54,43 @@ namespace ElmX.Core
 
             List<string> Unused = new();
 
-            int fileCount = 0;
-
             WriteSummary(new List<string>() { "src" }, pkg.ExcludeDirs, pkg.ExcludeFiles, pkg.ModulePaths, pkg.FileList);
 
             short lineNumberToWriteAt = (short)(10 + (short)pkg.ExcludeDirs.Count() + (short)pkg.ExcludeFiles.Count());
 
-            foreach (var filePath in pkg.FileList)
+            Unused = FindUnused(pkg.FileList, pkg.ModulePaths, pkg.ExcludeFiles);
+
+            Writer.WriteAt($"Found: {Unused.Count()} unused files", 0, lineNumberToWriteAt);
+            Writer.EmptyLine();
+
+            return Unused;
+        }
+
+        static private List<string> FindUnused(List<string> fileList, List<string> modulePaths, List<string> excludeFiles)
+        {
+            List<string> Unused = new();
+
+            int fileCount = 0;
+
+            foreach (var filePath in fileList)
             {
                 fileCount++;
 
-                Writer.WriteAt($"Checking file {fileCount}", 0, lineNumberToWriteAt);
-                Writer.EmptyLine();
-
                 bool found = false;
-                foreach (var importPath in pkg.ModulePaths)
+                foreach (var importPath in modulePaths)
                 {
-                    if (filePath == importPath || pkg.ExposedModules.Select(module => module.FilePath).Contains(filePath))
+                    if (filePath == importPath)
                     {
                         found = true;
                         break;
                     }
                 }
 
-                if (!found && !pkg.ExcludeFiles.Contains(filePath))
+                if (!found && !excludeFiles.Contains(filePath))
                 {
                     Unused.Add(filePath);
                 }
             }
-
-            Writer.WriteAt($"Found: {Unused.Count().ToString()} unused files", 0, lineNumberToWriteAt);
-            Writer.EmptyLine();
 
             return Unused;
         }
