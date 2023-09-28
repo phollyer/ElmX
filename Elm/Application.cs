@@ -41,6 +41,7 @@ namespace ElmX.Elm
                 Writer.EmptyLine();
                 Environment.Exit(0);
             }
+
             EntryModule.Read();
             EntryModule.RemoveDocumentationComments();
             EntryModule.ParseImports();
