@@ -29,7 +29,7 @@ namespace ElmX.Core
 
                         app.ModulePaths.Add(module.Path);
 
-                        ExtractImports(app, srcDir, module);
+                        CreateModuleList(app.Modules, app.ModulePaths, srcDir, module);
                     }
                 }
             }
@@ -101,7 +101,7 @@ namespace ElmX.Core
 
                     pkg.ModulePaths.Add(module.Path);
 
-                    ExtractImports(pkg, "src", module);
+                    CreateModuleList(pkg.Modules, pkg.ModulePaths, "src", module);
                 }
             }
 
@@ -158,43 +158,25 @@ namespace ElmX.Core
         }
 
 
-        static private void ExtractImports(Application app, string srcDir, Elm.Code.Module module)
+        static private void CreateModuleList(List<Module> list, List<string> paths, string srcDir, Elm.Code.Module module)
         {
             foreach (Import import in module.Imports)
             {
-                string modulePath = System.IO.Path.Join(srcDir, import.Name.Replace(".", System.IO.Path.DirectorySeparatorChar.ToString()) + ".elm");
+                string modulePath = ModulePathFromImport(srcDir, import);
 
-                if (app.ModulePaths.IndexOf(modulePath) == -1 && File.Exists(modulePath))
+                if (paths.IndexOf(modulePath) == -1 && File.Exists(modulePath))
                 {
-                    Elm.Code.Module _module = new(modulePath);
-                    _module.ParseImports();
-                    app.Modules.Add(_module);
+                    Elm.Code.Module _module = ModuleFromPath(modulePath);
 
-                    app.ModulePaths.Add(_module.Path);
+                    list.Add(_module);
 
-                    ExtractImports(app, srcDir, _module);
+                    paths.Add(modulePath);
+
+                    CreateModuleList(list, paths, srcDir, _module);
                 }
             }
         }
 
-        static private void ExtractImports(Package pkg, string srcDir, Elm.Code.Module module)
-        {
-            foreach (Import import in module.Imports)
-            {
-                string modulePath = System.IO.Path.Join(srcDir, import.Name.Replace(".", System.IO.Path.DirectorySeparatorChar.ToString()) + ".elm");
-
-                if (pkg.ModulePaths.IndexOf(modulePath) == -1 && File.Exists(modulePath))
-                {
-                    Elm.Code.Module _module = new(modulePath);
-                    _module.ParseImports();
-                    pkg.Modules.Add(_module);
-
-                    pkg.ModulePaths.Add(_module.Path);
-
-                    ExtractImports(pkg, srcDir, _module);
-                }
-            }
-        }
         static private void WriteSummary(List<string> sourceDirs, List<string> excludeDirs, List<string> excludeFiles, List<string> modulePaths, List<string> allFiles)
         {
             Writer.EmptyLine();
