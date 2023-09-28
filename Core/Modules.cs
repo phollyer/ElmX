@@ -18,7 +18,7 @@ namespace ElmX.Core
                 ModulesFromImports(app.Modules, app.ModulePaths, srcDir, app.Imports);
             }
 
-            return FindUnused(app.SourceDirs, app.FileList, app.ModulePaths, app.ExcludeDirs, app.ExcludeFiles); ;
+            return FindUnused(app.SourceDirs, app.FileList, app.ModulePaths, app.ExcludeDirs, app.ExcludeFiles);
         }
         static public List<string> FindUnused(Package pkg)
         {
@@ -67,7 +67,7 @@ namespace ElmX.Core
                     }
                 }
 
-                if (!found && !excludeFiles.Contains(filePath))
+                if (!found)
                 {
                     Unused.Add(filePath);
                 }

@@ -47,8 +47,8 @@ namespace ElmX.Elm
             try
             {
                 IEnumerable<string> _files = from file in Directory.EnumerateFiles(srcDir, "*.elm", SearchOption.AllDirectories)
-                                             where IsNotExcluded(file, excludedDirs)
-                                             where file != topLevelModule.FilePath
+                                             where IsNotExcludedDirectory(file, excludedDirs)
+                                             where IsNotExcludedFile(file, ExcludeFiles)
                                              select file;
 
                 foreach (string file in _files)
@@ -73,26 +73,23 @@ namespace ElmX.Elm
 
             return files;
         }
-        /// <summary>
-        /// Check if a file is in an excluded directory.
-        /// </summary>
-        /// <param name="file">
-        /// The file to check.
-        /// </param>
-        /// <param name="excludedDirs">
-        /// The list of excluded directories.
-        /// </param>
-        /// <returns>
-        /// True if the file is not in an excluded directory.
-        /// </returns>
-        private bool IsNotExcluded(string file, List<string> excludedDirs)
+        private bool IsNotExcludedDirectory(string filePath, List<string> excludedDirs)
         {
-            string seperator = Path.DirectorySeparatorChar.ToString();
-
             foreach (string excludedDir in excludedDirs)
             {
-                string searchStr = $"{seperator}{excludedDir}{seperator}";
-                if (file.Contains(searchStr))
+                if (System.IO.Path.GetDirectoryName(filePath) == excludedDir)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+        private bool IsNotExcludedFile(string filePath, List<string> excludedFiles)
+        {
+            foreach (string excludedFile in excludedFiles)
+            {
+                if (filePath == excludedFile)
                 {
                     return false;
                 }
