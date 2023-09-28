@@ -26,7 +26,8 @@ namespace ElmX.Core
             {
                 Elm.Code.Module module = new();
                 module.FilePath = System.IO.Path.Join("src", filePath);
-
+                module.Read();
+                module.RemoveDocumentationComments();
                 module.ParseImports();
 
                 foreach (Import import in module.Imports)
@@ -108,7 +109,8 @@ namespace ElmX.Core
         {
             Module module = new();
             module.FilePath = path;
-
+            module.Read();
+            module.RemoveDocumentationComments();
             module.ParseImports();
 
             return module;

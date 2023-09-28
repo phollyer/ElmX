@@ -19,13 +19,74 @@ namespace ElmX.Elm.Code
 
         public string Content { get; private set; } = "";
 
-        public void ParseImports()
+        public void Read()
         {
             Content = File.ReadAllText(FilePath);
+        }
 
+        public void RemoveDocumentationComments()
+        {
             Content = Comments.RemoveDocumentationComments(Content);
+        }
 
+        public void ParseImports()
+        {
             Imports = ParseImports(Content);
+        }
+
+        public void RemoveImportStatementsFromContent()
+        {
+            string[] lines = Content.Split('\n');
+            string[] newLines = Array.Empty<string>();
+
+            int[] lineNumbers = GetImportLineNumbers(lines);
+
+            if (lineNumbers.Length == 0)
+            {
+                return;
+            }
+
+            Writer.WriteLine($"lineNumbers: {string.Join(", ", lineNumbers)}");
+
+            int lastLineNumberOfLastImport = GetLastLineNumberOfLastImport(lines, lineNumbers[^1]);
+
+            if (lastLineNumberOfLastImport == -1)
+            {
+                lastLineNumberOfLastImport = lines.Length;
+            }
+            else
+            {
+                lineNumbers = lineNumbers.Append(lastLineNumberOfLastImport + 1).ToArray();
+            }
+
+            for (int lineNumber = 0; lineNumber < lines.Length; lineNumber++)
+            {
+                bool lineIsImport = false;
+
+                for (int i = 0; i < lineNumbers.Length - 1; i++)
+                {
+                    int startLine = lineNumbers[i];
+                    int endLine = lineNumbers[i + 1];
+
+                    Writer.WriteLine($"lineNumber: {lineNumber}, startLine: {startLine}, endLine: {endLine}");
+
+                    if (lineNumber >= startLine && lineNumber <= endLine)
+                    {
+                        lineIsImport = true;
+                        break;
+                    }
+                }
+
+                if (lineIsImport)
+                {
+                    continue;
+                }
+                else
+                {
+                    newLines = newLines.Append(lines[lineNumber]).ToArray();
+                }
+            }
+            Content = string.Join("\n", newLines);
         }
 
         private List<Import> ParseImports(string content)
