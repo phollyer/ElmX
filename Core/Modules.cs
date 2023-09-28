@@ -20,18 +20,7 @@ namespace ElmX.Core
                 ModulesFromImports(app.Modules, app.ModulePaths, srcDir, app.Imports);
             }
 
-            List<string> Unused = new();
-
-            WriteSummary(app.SourceDirs, app.ExcludeDirs, app.ExcludeFiles, app.ModulePaths, app.FileList);
-
-            short lineNumberToWriteAt = (short)(10 + (short)app.SourceDirs.Count() + (short)app.ExcludeDirs.Count() + (short)app.ExcludeFiles.Count());
-
-            Unused = FindUnused(app.FileList, app.ModulePaths, app.ExcludeFiles);
-
-            Writer.WriteAt($"Found: {Unused.Count} unused files", 0, lineNumberToWriteAt);
-            Writer.EmptyLine();
-
-            return Unused;
+            return FindUnused(app.SourceDirs, app.FileList, app.ModulePaths, app.ExcludeDirs, app.ExcludeFiles); ;
         }
         static public List<string> FindUnused(Package pkg)
         {
@@ -52,22 +41,15 @@ namespace ElmX.Core
 
             ModulesFromImports(pkg.Modules, pkg.ModulePaths, "src", pkg.Imports);
 
-            List<string> Unused = new();
-
-            WriteSummary(new List<string>() { "src" }, pkg.ExcludeDirs, pkg.ExcludeFiles, pkg.ModulePaths, pkg.FileList);
-
-            short lineNumberToWriteAt = (short)(10 + (short)pkg.ExcludeDirs.Count() + (short)pkg.ExcludeFiles.Count());
-
-            Unused = FindUnused(pkg.FileList, pkg.ModulePaths, pkg.ExcludeFiles);
-
-            Writer.WriteAt($"Found: {Unused.Count()} unused files", 0, lineNumberToWriteAt);
-            Writer.EmptyLine();
-
-            return Unused;
+            return FindUnused(new List<string>() { "src" }, pkg.FileList, pkg.ModulePaths, pkg.ExcludeDirs, pkg.ExcludeFiles); ;
         }
 
-        static private List<string> FindUnused(List<string> fileList, List<string> modulePaths, List<string> excludeFiles)
+        static private List<string> FindUnused(List<string> srcDirs, List<string> fileList, List<string> modulePaths, List<string> excludeDirs, List<string> excludeFiles)
         {
+            WriteSummary(srcDirs, excludeDirs, excludeFiles, modulePaths, fileList);
+
+            short lineNumberToWriteAt = (short)(10 + (short)srcDirs.Count() + (short)excludeDirs.Count() + (short)excludeFiles.Count());
+
             List<string> Unused = new();
 
             int fileCount = 0;
@@ -91,6 +73,9 @@ namespace ElmX.Core
                     Unused.Add(filePath);
                 }
             }
+
+            Writer.WriteAt($"Found: {Unused.Count} unused files", 0, lineNumberToWriteAt);
+            Writer.EmptyLine();
 
             return Unused;
         }
