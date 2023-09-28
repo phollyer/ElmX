@@ -29,7 +29,7 @@ namespace ElmX.Commands.UnusedImports
             if (ElmJson.json.projectType == ProjectType.Application && ElmJson.json.Application != null)
             {
                 Elm.Application application = new(ElmJson.json.Application, ElmX_Json);
-                unusedImports = application.FindUnusedImports();
+                unusedImports = Imports.FindUnused(application);
             }
             else if (ElmJson.json.projectType == ProjectType.Package && ElmJson.json.Package != null)
             {

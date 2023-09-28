@@ -4,7 +4,7 @@ using ElmX.Elm.Code;
 
 namespace ElmX.Core
 {
-    static class Module
+    static class Modules
     {
         static public List<string> FindUnused(Application app)
         {

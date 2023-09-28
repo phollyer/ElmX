@@ -35,12 +35,12 @@ namespace ElmX.Commands.UnusedModules
             if (ElmJson.json.projectType == ProjectType.Application && ElmJson.json.Application != null)
             {
                 Elm.Application application = new(ElmJson.json.Application, ElmX_Json);
-                unusedModules = ElmX.Core.Module.FindUnused(application);
+                unusedModules = Modules.FindUnused(application);
             }
             else if (ElmJson.json.projectType == ProjectType.Package && ElmJson.json.Package != null)
             {
                 Elm.Package package = new(ElmJson.json.Package, ElmX_Json);
-                unusedModules = package.FindUnusedModules();
+                unusedModules = Modules.FindUnused(package);
             }
             else
             {
