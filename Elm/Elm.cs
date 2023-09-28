@@ -17,38 +17,26 @@ namespace ElmX.Elm
 
         public List<string> FileList { get; protected set; } = new();
 
-        protected List<string> FindAllFiles(List<string> sourceDirectories, Module entryModule, List<string> excludedDirs)
+        protected List<string> FindAllFiles(List<string> sourceDirectories)
         {
             List<string> files = new();
 
             foreach (string srcDir in sourceDirectories)
             {
-                files.AddRange(FindAllFiles(srcDir, entryModule, ExcludeDirs));
+                files.AddRange(FindAllFiles(srcDir));
             }
 
             return files;
         }
 
-        protected List<string> FindAllFiles(string srcDir, List<Module> exposedModules, List<string> excludedDirs)
-        {
-            List<string> files = new();
-
-            foreach (Module module in exposedModules)
-            {
-                files.AddRange(FindAllFiles(srcDir, module, ExcludeDirs));
-            }
-
-            return files;
-        }
-
-        private List<string> FindAllFiles(string srcDir, Module topLevelModule, List<string> excludedDirs)
+        protected List<string> FindAllFiles(string srcDir)
         {
             List<string> files = new();
             try
             {
                 IEnumerable<string> _files = from file in Directory.EnumerateFiles(srcDir, "*.elm", SearchOption.AllDirectories)
-                                             where IsNotExcludedDirectory(file, excludedDirs)
-                                             where IsNotExcludedFile(file, ExcludeFiles)
+                                             where IsNotExcludedDirectory(file)
+                                             where IsNotExcludedFile(file)
                                              select file;
 
                 foreach (string file in _files)
@@ -73,9 +61,9 @@ namespace ElmX.Elm
 
             return files;
         }
-        private bool IsNotExcludedDirectory(string filePath, List<string> excludedDirs)
+        private bool IsNotExcludedDirectory(string filePath)
         {
-            foreach (string excludedDir in excludedDirs)
+            foreach (string excludedDir in ExcludeDirs)
             {
                 if (System.IO.Path.GetDirectoryName(filePath) == excludedDir)
                 {
@@ -85,9 +73,9 @@ namespace ElmX.Elm
 
             return true;
         }
-        private bool IsNotExcludedFile(string filePath, List<string> excludedFiles)
+        private bool IsNotExcludedFile(string filePath)
         {
-            foreach (string excludedFile in excludedFiles)
+            foreach (string excludedFile in ExcludeFiles)
             {
                 if (filePath == excludedFile)
                 {

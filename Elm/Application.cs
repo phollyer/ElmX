@@ -48,7 +48,7 @@ namespace ElmX.Elm
 
             ModulePaths.Add(EntryModule.FilePath);
 
-            FileList = FindAllFiles(SourceDirs, EntryModule, ExcludeDirs);
+            FileList = FindAllFiles(SourceDirs);
         }
 
         private Module? FindEntryModule(string entryFile)
