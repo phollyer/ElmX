@@ -103,25 +103,6 @@ This will find all unused modules in your project, and perform the required task
 -s, --show                              Show the unused modules.
 ```
 
-### Find unused imports
-
-From the root of your Elm project (where your `elm.json` resides), run:
-
-``` shell
-elmx unused-imports [options]
-```
-
-This will find all unused imports in your project, and perform the required task based on the options you provide.
-
-``` shell
-[unused-imports-options]
-
--d, --delete                            Delete the unused imports.
--e, --exclude <dir> <dir> <dir>...      Exclude the specified directories from the search.
--p, --pause                             Pause before each deletion, requesting confirmation before deleting an import.
--s, --show                              Show the unused imports.
-```
-
 ---
 
 ### Any Questions, Comments, Suggestions
