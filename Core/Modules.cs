@@ -8,8 +8,6 @@ namespace ElmX.Core
     {
         static public List<string> FindUnused(Application app)
         {
-            app.ModulePaths.Add(app.EntryModule.FilePath);
-
             foreach (Import import in app.EntryModule.Imports)
             {
                 app.Imports.Add(import);

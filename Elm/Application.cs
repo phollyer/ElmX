@@ -46,6 +46,8 @@ namespace ElmX.Elm
             }
             EntryModule.ParseImports();
 
+            ModulePaths.Add(EntryModule.FilePath);
+
             foreach (string srcDir in SourceDirs)
             {
                 FileList.AddRange(FindAllFiles(srcDir, EntryModule.FilePath, ExcludeDirs));
