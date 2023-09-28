@@ -19,12 +19,12 @@ namespace ElmX.Core
             {
                 foreach (Import import in app.Imports)
                 {
-                    string modulePath = System.IO.Path.Join(srcDir, import.Name.Replace(".", System.IO.Path.DirectorySeparatorChar.ToString()) + ".elm");
+                    string modulePath = ModulePathFromImport(srcDir, import);
 
                     if (File.Exists(modulePath))
                     {
-                        Elm.Code.Module module = new(modulePath);
-                        module.ParseImports();
+                        Elm.Code.Module module = ModuleFromPath(modulePath);
+
                         app.Modules.Add(module);
 
                         app.ModulePaths.Add(module.Path);
@@ -91,12 +91,12 @@ namespace ElmX.Core
 
             foreach (Import import in pkg.Imports)
             {
-                string modulePath = System.IO.Path.Join("src", import.Name.Replace(".", System.IO.Path.DirectorySeparatorChar.ToString()) + ".elm");
+                string modulePath = ModulePathFromImport("src", import);
 
                 if (File.Exists(modulePath))
                 {
-                    Elm.Code.Module module = new(modulePath);
-                    module.ParseImports();
+                    Elm.Code.Module module = ModuleFromPath(modulePath);
+
                     pkg.Modules.Add(module);
 
                     pkg.ModulePaths.Add(module.Path);
@@ -142,6 +142,19 @@ namespace ElmX.Core
             Writer.EmptyLine();
 
             return Unused;
+        }
+
+        static private string ModulePathFromImport(string srcDir, Import import)
+        {
+            return System.IO.Path.Join(srcDir, import.Name.Replace(".", System.IO.Path.DirectorySeparatorChar.ToString()) + ".elm");
+        }
+
+        static private Module ModuleFromPath(string path)
+        {
+            Module module = new Module(path);
+            module.ParseImports();
+
+            return module;
         }
 
 
