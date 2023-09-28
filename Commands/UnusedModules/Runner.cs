@@ -171,8 +171,7 @@ namespace ElmX.Commands.UnusedModules
         private void MaybeDeleteFile(string file)
         {
             Writer.EmptyLine();
-            Writer.WriteLine($"Should I delete the following file? (y/n/(q)uit)");
-            Writer.WriteLine(file);
+            Writer.WriteLine($"Should I delete: {file}? (y/n/(q)uit)");
 
             string key = Reader.ReadKey();
 
@@ -191,6 +190,11 @@ namespace ElmX.Commands.UnusedModules
             {
                 Writer.EmptyLine();
                 Writer.WriteLine("Skipping...");
+            }
+            else
+            {
+                Writer.WriteLine($"I did not understand your input. Please try again.");
+                MaybeDeleteFile(file);
             }
         }
 
