@@ -17,14 +17,38 @@ namespace ElmX.Elm
 
         public List<string> FileList { get; protected set; } = new();
 
-        protected List<string> FindAllFiles(string srcDir, string entryFile, List<string> excludedDirs)
+        protected List<string> FindAllFiles(List<string> sourceDirectories, Module entryModule, List<string> excludedDirs)
+        {
+            List<string> files = new();
+
+            foreach (string srcDir in sourceDirectories)
+            {
+                files.AddRange(FindAllFiles(srcDir, entryModule, ExcludeDirs));
+            }
+
+            return files;
+        }
+
+        protected List<string> FindAllFiles(string srcDir, List<Module> exposedModules, List<string> excludedDirs)
+        {
+            List<string> files = new();
+
+            foreach (Module module in exposedModules)
+            {
+                files.AddRange(FindAllFiles(srcDir, module, ExcludeDirs));
+            }
+
+            return files;
+        }
+
+        private List<string> FindAllFiles(string srcDir, Module topLevelModule, List<string> excludedDirs)
         {
             List<string> files = new();
             try
             {
                 IEnumerable<string> _files = from file in Directory.EnumerateFiles(srcDir, "*.elm", SearchOption.AllDirectories)
                                              where IsNotExcluded(file, excludedDirs)
-                                             where file != entryFile
+                                             where file != topLevelModule.FilePath
                                              select file;
 
                 foreach (string file in _files)
@@ -49,39 +73,6 @@ namespace ElmX.Elm
 
             return files;
         }
-        protected List<string> FindAllFiles(string src, List<Module> exposedModules, List<string> excludedDirs)
-        {
-            List<string> files = new();
-            try
-            {
-                IEnumerable<string> _files = from file in Directory.EnumerateFiles(src, "*.elm", SearchOption.AllDirectories)
-                                             where IsNotExcluded(file, excludedDirs)
-                                             where !exposedModules.Any(module => module.FilePath == file)
-                                             select file;
-
-                foreach (string file in _files)
-                {
-                    files.Add(file);
-                }
-            }
-            catch (DirectoryNotFoundException dirEx)
-            {
-                Writer.WriteLine(dirEx.Message);
-            }
-            catch (UnauthorizedAccessException uAEx)
-            {
-                Writer.WriteLine(uAEx.Message);
-            }
-            catch (PathTooLongException pathEx)
-            {
-                Writer.WriteLine(pathEx.Message);
-            }
-
-            files.Sort();
-
-            return files;
-        }
-
         /// <summary>
         /// Check if a file is in an excluded directory.
         /// </summary>
