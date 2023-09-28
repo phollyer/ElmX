@@ -58,10 +58,10 @@ namespace ElmX.Core
         }
         static public List<string> FindUnused(Package pkg)
         {
-            foreach (string exposedModule in pkg.ExposedModules.Select(module => module.FilePath))
+            foreach (string filePath in pkg.ExposedModules.Select(module => module.FilePath))
             {
                 Elm.Code.Module module = new();
-                module.FilePath = ModulePathFromDotNotation("src", exposedModule); ;
+                module.FilePath = System.IO.Path.Join("src", filePath);
 
                 module.ParseImports();
 
@@ -185,21 +185,6 @@ namespace ElmX.Core
 
             Writer.WriteLine($"Found: {modulePaths.Count()} unique imports");
             Writer.WriteLine($"Found: {allFiles.Count()} files");
-        }
-        static private bool IsNotExcluded(string file, List<string> excludedDirs)
-        {
-            string seperator = System.IO.Path.DirectorySeparatorChar.ToString();
-
-            foreach (string excludedDir in excludedDirs)
-            {
-                string searchStr = $"{seperator}{excludedDir}{seperator}";
-                if (file.Contains(searchStr))
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
     }
 }

@@ -1,4 +1,5 @@
 using ElmX.Elm.Code;
+using ElmX.Core.Console;
 
 namespace ElmX.Elm
 {
@@ -15,12 +16,12 @@ namespace ElmX.Elm
             {
                 Module module = new();
                 module.DotNotation = dotNotation;
-                module.FilePath = dotNotation;
+                module.FilePath = ElmX.Core.Path.FromDotNotation(dotNotation);
 
                 ExposedModules.Add(module);
             }
 
-            FileList = FindAllFiles("src", json.ExposedModules, ExcludeDirs);
+            FileList = FindAllFiles("src", ExposedModules, ExcludeDirs);
         }
     }
 }

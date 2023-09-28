@@ -49,14 +49,14 @@ namespace ElmX.Elm
 
             return files;
         }
-        protected List<string> FindAllFiles(string src, List<string> exposedModules, List<string> excludedDirs)
+        protected List<string> FindAllFiles(string src, List<Module> exposedModules, List<string> excludedDirs)
         {
             List<string> files = new();
             try
             {
                 IEnumerable<string> _files = from file in Directory.EnumerateFiles(src, "*.elm", SearchOption.AllDirectories)
                                              where IsNotExcluded(file, excludedDirs)
-                                             where !exposedModules.Contains(file)
+                                             where !exposedModules.Any(module => module.FilePath == file)
                                              select file;
 
                 foreach (string file in _files)
