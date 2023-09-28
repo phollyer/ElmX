@@ -8,7 +8,7 @@ namespace ElmX.Core
     {
         static public List<string> FindUnused(Application app)
         {
-            app.ModulePaths.Add(app.EntryModule.Path);
+            app.ModulePaths.Add(app.EntryModule.FilePath);
 
             foreach (Import import in app.EntryModule.Imports)
             {
@@ -17,24 +17,8 @@ namespace ElmX.Core
 
             foreach (string srcDir in app.SourceDirs)
             {
-                foreach (Import import in app.Imports)
-                {
-                    string modulePath = ModulePathFromImport(srcDir, import);
-
-                    if (File.Exists(modulePath))
-                    {
-                        Elm.Code.Module module = ModuleFromPath(modulePath);
-
-                        app.Modules.Add(module);
-
-                        app.ModulePaths.Add(module.Path);
-
-                        CreateModuleList(app.Modules, app.ModulePaths, srcDir, module);
-                    }
-                }
+                ModulesFromImports(app.Modules, app.ModulePaths, srcDir, app.Imports);
             }
-
-            app.ModulePaths.Sort();
 
             List<string> Unused = new();
 
@@ -54,7 +38,7 @@ namespace ElmX.Core
                 bool found = false;
                 foreach (var importPath in app.ModulePaths)
                 {
-                    if (filePath == importPath || filePath == app.EntryModule.Path)
+                    if (filePath == importPath || filePath == app.EntryModule.FilePath)
                     {
                         found = true;
                         break;
@@ -74,11 +58,11 @@ namespace ElmX.Core
         }
         static public List<string> FindUnused(Package pkg)
         {
-            foreach (string exposedModule in pkg.ExposedModules.Select(module => module.Path))
+            foreach (string exposedModule in pkg.ExposedModules.Select(module => module.FilePath))
             {
-                string modulePath = System.IO.Path.Join("src", exposedModule.Replace(".", System.IO.Path.DirectorySeparatorChar.ToString()) + ".elm");
+                Elm.Code.Module module = new();
+                module.FilePath = ModulePathFromDotNotation("src", exposedModule); ;
 
-                Elm.Code.Module module = new(modulePath);
                 module.ParseImports();
 
                 foreach (Import import in module.Imports)
@@ -86,26 +70,10 @@ namespace ElmX.Core
                     pkg.Imports.Add(import);
                 }
 
-                pkg.ModulePaths.Add(module.Path);
+                pkg.ModulePaths.Add(module.FilePath);
             }
 
-            foreach (Import import in pkg.Imports)
-            {
-                string modulePath = ModulePathFromImport("src", import);
-
-                if (File.Exists(modulePath))
-                {
-                    Elm.Code.Module module = ModuleFromPath(modulePath);
-
-                    pkg.Modules.Add(module);
-
-                    pkg.ModulePaths.Add(module.Path);
-
-                    CreateModuleList(pkg.Modules, pkg.ModulePaths, "src", module);
-                }
-            }
-
-            pkg.ModulePaths.Sort();
+            ModulesFromImports(pkg.Modules, pkg.ModulePaths, "src", pkg.Imports);
 
             List<string> Unused = new();
 
@@ -125,7 +93,7 @@ namespace ElmX.Core
                 bool found = false;
                 foreach (var importPath in pkg.ModulePaths)
                 {
-                    if (filePath == importPath || pkg.ExposedModules.Select(module => module.Path).Contains(filePath))
+                    if (filePath == importPath || pkg.ExposedModules.Select(module => module.FilePath).Contains(filePath))
                     {
                         found = true;
                         break;
@@ -144,14 +112,37 @@ namespace ElmX.Core
             return Unused;
         }
 
-        static private string ModulePathFromImport(string srcDir, Import import)
+        static private void ModulesFromImports(List<Module> modules, List<string> modulePaths, string srcDir, List<Import> imports)
         {
-            return System.IO.Path.Join(srcDir, import.Name.Replace(".", System.IO.Path.DirectorySeparatorChar.ToString()) + ".elm");
+            foreach (Import import in imports)
+            {
+                string modulePath = ModulePathFromDotNotation(srcDir, import.Name);
+
+                if (File.Exists(modulePath))
+                {
+                    Elm.Code.Module module = ModuleFromPath(modulePath);
+
+                    modules.Add(module);
+
+                    modulePaths.Add(module.FilePath);
+
+                    CreateModuleList(modules, modulePaths, srcDir, module);
+                }
+            }
+
+            modulePaths.Sort();
+        }
+
+        static public string ModulePathFromDotNotation(string srcDir, string dotNotation)
+        {
+            return System.IO.Path.Join(srcDir, ElmX.Core.Path.FromDotNotation(dotNotation));
         }
 
         static private Module ModuleFromPath(string path)
         {
-            Module module = new Module(path);
+            Module module = new();
+            module.FilePath = path;
+
             module.ParseImports();
 
             return module;
@@ -162,7 +153,7 @@ namespace ElmX.Core
         {
             foreach (Import import in module.Imports)
             {
-                string modulePath = ModulePathFromImport(srcDir, import);
+                string modulePath = ModulePathFromDotNotation(srcDir, import.Name);
 
                 if (paths.IndexOf(modulePath) == -1 && File.Exists(modulePath))
                 {

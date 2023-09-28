@@ -1,5 +1,4 @@
 using ElmX.Elm.Code;
-using ElmX.Elm.Pkg;
 
 namespace ElmX.Elm
 {
@@ -11,7 +10,15 @@ namespace ElmX.Elm
         {
             ExcludeDirs = elmxJson.AppJson.ExcludeDirs.ToList();
             ExcludeFiles = elmxJson.AppJson.ExcludeFiles.ToList();
-            ExposedModules = json.ExposedModules.Select(m => new Module(m)).ToList();
+
+            foreach (string dotNotation in json.ExposedModules)
+            {
+                Module module = new();
+                module.DotNotation = dotNotation;
+                module.FilePath = dotNotation;
+
+                ExposedModules.Add(module);
+            }
 
             FileList = FindAllFiles("src", json.ExposedModules, ExcludeDirs);
         }

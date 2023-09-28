@@ -204,12 +204,12 @@ namespace ElmX.Commands.UnusedModules
         {
             foreach (string file in files)
             {
-                string? path = Path.GetDirectoryName(file);
-                string? filename = Path.GetFileName(file);
+                string? path = System.IO.Path.GetDirectoryName(file);
+                string? filename = System.IO.Path.GetFileName(file);
 
                 if (filename != null && path != null)
                 {
-                    string newFile = Path.Combine(path, $"~{filename}");
+                    string newFile = System.IO.Path.Combine(path, $"~{filename}");
 
                     File.Move(file, newFile);
 

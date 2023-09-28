@@ -1,10 +1,13 @@
 using ElmX.Core;
+using ElmX.Core.Console;
 
 namespace ElmX.Elm.Code
 {
     public class Module
     {
-        public string Path { get; private set; } = "";
+        public string DotNotation { get; set; } = "";
+
+        public string FilePath { get; set; } = "";
 
         public List<Import> Imports { get; private set; } = new List<Import>();
 
@@ -16,16 +19,9 @@ namespace ElmX.Elm.Code
 
         public string Content { get; private set; } = "";
 
-        public Module() { }
-
-        public Module(string path)
-        {
-            Path = path;
-        }
-
         public void ParseImports()
         {
-            Content = File.ReadAllText(Path);
+            Content = File.ReadAllText(FilePath);
 
             Content = Comments.RemoveDocumentationComments(Content);
 
@@ -177,8 +173,8 @@ namespace ElmX.Elm.Code
         public override string ToString()
         {
             string str = "";
-
-            str += $"Path: {Path}\n";
+            str += $"Dot Notation: {DotNotation}\n";
+            str += $"Path: {FilePath}\n";
 
             str += $"Imports:\n";
             foreach (Import import in Imports)

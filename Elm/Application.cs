@@ -48,7 +48,7 @@ namespace ElmX.Elm
 
             foreach (string srcDir in SourceDirs)
             {
-                FileList.AddRange(FindAllFiles(srcDir, EntryModule.Path, ExcludeDirs));
+                FileList.AddRange(FindAllFiles(srcDir, EntryModule.FilePath, ExcludeDirs));
             }
         }
 
@@ -58,8 +58,8 @@ namespace ElmX.Elm
 
             if (File.Exists(entryFile))
             {
-                entryModule = new(entryFile);
-
+                entryModule = new();
+                entryModule.FilePath = entryFile;
             }
 
             return entryModule;
