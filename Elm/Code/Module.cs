@@ -5,8 +5,6 @@ namespace ElmX.Elm.Code
 {
     public class Module
     {
-        public string DotNotation { get; set; } = "";
-
         public string FilePath { get; set; } = "";
 
         public List<Import> Imports { get; private set; } = new List<Import>();
@@ -234,7 +232,6 @@ namespace ElmX.Elm.Code
         public override string ToString()
         {
             string str = "";
-            str += $"Dot Notation: {DotNotation}\n";
             str += $"Path: {FilePath}\n";
 
             str += $"Imports:\n";
