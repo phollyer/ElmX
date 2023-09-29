@@ -21,7 +21,7 @@ namespace ElmX.Elm
                 ExposedModules.Add(module);
             }
 
-            FileList = FindAllFiles("src", ExposedModules, ExcludeDirs);
+            FileList = FindAllFiles("src");
         }
     }
 }

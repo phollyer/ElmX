@@ -58,7 +58,7 @@ namespace ElmX.Core.Console
         /// <param name="txt"></param>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        static public void WriteAt(string txt, short x, short y)
+        static public void WriteAt(string txt, short x, int y)
         {
             try
             {

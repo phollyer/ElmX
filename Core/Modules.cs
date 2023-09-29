@@ -18,7 +18,7 @@ namespace ElmX.Core
                 ModulesFromImports(app.Modules, app.ModulePaths, srcDir, app.Imports);
             }
 
-            return FindUnused(app.SourceDirs, app.FileList, app.ModulePaths, app.ExcludeDirs, app.ExcludeFiles); ;
+            return FindUnused(app.SourceDirs, app.FileList, app.ModulePaths, app.ExcludeDirs, app.ExcludeFiles);
         }
         static public List<string> FindUnused(Package pkg)
         {
@@ -26,7 +26,8 @@ namespace ElmX.Core
             {
                 Elm.Code.Module module = new();
                 module.FilePath = System.IO.Path.Join("src", filePath);
-
+                module.Read();
+                module.RemoveDocumentationComments();
                 module.ParseImports();
 
                 foreach (Import import in module.Imports)
@@ -46,16 +47,10 @@ namespace ElmX.Core
         {
             WriteSummary(srcDirs, excludeDirs, excludeFiles, modulePaths, fileList);
 
-            short lineNumberToWriteAt = (short)(10 + (short)srcDirs.Count() + (short)excludeDirs.Count() + (short)excludeFiles.Count());
-
             List<string> Unused = new();
-
-            int fileCount = 0;
 
             foreach (var filePath in fileList)
             {
-                fileCount++;
-
                 bool found = false;
                 foreach (var importPath in modulePaths)
                 {
@@ -66,11 +61,13 @@ namespace ElmX.Core
                     }
                 }
 
-                if (!found && !excludeFiles.Contains(filePath))
+                if (!found)
                 {
                     Unused.Add(filePath);
                 }
             }
+
+            int lineNumberToWriteAt = 10 + srcDirs.Count() + excludeDirs.Count() + excludeFiles.Count();
 
             Writer.WriteAt($"Found: {Unused.Count} unused files", 0, lineNumberToWriteAt);
             Writer.EmptyLine();
@@ -108,7 +105,8 @@ namespace ElmX.Core
         {
             Module module = new();
             module.FilePath = path;
-
+            module.Read();
+            module.RemoveDocumentationComments();
             module.ParseImports();
 
             return module;

@@ -10,11 +10,8 @@ namespace ElmX.Elm
 
         public Module EntryModule { get; set; } = new();
 
-        public Core.Json ElmxJson { get; set; } = new();
-
         public Application(App.Json json, Core.Json elmxJson)
         {
-            ElmxJson = elmxJson;
 
             foreach (string srcDir in json.SourceDirs)
             {
@@ -24,10 +21,10 @@ namespace ElmX.Elm
                 }
             }
 
-            ExcludeDirs = ElmxJson.AppJson.ExcludeDirs;
-            ExcludeFiles = ElmxJson.AppJson.ExcludeFiles;
+            ExcludeDirs = elmxJson.AppJson.ExcludeDirs;
+            ExcludeFiles = elmxJson.AppJson.ExcludeFiles;
 
-            string entryFile = ElmxJson.AppJson.EntryFile;
+            string entryFile = elmxJson.AppJson.EntryFile;
 
             Module? entryModule = FindEntryModule(entryFile);
 
@@ -44,14 +41,14 @@ namespace ElmX.Elm
                 Writer.EmptyLine();
                 Environment.Exit(0);
             }
+
+            EntryModule.Read();
+            EntryModule.RemoveDocumentationComments();
             EntryModule.ParseImports();
 
             ModulePaths.Add(EntryModule.FilePath);
 
-            foreach (string srcDir in SourceDirs)
-            {
-                FileList.AddRange(FindAllFiles(srcDir, EntryModule.FilePath, ExcludeDirs));
-            }
+            FileList = FindAllFiles(SourceDirs);
         }
 
         private Module? FindEntryModule(string entryFile)
