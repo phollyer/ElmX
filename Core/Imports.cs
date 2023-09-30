@@ -37,18 +37,18 @@ namespace ElmX.Core
             module.ParseImports();
             module.RemoveImportStatementsFromContent();
 
-            Writer.WriteLine(module.Content);
+            Writer.WriteLine(module.RawContent);
 
 
             foreach (Import import in module.Imports)
             {
                 bool found = false;
 
-                if (ImportIsUsedByName(module.Content, import.Name))
+                if (ImportIsUsedByName(module.RawContent, import.Name))
                 {
                     found = true;
                 }
-                else if (ImportIsUsedAsName(module.Content, import.As))
+                else if (ImportIsUsedAsName(module.RawContent, import.As))
                 {
                     found = true;
                 }

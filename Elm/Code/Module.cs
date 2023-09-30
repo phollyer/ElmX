@@ -7,34 +7,150 @@ namespace ElmX.Elm.Code
     {
         public string FilePath { get; set; } = "";
 
-        public List<Import> Imports { get; private set; } = new List<Import>();
+        public string Name { get; private set; } = "";
 
-        public List<UnionType> UnionTypes { get; private set; } = new List<UnionType>();
+        public List<string> Exposing { get; private set; } = new();
 
-        public List<TypeAlias> TypeAliases { get; private set; } = new List<TypeAlias>();
+        public List<Import> Imports { get; private set; } = new();
 
-        public List<Function> Functions { get; private set; } = new List<Function>();
+        public List<UnionType> UnionTypes { get; private set; } = new();
 
-        public string Content { get; private set; } = "";
+        public List<TypeAlias> TypeAliases { get; private set; } = new();
+
+        public List<Function> Functions { get; private set; } = new();
+
+        public string RawContent { get; private set; } = "";
+
+        public Dictionary<int, string> Content { get; private set; } = new();
 
         public void Read()
         {
-            Content = File.ReadAllText(FilePath);
+            RawContent = File.ReadAllText(FilePath);
+
+            foreach (string line in RawContent.Split('\n'))
+            {
+                Content.Add(Content.Count + 1, line);
+            }
+        }
+
+        public int ParseModuleStatement()
+        {
+            int startLine = BypassCommentsAndWhitespace(1);
+            int endLine = startLine;
+
+            for (int i = startLine; i < Content.Count; i++)
+            {
+                string text = Content[i];
+
+                if (text.StartsWith("module") && text.Contains("{-"))
+                {
+
+                }
+                else if (text.StartsWith("module") && text.EndsWith(")"))
+                {
+                    startLine = i;
+                    endLine = i;
+                    break;
+                }
+                else if (text.StartsWith("module"))
+                {
+                    startLine = i;
+                }
+                else if (text.EndsWith(")"))
+                {
+                    endLine = i;
+                    break;
+                }
+            }
+
+            if (startLine == endLine)
+            {
+                ParseSingleLineModuleStatement(Content[endLine]);
+            }
+            else
+            {
+                ParseMultiLineModuleStatement(startLine, endLine);
+            }
+
+            return endLine;
+        }
+
+
+        private void ParseSingleLineModuleStatement(string line)
+        {
+            line = line.Replace("module", "");
+            line = line.Trim();
+            string[] parts = line.Split("exposing");
+
+            Name = parts[0].Trim();
+
+            string exposing = parts[1].Trim();
+
+
+            Exposing = ParseExposing(parts[1]);
+        }
+
+        private void ParseMultiLineModuleStatement(int startLine, int endLine)
+        {
+            List<string> text = new();
+
+            for (int i = startLine; i <= endLine; i++)
+            {
+                text.Add(Content[i]);
+            }
+
+            string singleLineStatement = string.Join(" ", text);
+
+            ParseSingleLineModuleStatement(singleLineStatement);
+        }
+
+        private List<string> ParseExposing(string line)
+        {
+            Writer.WriteLine($"line: {line}");
+
+            line = StripTrailingComments(line);
+
+            Writer.WriteLine($"line: {line}");
+
+            int startIndex = 0;
+            int endIndex = 0;
+
+            for (int i = 0; i <= line.Trim().Length; i++)
+            {
+                if (line[i] == '(')
+                {
+                    startIndex = i + 1;
+                    continue;
+                }
+                else if (line[i] == ')')
+                {
+                    endIndex = i;
+                    break;
+                }
+            }
+
+            return
+                line[startIndex..endIndex]
+                    .Split(',')
+                    .ToList()
+                    .Select(item => item.Trim())
+                    .ToList()
+                    ;
         }
 
         public void RemoveDocumentationComments()
         {
-            Content = Comments.RemoveDocumentationComments(Content);
+            RawContent = Comments.RemoveDocumentationComments(RawContent);
         }
 
         public void ParseImports()
         {
-            Imports = ParseImports(Content);
+            Imports = ParseImports(RawContent);
         }
 
         public void RemoveImportStatementsFromContent()
         {
-            string[] lines = Content.Split('\n');
+            string[] lines = RawContent.Split('\n');
             string[] newLines = Array.Empty<string>();
 
             int[] lineNumbers = GetImportLineNumbers(lines);
@@ -84,7 +200,7 @@ namespace ElmX.Elm.Code
                     newLines = newLines.Append(lines[lineNumber]).ToArray();
                 }
             }
-            Content = string.Join("\n", newLines);
+            RawContent = string.Join("\n", newLines);
         }
 
         private List<Import> ParseImports(string content)
@@ -229,10 +345,100 @@ namespace ElmX.Elm.Code
             }
         }
 
+        private string StripTrailingComments(string line)
+        {
+            int index = line.IndexOf("--");
+
+            if (index > -1)
+            {
+                line = line[0..index];
+            }
+
+            index = line.IndexOf("{-");
+
+            if (index > -1)
+            {
+                line = line[0..index];
+            }
+
+            return line;
+        }
+
+        private string StripInnerComments(string line)
+        {
+            int index = line.IndexOf("{-");
+
+            if (index > -1)
+            {
+                for (int i = index; i < line.Length; i++)
+                {
+                    if (line[i] == '-' && line[i + 1] == '}')
+                    {
+                        line = line[0..index] + line[(i + 2)..];
+                        break;
+                    }
+                }
+            }
+
+            return line;
+        }
+
+        private int BypassCommentsAndWhitespace(int lineNumber)
+        {
+            bool multilineCommentFound = false;
+
+            int lastLine = lineNumber;
+
+            for (int i = lineNumber; i < Content.Count; i++)
+            {
+                string text = Content[i];
+
+                Writer.WriteLine($"lineNumber: {i}; text: {text}");
+
+                if (text.StartsWith("--") || (text.StartsWith("{-") && text.EndsWith("-}")))
+                {
+                    continue;
+                }
+                else if (text.StartsWith("{-"))
+                {
+                    multilineCommentFound = true;
+                    continue;
+                }
+                else if (multilineCommentFound && text.EndsWith("-}"))
+                {
+                    multilineCommentFound = false;
+                    continue;
+                }
+                else if (multilineCommentFound)
+                {
+                    continue;
+                }
+                else if (text.Trim() == "")
+                {
+                    continue;
+                }
+                else
+                {
+                    lastLine = i;
+                    break;
+                }
+            }
+
+            return lastLine;
+        }
+
         public override string ToString()
         {
             string str = "";
             str += $"Path: {FilePath}\n";
+
+            str += $"Name: {Name};\n";
+
+            str += $"Exposing:\n";
+            foreach (string exposing in Exposing)
+            {
+                str += $"    {exposing};\n";
+            }
 
             str += $"Imports:\n";
             foreach (Import import in Imports)
