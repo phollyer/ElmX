@@ -14,6 +14,8 @@ namespace ElmX.Elm
 
         private List<Token> Tokens { get; set; } = new List<Token>();
 
+        private bool ModuleStatementFound { get; set; } = false;
+
         public Lexer(string filePath)
         {
             if (System.IO.File.Exists(filePath))
@@ -29,8 +31,6 @@ namespace ElmX.Elm
 
         public void Build()
         {
-            string content = "";
-
             for (int charIndex = 0; charIndex < Content.Length; charIndex++)
             {
                 char c = Content[charIndex];
@@ -43,7 +43,11 @@ namespace ElmX.Elm
                 }
 
             }
-            Writer.WriteLine(content);
+            foreach (Token token in Tokens)
+            {
+                Writer.WriteLine(token.Value);
+            }
+            Environment.Exit(0);
         }
 
         private int Evaluate(int index, char c)
@@ -59,16 +63,8 @@ namespace ElmX.Elm
                 case '\n':
                     break;
 
-                case 'm':
-
                 default:
-                    Writer.WriteLine($"ElmX.Elm.Lexer:\tThe character at '{index}' ('{c}') is not supported.");
-
-                    foreach (Token token in Tokens)
-                    {
-                        Writer.WriteLine($"ElmX.Elm.Lexer:\tToken: {token.Value}");
-                    }
-                    index = -1;
+                    index = Evaluate(TokenType.Char, index);
                     break;
             }
 
@@ -81,6 +77,27 @@ namespace ElmX.Elm
 
             switch (type)
             {
+                case TokenType.Char:
+                    char c = Content[index];
+                    if (c == 'm' && !ModuleStatementFound)
+                    {
+                        result =
+                            new Evaluator(index, false, Content)
+                                .MaybeModuleStatement();
+                    }
+                    else
+                    {
+                        result =
+                            new Evaluator(-1, true, Content);
+                    }
+
+                    if (result.Token != null)
+                    {
+                        index = result.Index;
+                        Tokens.Add(result.Token);
+                    }
+
+                    break;
                 case TokenType.Hyphen:
                     result =
                         new Evaluator(index, false, Content)
@@ -131,6 +148,56 @@ namespace ElmX.Elm
             Found = found;
             Content = content;
         }
+
+        // Module Statement
+
+        public Evaluator MaybeModuleStatement()
+        {
+            if (Found)
+            {
+                return this;
+            }
+
+            string maybeWord = Content[Index..(Index + 6)];
+
+            if (maybeWord == "module")
+            {
+                int endIndex = FindEndOfModuleStatement(Index + 6);
+                Writer.WriteLine($"ElmX.Elm.Evaluator:\tFound module statement at index {Index} to {endIndex}.");
+                string value = Content[Index..endIndex];
+
+                Token = new(value, TokenType.ModuleStatement, Index, endIndex);
+
+                Found = true;
+                Index = endIndex;
+            }
+
+            return this;
+
+        }
+
+        private int FindEndOfModuleStatement(int index)
+        {
+            int endIndex = index;
+
+            for (int i = index; i < Content.Length; i++)
+            {
+                if (Content[i] == '{')
+                {
+                    i = FindEndOfMultilineComment((0, 0), i);
+                }
+                else if (Content[i] == ')')
+                {
+                    endIndex = i + 1;
+                    break;
+                }
+            }
+
+            return endIndex;
+        }
+
+
+        // Comments
         public Evaluator MaybeInlineComment()
         {
             if (Found)
@@ -218,6 +285,8 @@ namespace ElmX.Elm
         BraceL,
         BraceR,
         Char,
+
+        Function,
         Hyphen,
         InlineComment,
         ModuleStatement,

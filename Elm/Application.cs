@@ -44,7 +44,7 @@ namespace ElmX.Elm
 
             EntryModule.Read();
             //EntryModule.RemoveDocumentationComments();
-            int lineNumber = EntryModule.ParseModuleStatement();
+            //int lineNumber = EntryModule.ParseModuleStatement();
             Writer.WriteLine(EntryModule.ToString());
             Environment.Exit(0);
             EntryModule.ParseImports();
