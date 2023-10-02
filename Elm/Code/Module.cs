@@ -1,5 +1,6 @@
 using ElmX.Core;
 using ElmX.Core.Console;
+using ElmX.Elm;
 
 namespace ElmX.Elm.Code
 {
@@ -25,12 +26,9 @@ namespace ElmX.Elm.Code
 
         public void Read()
         {
-            RawContent = File.ReadAllText(FilePath);
-
-            foreach (string line in RawContent.Split('\n'))
-            {
-                Content.Add(Content.Count + 1, line);
-            }
+            Lexer lexer = new(FilePath);
+            lexer.Build();
+            Environment.Exit(0);
         }
 
         public int ParseModuleStatement()
