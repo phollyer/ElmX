@@ -16,6 +16,8 @@ namespace ElmX.Elm
 
         private bool ModuleStatementFound { get; set; } = false;
 
+        private bool AllImportsFound { get; set; } = false;
+
         public Lexer(string filePath)
         {
             if (System.IO.File.Exists(filePath))
@@ -31,26 +33,29 @@ namespace ElmX.Elm
 
         public void Build()
         {
-            for (int charIndex = 0; charIndex < Content.Length; charIndex++)
-            {
-                char c = Content[charIndex];
+            EvaluateComments()
+            .RemoveComments()
+            .Evaluate()
+            ;
 
-                charIndex = Evaluate(charIndex, c);
-
-                if (charIndex == -1)
-                {
-                    break;
-                }
-
-            }
             foreach (Token token in Tokens)
             {
                 Writer.WriteLine(token.Value);
             }
+
             Environment.Exit(0);
         }
+        private Lexer EvaluateComments()
+        {
+            for (int charIndex = 0; charIndex < Content.Length; charIndex++)
+            {
+                charIndex = EvaluateComments(charIndex, Content[charIndex]);
+            }
 
-        private int Evaluate(int index, char c)
+            return this;
+        }
+
+        private int EvaluateComments(int index, char c)
         {
             switch (c)
             {
@@ -60,9 +65,39 @@ namespace ElmX.Elm
                 case '{':
                     index = Evaluate(TokenType.BraceL, index);
                     break;
-                case '\n':
-                    break;
 
+                default:
+                    break;
+            }
+
+            return index;
+        }
+
+        private Lexer RemoveComments()
+        {
+            Tokens.Reverse();
+
+            foreach (Token token in Tokens)
+            {
+                Content = Content.Remove(token.StartIndex, token.EndIndex - token.StartIndex);
+            }
+
+            return this;
+        }
+
+        private Lexer Evaluate()
+        {
+            for (int charIndex = 0; charIndex < Content.Length; charIndex++)
+            {
+                charIndex = Evaluate(charIndex, Content[charIndex]);
+            }
+
+            return this;
+        }
+        private int Evaluate(int index, char c)
+        {
+            switch (c)
+            {
                 default:
                     index = Evaluate(TokenType.Char, index);
                     break;
@@ -70,7 +105,6 @@ namespace ElmX.Elm
 
             return index;
         }
-
         private int Evaluate(TokenType type, int index)
         {
             Evaluator result;
@@ -79,22 +113,45 @@ namespace ElmX.Elm
             {
                 case TokenType.Char:
                     char c = Content[index];
-                    if (c == 'm' && !ModuleStatementFound)
+                    switch (c)
                     {
-                        result =
-                            new Evaluator(index, false, Content)
-                                .MaybeModuleStatement();
-                    }
-                    else
-                    {
-                        result =
-                            new Evaluator(-1, true, Content);
-                    }
+                        case 'm':
+                            if (!ModuleStatementFound)
+                            {
+                                result =
+                                    new Evaluator(index, false, Content)
+                                        .ShouldBeModuleStatement();
 
-                    if (result.Token != null)
-                    {
-                        index = result.Index;
-                        Tokens.Add(result.Token);
+                                if (result.Token != null)
+                                {
+                                    index = result.Index;
+                                    Tokens.Add(result.Token);
+                                    ModuleStatementFound = true;
+                                }
+                            }
+                            break;
+                        case 'i':
+                            if (!AllImportsFound)
+                            {
+
+                                result =
+                                    new Evaluator(index, false, Content)
+                                        .MaybeImportStatement();
+                            }
+                            else
+                            {
+                                result =
+                                    new Evaluator(index, false, Content);
+                            }
+
+                            if (result.Token != null)
+                            {
+                                index = result.Index;
+                                AllImportsFound = result.AllImportsFound;
+                                Tokens.Add(result.Token);
+                            }
+                            break;
+
                     }
 
                     break;
@@ -123,13 +180,35 @@ namespace ElmX.Elm
 
                     break;
                 default:
-                    Writer.WriteLine($"ElmX.Elm.Lexer:\tThe token type '{type}' is not supported.");
-
-                    index = -1;
                     break;
             }
 
             return index;
+        }
+
+        private List<Token> ExtractComments(string value)
+        {
+            List<Token> commentTokens = new();
+
+            for (int i = 0; i < value.Length; i++)
+            {
+                if (value[i] == '{')
+                {
+                    Evaluator r =
+                        new Evaluator(i, false, value)
+                            .MaybeMultilineComment();
+
+                    if (r.Token != null)
+                    {
+                        Writer.WriteLine(r.Token.Value);
+                        commentTokens.Add(r.Token);
+                    }
+                }
+            }
+
+            commentTokens.Reverse();
+
+            return commentTokens;
         }
     }
 
@@ -137,6 +216,7 @@ namespace ElmX.Elm
     {
         private bool Found { get; set; } = false;
 
+        public bool AllImportsFound { get; set; } = false;
         public int Index { get; set; } = 0;
         public string Content { get; set; } = "";
 
@@ -151,19 +231,18 @@ namespace ElmX.Elm
 
         // Module Statement
 
-        public Evaluator MaybeModuleStatement()
+        public Evaluator ShouldBeModuleStatement()
         {
             if (Found)
             {
                 return this;
             }
 
-            string maybeWord = Content[Index..(Index + 6)];
+            string maybeWord = Content[Index..(Index + 7)];
 
-            if (maybeWord == "module")
+            if (maybeWord == "module " || maybeWord == "module\n")
             {
                 int endIndex = FindEndOfModuleStatement(Index + 6);
-                Writer.WriteLine($"ElmX.Elm.Evaluator:\tFound module statement at index {Index} to {endIndex}.");
                 string value = Content[Index..endIndex];
 
                 Token = new(value, TokenType.ModuleStatement, Index, endIndex);
@@ -196,6 +275,62 @@ namespace ElmX.Elm
             return endIndex;
         }
 
+        // Import Statements
+
+        public Evaluator MaybeImportStatement()
+        {
+            if (Found)
+            {
+                return this;
+            }
+
+            string maybeWord = Content[Index..(Index + 7)];
+
+            if (maybeWord == "import " || maybeWord == "import\n")
+            {
+                (int endIndex, bool isLastImport) = FindEndOfImportStatement(Index + 6);
+                string value = Content[Index..endIndex];
+
+                Token = new(value, TokenType.ImportStatement, Index, endIndex);
+
+                AllImportsFound = isLastImport;
+                Found = true;
+                Index = endIndex;
+            }
+
+            return this;
+        }
+
+        private (int, bool) FindEndOfImportStatement(int index)
+        {
+            int endIndex = index;
+            bool isLastImport = false;
+
+            for (int i = index; i < Content.Length; i++)
+            {
+                char c = Content[i];
+                char next = Content[i + 1];
+
+                if (c == '\n' && Char.IsLetter(next))
+                {
+                    string maybeNextImport = Content[(i + 1)..(i + 8)];
+                    if (maybeNextImport == "import " || maybeNextImport == "import\n")
+                    {
+                        endIndex = i;
+                        break;
+                    }
+                    else
+                    {
+                        endIndex = i;
+                        isLastImport = true;
+                        break;
+                    }
+                }
+            }
+
+            return (endIndex, isLastImport);
+        }
+
 
         // Comments
         public Evaluator MaybeInlineComment()
@@ -208,6 +343,12 @@ namespace ElmX.Elm
             if (Content[Index + 1] == '-')
             {
                 int endIndex = Content.IndexOf('\n', Index);
+
+                if (endIndex == -1)
+                {
+                    endIndex = Content.Length;
+                }
+
                 string value = Content[Index..endIndex];
 
                 Token = new(value, TokenType.InlineComment, Index, endIndex);
@@ -288,6 +429,8 @@ namespace ElmX.Elm
 
         Function,
         Hyphen,
+
+        ImportStatement,
         InlineComment,
         ModuleStatement,
         MultilineComment,
