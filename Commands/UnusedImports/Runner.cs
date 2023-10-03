@@ -40,6 +40,7 @@ namespace ElmX.Commands.UnusedImports
                 Writer.EmptyLine();
                 Writer.WriteLine("You asked me to show you the unused imports and then pause before deleting them. I will do that now.");
                 Writer.EmptyLine();
+
                 foreach (KeyValuePair<string, List<string>> unusedImport in unusedImports)
                 {
                     Writer.WriteLine(unusedImport.Key);
@@ -56,6 +57,7 @@ namespace ElmX.Commands.UnusedImports
                 Writer.EmptyLine();
                 Writer.WriteLine("You asked me to show you the unused imports and then delete them. I will do that now.");
                 Writer.EmptyLine();
+
                 foreach (KeyValuePair<string, List<string>> unusedImport in unusedImports)
                 {
                     Writer.WriteLine(unusedImport.Key);
