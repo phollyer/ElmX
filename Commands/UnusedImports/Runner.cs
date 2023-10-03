@@ -26,22 +26,7 @@ namespace ElmX.Commands.UnusedImports
             Writer.Clear();
             Writer.WriteLine("I will now search for unused imports.");
 
-            if (ElmJson.json.projectType == ProjectType.Application && ElmJson.json.Application != null)
-            {
-                Elm.Application application = new(ElmJson.json.Application, ElmX_Json);
-                unusedImports = Imports.FindUnused(application);
-            }
-            else if (ElmJson.json.projectType == ProjectType.Package && ElmJson.json.Package != null)
-            {
-                Elm.Package package = new(ElmJson.json.Package, ElmX_Json);
-                unusedImports = Imports.FindUnused(package);
-            }
-            else
-            {
-                Writer.EmptyLine();
-                Writer.WriteLine("I could not find the source directories for this project.");
-                Environment.Exit(0);
-            }
+            unusedImports = Run();
 
             if (unusedImports.Count == 0)
             {
@@ -49,7 +34,6 @@ namespace ElmX.Commands.UnusedImports
                 Writer.WriteLine("I did not find any unused imports.");
                 Environment.Exit(0);
             }
-
 
             if (options.Show && options.Pause)
             {
@@ -78,16 +62,6 @@ namespace ElmX.Commands.UnusedImports
                     Writer.WriteLines("\t", unusedImport.Value);
                 }
 
-                //DeleteUnusedImports(unusedImports);
-
-                Environment.Exit(0);
-            }
-
-            if (options.Delete)
-            {
-                Writer.EmptyLine();
-                Writer.WriteLine("You asked me to delete the unused modules. I will do that now.");
-
                 DeleteUnusedImports(unusedImports);
 
                 Environment.Exit(0);
@@ -103,6 +77,15 @@ namespace ElmX.Commands.UnusedImports
                 Environment.Exit(0);
             }
 
+            if (options.Delete)
+            {
+                Writer.EmptyLine();
+                Writer.WriteLine("You asked me to delete the unused modules. I will do that now.");
+
+                DeleteUnusedImports(unusedImports);
+
+                Environment.Exit(0);
+            }
 
             if (options.Show)
             {
@@ -123,6 +106,26 @@ namespace ElmX.Commands.UnusedImports
                 }
 
                 Environment.Exit(0);
+            }
+        }
+
+        private Dictionary<string, List<string>> Run()
+        {
+            if (ElmJson.json.projectType == ProjectType.Application && ElmJson.json.Application != null)
+            {
+                Elm.Application application = new(ElmJson.json.Application, ElmX_Json);
+
+                return Imports.FindUnused(application);
+            }
+            else if (ElmJson.json.projectType == ProjectType.Package && ElmJson.json.Package != null)
+            {
+                Elm.Package package = new(ElmJson.json.Package, ElmX_Json);
+
+                return Imports.FindUnused(package);
+            }
+            else
+            {
+                return new();
             }
         }
 
