@@ -24,7 +24,7 @@ namespace ElmX.Core
         {
             foreach (string filePath in pkg.ExposedModules.Select(module => module.FilePath))
             {
-                Elm.Code.Module module = new(System.IO.Path.Join("src", filePath));
+                Module module = new(System.IO.Path.Join("src", filePath));
 
                 module.ParseImports();
 
@@ -81,7 +81,7 @@ namespace ElmX.Core
 
                 if (File.Exists(modulePath))
                 {
-                    Elm.Code.Module module = ModuleFromPath(modulePath);
+                    Module module = ModuleFromPath(modulePath);
 
                     modules.Add(module);
 
@@ -96,7 +96,7 @@ namespace ElmX.Core
 
         static public string ModulePathFromDotNotation(string srcDir, string dotNotation)
         {
-            return System.IO.Path.Join(srcDir, ElmX.Core.Path.FromDotNotation(dotNotation));
+            return System.IO.Path.Join(srcDir, Path.FromDotNotation(dotNotation));
         }
 
         static private Module ModuleFromPath(string path)
@@ -108,8 +108,7 @@ namespace ElmX.Core
             return module;
         }
 
-
-        static private void CreateModuleList(List<Module> list, List<string> paths, string srcDir, Elm.Code.Module module)
+        static private void CreateModuleList(List<Module> list, List<string> paths, string srcDir, Module module)
         {
             foreach (Import import in module.Imports)
             {
@@ -117,7 +116,7 @@ namespace ElmX.Core
 
                 if (paths.IndexOf(modulePath) == -1 && File.Exists(modulePath))
                 {
-                    Elm.Code.Module _module = ModuleFromPath(modulePath);
+                    Module _module = ModuleFromPath(modulePath);
 
                     list.Add(_module);
 
