@@ -56,46 +56,30 @@ namespace ElmX.Elm.Code
 
             if (token is not null)
             {
-                string line = token.Value.Replace('\n', ' ');
-
-                line = line.Replace("module", "");
-                line = line.Trim();
-                string[] parts = line.Split("exposing");
+                string[] parts =
+                    token.Value
+                    .Replace('\n', ' ')
+                    .Replace("module", "")
+                    .Trim()
+                    .Split("exposing");
 
                 Name = parts[0].Trim();
 
-                string exposing = parts[1].Trim();
-
-                Exposing = ParseExposing(parts[1]);
+                ParseExposing(parts[1]);
 
             }
         }
-        private List<string> ParseExposing(string line)
+        private void ParseExposing(string exposing)
         {
-            int startIndex = 0;
-            int endIndex = 0;
+            exposing = exposing.Trim();
+            exposing = exposing[1..^1];
 
-            for (int i = 0; i <= line.Trim().Length; i++)
+            string[] parts = exposing.Split(',');
+
+            foreach (string part in parts)
             {
-                if (line[i] == '(')
-                {
-                    startIndex = i + 1;
-                    continue;
-                }
-                else if (line[i] == ')')
-                {
-                    endIndex = i;
-                    break;
-                }
+                Exposing.Add(part.Trim());
             }
-
-            return
-                line[startIndex..endIndex]
-                    .Split(',')
-                    .ToList()
-                    .Select(item => item.Trim())
-                    .ToList()
-                    ;
         }
 
         public void ParseImports()

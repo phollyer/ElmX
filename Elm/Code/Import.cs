@@ -12,11 +12,10 @@ namespace ElmX.Elm.Code
 
         public Import(string statement)
         {
-            Writer.WriteLine(statement);
             string line = statement.Replace('\n', ' ');
             line = line.Replace("import", "");
             line = line.Trim();
-            string[] parts = line.Split(" ");
+            string[] parts = line.Split(' ');
 
             Name = parts[0];
 
