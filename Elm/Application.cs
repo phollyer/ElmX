@@ -1,5 +1,3 @@
-using ElmX.Core.Console;
-using ElmX.Elm.App;
 using ElmX.Elm.Code;
 
 namespace ElmX.Elm
