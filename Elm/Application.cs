@@ -8,7 +8,7 @@ namespace ElmX.Elm
     {
         public List<string> SourceDirs { get; private set; } = new();
 
-        public Module EntryModule { get; set; } = new();
+        public Module EntryModule { get; set; }
 
         public Application(App.Json json, Core.Json elmxJson)
         {
@@ -26,45 +26,15 @@ namespace ElmX.Elm
 
             string entryFile = elmxJson.AppJson.EntryFile;
 
-            Module? entryModule = FindEntryModule(entryFile);
-
-            if (entryModule is not null)
-            {
-                EntryModule = entryModule;
-            }
-            else
-            {
-                Writer.EmptyLine();
-                Writer.WriteLine($"I could not find the entry file '{entryFile}' in the following source directories '{string.Join(", ", SourceDirs)}'.");
-                Writer.EmptyLine();
-                Writer.WriteLine("Exiting...");
-                Writer.EmptyLine();
-                Environment.Exit(0);
-            }
-
-            EntryModule.Read();
-            //EntryModule.RemoveDocumentationComments();
-            //int lineNumber = EntryModule.ParseModuleStatement();
-            Writer.WriteLine(EntryModule.ToString());
-            Environment.Exit(0);
+            EntryModule = new(entryFile);
             EntryModule.ParseImports();
 
+            Writer.WriteLine(EntryModule.ToString());
+
+            Environment.Exit(0);
             ModulePaths.Add(EntryModule.FilePath);
 
             FileList = FindAllFiles(SourceDirs);
-        }
-
-        private Module? FindEntryModule(string entryFile)
-        {
-            Module? entryModule = null;
-
-            if (File.Exists(entryFile))
-            {
-                entryModule = new();
-                entryModule.FilePath = entryFile;
-            }
-
-            return entryModule;
         }
     }
 }

@@ -14,8 +14,7 @@ namespace ElmX.Elm
 
             foreach (string dotNotation in json.ExposedModules)
             {
-                Module module = new();
-                module.FilePath = ElmX.Core.Path.FromDotNotation(dotNotation);
+                Module module = new(ElmX.Core.Path.FromDotNotation(dotNotation));
 
                 ExposedModules.Add(module);
             }

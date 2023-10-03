@@ -24,10 +24,8 @@ namespace ElmX.Core
         {
             foreach (string filePath in pkg.ExposedModules.Select(module => module.FilePath))
             {
-                Elm.Code.Module module = new();
-                module.FilePath = System.IO.Path.Join("src", filePath);
-                module.Read();
-                module.RemoveDocumentationComments();
+                Elm.Code.Module module = new(System.IO.Path.Join("src", filePath));
+
                 module.ParseImports();
 
                 foreach (Import import in module.Imports)
@@ -103,10 +101,8 @@ namespace ElmX.Core
 
         static private Module ModuleFromPath(string path)
         {
-            Module module = new();
-            module.FilePath = path;
-            module.Read();
-            module.RemoveDocumentationComments();
+            Module module = new(path);
+
             module.ParseImports();
 
             return module;

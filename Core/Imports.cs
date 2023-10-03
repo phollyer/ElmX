@@ -30,12 +30,8 @@ namespace ElmX.Core
 
         static private void CheckFile(string filePath, Dictionary<string, List<string>> unused)
         {
-            Elm.Code.Module module = new();
-            module.FilePath = filePath;
-            module.Read();
-            module.RemoveDocumentationComments();
+            Elm.Code.Module module = new(filePath);
             module.ParseImports();
-            module.RemoveImportStatementsFromContent();
 
             Writer.WriteLine(module.RawContent);
 

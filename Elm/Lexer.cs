@@ -31,7 +31,7 @@ namespace ElmX.Elm
             }
         }
 
-        public void Build()
+        public void Lex()
         {
             EvaluateComments()
             .RemoveComments()
@@ -40,10 +40,18 @@ namespace ElmX.Elm
 
             foreach (Token token in Tokens)
             {
-                Writer.WriteLine($"{token.Type}:\n{token.Value}");
+                //Writer.WriteLine($"{token.Type}:\n{token.Value}");
             }
+        }
 
-            Environment.Exit(0);
+        public Token? GetModuleStatement()
+        {
+            return Tokens.FirstOrDefault(t => t.Type == TokenType.ModuleStatement);
+        }
+
+        public List<Token> GetImportStatements()
+        {
+            return Tokens.Where(t => t.Type == TokenType.ImportStatement).ToList();
         }
         private Lexer EvaluateComments()
         {
