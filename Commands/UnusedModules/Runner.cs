@@ -6,12 +6,6 @@ namespace ElmX.Commands.UnusedModules
 {
     class Runner : RunnerBase
     {
-        /// <summary>
-        /// Run the unused-modules command in the current directory.
-        /// </summary>
-        /// <param name="options">
-        /// The command line options.
-        /// </param>
         public void Run(Options options)
         {
             if (options.ShowHelp)
@@ -32,22 +26,7 @@ namespace ElmX.Commands.UnusedModules
             Writer.Clear();
             Writer.WriteLine("I will now search for unused modules.");
 
-            if (ElmJson.json.projectType == ProjectType.Application && ElmJson.json.Application != null)
-            {
-                Elm.Application application = new(ElmJson.json.Application, ElmX_Json);
-                unusedModules = Modules.FindUnused(application);
-            }
-            else if (ElmJson.json.projectType == ProjectType.Package && ElmJson.json.Package != null)
-            {
-                Elm.Package package = new(ElmJson.json.Package, ElmX_Json);
-                unusedModules = Modules.FindUnused(package);
-            }
-            else
-            {
-                Writer.EmptyLine();
-                Writer.WriteLine("I could not find the source directories for this project.");
-                Environment.Exit(0);
-            }
+            unusedModules = Run();
 
             if (unusedModules.Count == 0)
             {
@@ -92,16 +71,6 @@ namespace ElmX.Commands.UnusedModules
                 Environment.Exit(0);
             }
 
-            if (options.Delete)
-            {
-                Writer.EmptyLine();
-                Writer.WriteLine("You asked me to delete the unused modules. I will do that now.");
-
-                DeleteUnusedModules(unusedModules);
-
-                Environment.Exit(0);
-            }
-
             if (options.Pause)
             {
                 Writer.EmptyLine();
@@ -131,14 +100,39 @@ namespace ElmX.Commands.UnusedModules
 
                 Environment.Exit(0);
             }
+
+            if (options.Delete)
+            {
+                Writer.EmptyLine();
+                Writer.WriteLine("You asked me to delete the unused modules. I will do that now.");
+
+                DeleteUnusedModules(unusedModules);
+
+                Environment.Exit(0);
+            }
         }
 
-        /// <summary>
-        /// Delete the unused modules.  
-        /// </summary>
-        /// <param name="files">
-        /// The list of unused modules.
-        /// </param>
+        private List<string> Run()
+        {
+
+            if (ElmJson.json.projectType == ProjectType.Application && ElmJson.json.Application != null)
+            {
+                Elm.Application application = new(ElmJson.json.Application, ElmX_Json);
+
+                return Modules.FindUnused(application);
+            }
+            else if (ElmJson.json.projectType == ProjectType.Package && ElmJson.json.Package != null)
+            {
+                Elm.Package package = new(ElmJson.json.Package, ElmX_Json);
+
+                return Modules.FindUnused(package);
+            }
+            else
+            {
+                return new();
+            }
+        }
+
         private void DeleteUnusedModules(List<string> files)
         {
             foreach (string file in files)
@@ -148,12 +142,6 @@ namespace ElmX.Commands.UnusedModules
 
         }
 
-        /// <summary>
-        /// Pause before deleting the unused modules. Request permission before deleting each module.
-        /// </summary>
-        /// <param name="files">
-        /// The list of unused modules.
-        /// </param>
         private void PauseUnusedModules(List<string> files)
         {
             foreach (string file in files)
@@ -162,12 +150,6 @@ namespace ElmX.Commands.UnusedModules
             }
         }
 
-        /// <summary>
-        /// Request permission before deleting a module.
-        /// </summary>
-        /// <param name="file">
-        /// The module to delete.
-        /// </param>
         private void MaybeDeleteFile(string file)
         {
             Writer.EmptyLine();
@@ -198,12 +180,6 @@ namespace ElmX.Commands.UnusedModules
             }
         }
 
-        /// <summary>
-        /// Rename the unused modules by prepending a tilde (~) to the filename.
-        /// </summary>
-        /// <param name="files">
-        /// The list of unused modules.
-        /// </param>
         private void Rename(List<string> files)
         {
             foreach (string file in files)
@@ -232,5 +208,4 @@ namespace ElmX.Commands.UnusedModules
             }
         }
     }
-
 }
