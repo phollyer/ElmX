@@ -29,9 +29,6 @@ namespace ElmX.Elm
             EntryModule = new(entryFile);
             EntryModule.ParseImports();
 
-            Writer.WriteLine(EntryModule.ToString());
-
-            Environment.Exit(0);
             ModulePaths.Add(EntryModule.FilePath);
 
             FileList = FindAllFiles(SourceDirs);
