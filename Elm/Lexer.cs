@@ -354,7 +354,7 @@ namespace ElmX.Elm
                 Token = new(value, TokenType.InlineComment, Index, endIndex);
 
                 Found = true;
-                Index = endIndex;
+                Index = endIndex - 1;
             }
 
             return this;
@@ -376,7 +376,7 @@ namespace ElmX.Elm
                 Token = new(value, TokenType.MultilineComment, Index, endIndex);
 
                 Found = true;
-                Index = endIndex;
+                Index = endIndex - 1;
             }
 
             return this;
