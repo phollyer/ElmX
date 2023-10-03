@@ -24,7 +24,7 @@ namespace ElmX.Core
         {
             foreach (string filePath in pkg.ExposedModules.Select(module => module.FilePath))
             {
-                Module module = new(System.IO.Path.Join("src", filePath));
+                Module module = new(filePath);
 
                 module.ParseImports();
 
