@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ElmX.Core.Console;
 
 namespace ElmX.Elm
@@ -36,11 +32,6 @@ namespace ElmX.Elm
             .RemoveComments()
             .Evaluate()
             ;
-
-            foreach (Token token in Tokens)
-            {
-                //Writer.WriteLine($"{token.Type}:\n{token.Value}");
-            }
         }
 
         public Token? GetModuleStatement()
