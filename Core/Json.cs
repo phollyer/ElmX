@@ -22,8 +22,6 @@ namespace ElmX.Core
             ElmX.Elm.Json elmJson = new();
             elmJson.Read();
 
-            Writer.WriteLine(elmJson.json.projectType.ToString());
-
             if (elmJson.json.projectType == Elm.ProjectType.Application)
             {
                 AppJson.EntryFile = options.EntryFile;
@@ -47,7 +45,6 @@ namespace ElmX.Core
 
         public void Read()
         {
-
             try
             {
                 string jsonStr = File.ReadAllText("elmx.json");
