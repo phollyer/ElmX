@@ -1,5 +1,4 @@
 using ElmX.Elm.Code;
-using ElmX.Core.Console;
 
 namespace ElmX.Elm
 {
