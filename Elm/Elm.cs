@@ -18,6 +18,31 @@ namespace ElmX.Elm
 
         public List<string> FileList { get; protected set; } = new();
 
+
+        protected List<string> FindUnusedModules(List<string> srcDirs, List<string> fileList, List<string> modulePaths, List<string> excludeDirs, List<string> excludeFiles)
+        {
+            List<string> Unused = new();
+
+            foreach (var filePath in fileList)
+            {
+                bool found = false;
+                foreach (var importPath in modulePaths)
+                {
+                    if (filePath == importPath)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                {
+                    Unused.Add(filePath);
+                }
+            }
+
+            return Unused;
+        }
         protected void ModulesFromImports(List<Module> modules, List<string> modulePaths, string srcDir, List<Import> imports)
         {
             foreach (Import import in imports)

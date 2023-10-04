@@ -14,8 +14,6 @@ namespace ElmX.Commands.UnusedModules
                 Environment.Exit(0);
             }
 
-            List<string> unusedModules = new();
-
             if (!options.Show && !options.Delete && !options.Pause && !options.Rename)
             {
                 Writer.EmptyLine();
@@ -26,7 +24,7 @@ namespace ElmX.Commands.UnusedModules
             Writer.Clear();
             Writer.WriteLine("I will now search for unused modules.");
 
-            unusedModules = Run();
+            List<string> unusedModules = Run();
 
             if (unusedModules.Count == 0)
             {
@@ -114,57 +112,41 @@ namespace ElmX.Commands.UnusedModules
 
         private List<string> Run()
         {
-
             if (ElmJson.json.projectType == ProjectType.Application && ElmJson.json.Application != null)
             {
                 Elm.Application app = new(ElmJson.json.Application, ElmX_Json);
 
-                return FindUnused(app.SourceDirs, app.FileList, app.ModulePaths, app.ExcludeDirs, app.ExcludeFiles);
+                List<string> unused =
+                    app
+                    .FindAllFiles()
+                    .FindUnusedModules()
+                    ;
+
+                WriteSummary(unused, app.SourceDirs, app.ExcludeDirs, app.ExcludeFiles, app.ModulePaths, app.FileList);
+
+                return unused;
             }
             else if (ElmJson.json.projectType == ProjectType.Package && ElmJson.json.Package != null)
             {
                 Elm.Package pkg = new(ElmJson.json.Package, ElmX_Json);
 
-                return FindUnused(new List<string>() { "src" }, pkg.FileList, pkg.ModulePaths, pkg.ExcludeDirs, pkg.ExcludeFiles); ;
+                List<string> unused =
+                    pkg
+                    .FindAllFiles()
+                    .FindUnusedModules()
+                    ;
+
+                WriteSummary(unused, new List<string>() { "src" }, pkg.ExcludeDirs, pkg.ExcludeFiles, pkg.ModulePaths, pkg.FileList);
+
+                return unused;
             }
             else
             {
                 return new();
             }
         }
-        private List<string> FindUnused(List<string> srcDirs, List<string> fileList, List<string> modulePaths, List<string> excludeDirs, List<string> excludeFiles)
-        {
-            WriteSummary(srcDirs, excludeDirs, excludeFiles, modulePaths, fileList);
 
-            List<string> Unused = new();
-
-            foreach (var filePath in fileList)
-            {
-                bool found = false;
-                foreach (var importPath in modulePaths)
-                {
-                    if (filePath == importPath)
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!found)
-                {
-                    Unused.Add(filePath);
-                }
-            }
-
-            int lineNumberToWriteAt = 10 + srcDirs.Count() + excludeDirs.Count() + excludeFiles.Count();
-
-            Writer.WriteAt($"Found: {Unused.Count} unused files", 0, lineNumberToWriteAt);
-            Writer.EmptyLine();
-
-            return Unused;
-        }
-
-        static private void WriteSummary(List<string> sourceDirs, List<string> excludeDirs, List<string> excludeFiles, List<string> modulePaths, List<string> allFiles)
+        private void WriteSummary(List<string> unused, List<string> sourceDirs, List<string> excludeDirs, List<string> excludeFiles, List<string> modulePaths, List<string> allFiles)
         {
             Writer.EmptyLine();
             Writer.WriteLine("Searching Dirs:");
@@ -181,6 +163,11 @@ namespace ElmX.Commands.UnusedModules
 
             Writer.WriteLine($"Found: {modulePaths.Count()} unique imports");
             Writer.WriteLine($"Found: {allFiles.Count()} files");
+
+            int lineNumberToWriteAt = 10 + sourceDirs.Count() + excludeDirs.Count() + excludeFiles.Count();
+
+            Writer.WriteAt($"Found: {unused.Count} unused files", 0, lineNumberToWriteAt);
+            Writer.EmptyLine();
         }
 
         private void DeleteUnusedModules(List<string> files)

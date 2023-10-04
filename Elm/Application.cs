@@ -38,8 +38,18 @@ namespace ElmX.Elm
             {
                 ModulesFromImports(Modules, ModulePaths, srcDir, Imports);
             }
+        }
 
+        public Application FindAllFiles()
+        {
             FileList = FindAllFiles(SourceDirs);
+
+            return this;
+        }
+
+        public List<string> FindUnusedModules()
+        {
+            return FindUnusedModules(SourceDirs, FileList, ModulePaths, ExcludeDirs, ExcludeFiles);
         }
     }
 }

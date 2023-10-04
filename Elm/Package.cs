@@ -34,9 +34,18 @@ namespace ElmX.Elm
             }
 
             ModulesFromImports(Modules, ModulePaths, "src", Imports);
+        }
 
-
+        public Package FindAllFiles()
+        {
             FileList = FindAllFiles("src");
+
+            return this;
+        }
+
+        public List<string> FindUnusedModules()
+        {
+            return FindUnusedModules(new List<string>() { "src" }, FileList, ModulePaths, ExcludeDirs, ExcludeFiles);
         }
     }
 }
