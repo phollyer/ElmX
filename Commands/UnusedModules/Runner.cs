@@ -142,6 +142,13 @@ namespace ElmX.Commands.UnusedModules
             }
             else
             {
+                Writer.EmptyLine();
+                Writer.WriteLine("I was unable to find the project type. Please make sure you are in the root of your project and that you have an elm.json file.");
+                Writer.WriteLine("If your elm.json file does exist, please open an issue at https://github.com/phollyer/ElmX/issues/new and include your elm.json file.");
+                Writer.EmptyLine();
+                Writer.WriteLine("Exiting...");
+                Environment.Exit(0);
+
                 return new();
             }
         }
