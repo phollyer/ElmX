@@ -4,9 +4,34 @@ using ElmX.Elm;
 
 namespace ElmX.Commands.UnusedImports
 {
-    class Runner : RunnerBase
+    class Runner
     {
-        public void Run(Options options)
+        static Elm.Json ElmJson = new();
+
+        static Core.Json ElmX_Json = new();
+
+        static Runner()
+        {
+
+            ElmJson.Read();
+
+            if (ElmJson.json == null)
+            {
+                Writer.EmptyLine();
+                Writer.WriteLine("I could not find an elm.json file in the current directory.");
+                Environment.Exit(0);
+            }
+
+            ElmX_Json.Read();
+
+            if (ElmX_Json.AppJson == null && ElmX_Json.PkgJson == null)
+            {
+                Writer.EmptyLine();
+                Writer.WriteLine("I could not find an elmx.json file in the current directory. Please run the init command first.");
+                Environment.Exit(0);
+            }
+        }
+        static public void Run(Options options)
         {
             if (options.ShowHelp)
             {
@@ -111,7 +136,7 @@ namespace ElmX.Commands.UnusedImports
             }
         }
 
-        private Dictionary<string, List<string>> Run()
+        static private Dictionary<string, List<string>> Run()
         {
             if (ElmJson.json.projectType == ProjectType.Application && ElmJson.json.Application != null)
             {
@@ -131,7 +156,7 @@ namespace ElmX.Commands.UnusedImports
             }
         }
 
-        private void DeleteUnusedImports(Dictionary<string, List<string>> unusedImports)
+        static private void DeleteUnusedImports(Dictionary<string, List<string>> unusedImports)
         {
             Writer.EmptyLine();
             Writer.WriteLine("I will now delete the unused imports.");
@@ -149,7 +174,7 @@ namespace ElmX.Commands.UnusedImports
             }
         }
 
-        private void PauseUnusedImports(Dictionary<string, List<string>> unusedImports)
+        static private void PauseUnusedImports(Dictionary<string, List<string>> unusedImports)
         {
             Writer.EmptyLine();
             Writer.WriteLine("I will now delete the unused imports.");
@@ -167,7 +192,7 @@ namespace ElmX.Commands.UnusedImports
             }
         }
 
-        private void MaybeDeleteImport(string file, string import)
+        static private void MaybeDeleteImport(string file, string import)
         {
             string input = Reader.ReadKey();
             if (input == "y")

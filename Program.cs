@@ -59,14 +59,12 @@ namespace ElmX
                     Environment.Exit(0);
                     break;
                 case Cmd.UnusedModules:
-                    Commands.UnusedModules.Runner modRunner = new();
-                    modRunner.Run(options.UnusedModulesOptions);
+                    Commands.UnusedModules.Runner.Run(options.UnusedModulesOptions);
 
                     Environment.Exit(0);
                     break;
                 case Cmd.UnusedImports:
-                    Commands.UnusedImports.Runner importRunner = new();
-                    importRunner.Run(options.UnusedImportsOptions);
+                    Commands.UnusedImports.Runner.Run(options.UnusedImportsOptions);
 
                     Environment.Exit(0);
                     break;

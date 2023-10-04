@@ -4,9 +4,34 @@ using ElmX.Elm;
 
 namespace ElmX.Commands.UnusedModules
 {
-    class Runner : RunnerBase
+    static class Runner
     {
-        public void Run(Options options)
+        static Elm.Json ElmJson = new();
+
+        static Core.Json ElmX_Json = new();
+
+        static Runner()
+        {
+
+            ElmJson.Read();
+
+            if (ElmJson.json == null)
+            {
+                Writer.EmptyLine();
+                Writer.WriteLine("I could not find an elm.json file in the current directory.");
+                Environment.Exit(0);
+            }
+
+            ElmX_Json.Read();
+
+            if (ElmX_Json.AppJson == null && ElmX_Json.PkgJson == null)
+            {
+                Writer.EmptyLine();
+                Writer.WriteLine("I could not find an elmx.json file in the current directory. Please run the init command first.");
+                Environment.Exit(0);
+            }
+        }
+        static public void Run(Options options)
         {
             if (options.ShowHelp)
             {
@@ -110,7 +135,7 @@ namespace ElmX.Commands.UnusedModules
             }
         }
 
-        private List<string> Run()
+        static private List<string> Run()
         {
             if (ElmJson.json.projectType == ProjectType.Application && ElmJson.json.Application != null)
             {
@@ -153,7 +178,7 @@ namespace ElmX.Commands.UnusedModules
             }
         }
 
-        private void WriteSummary(List<string> unused, List<string> sourceDirs, List<string> excludeDirs, List<string> excludeFiles, List<string> modulePaths, List<string> allFiles)
+        static private void WriteSummary(List<string> unused, List<string> sourceDirs, List<string> excludeDirs, List<string> excludeFiles, List<string> modulePaths, List<string> allFiles)
         {
             Writer.EmptyLine();
             Writer.WriteLine("Searching Dirs:");
@@ -177,7 +202,7 @@ namespace ElmX.Commands.UnusedModules
             Writer.EmptyLine();
         }
 
-        private void DeleteUnusedModules(List<string> files)
+        static private void DeleteUnusedModules(List<string> files)
         {
             foreach (string file in files)
             {
@@ -186,7 +211,7 @@ namespace ElmX.Commands.UnusedModules
 
         }
 
-        private void PauseUnusedModules(List<string> files)
+        static private void PauseUnusedModules(List<string> files)
         {
             foreach (string file in files)
             {
@@ -194,7 +219,7 @@ namespace ElmX.Commands.UnusedModules
             }
         }
 
-        private void MaybeDeleteFile(string file)
+        static private void MaybeDeleteFile(string file)
         {
             Writer.EmptyLine();
             Writer.WriteLine($"Should I delete: {file}? (y/n/(q)uit)");
@@ -224,7 +249,7 @@ namespace ElmX.Commands.UnusedModules
             }
         }
 
-        private void Rename(List<string> files)
+        static private void Rename(List<string> files)
         {
             foreach (string file in files)
             {
