@@ -25,6 +25,17 @@ namespace ElmX.Elm
             string entryFile = elmxJson.AppJson.EntryFile;
 
             EntryModule = new(entryFile);
+        }
+
+        public Application FindAllFiles()
+        {
+            FileList = FindAllFiles(SourceDirs);
+
+            return this;
+        }
+
+        public new List<string> FindUnusedModules()
+        {
             EntryModule.ParseImports();
 
             ModulePaths.Add(EntryModule.FilePath);
@@ -38,18 +49,7 @@ namespace ElmX.Elm
             {
                 ModulesFromImports(Modules, ModulePaths, srcDir, Imports);
             }
-        }
-
-        public Application FindAllFiles()
-        {
-            FileList = FindAllFiles(SourceDirs);
-
-            return this;
-        }
-
-        public List<string> FindUnusedModules()
-        {
-            return FindUnusedModules(SourceDirs, FileList, ModulePaths, ExcludeDirs, ExcludeFiles);
+            return base.FindUnusedModules();
         }
     }
 }

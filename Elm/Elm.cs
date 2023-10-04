@@ -19,14 +19,14 @@ namespace ElmX.Elm
         public List<string> FileList { get; protected set; } = new();
 
 
-        protected List<string> FindUnusedModules(List<string> srcDirs, List<string> fileList, List<string> modulePaths, List<string> excludeDirs, List<string> excludeFiles)
+        protected List<string> FindUnusedModules()
         {
-            List<string> Unused = new();
+            List<string> unused = new();
 
-            foreach (var filePath in fileList)
+            foreach (var filePath in FileList)
             {
                 bool found = false;
-                foreach (var importPath in modulePaths)
+                foreach (var importPath in ModulePaths)
                 {
                     if (filePath == importPath)
                     {
@@ -37,11 +37,11 @@ namespace ElmX.Elm
 
                 if (!found)
                 {
-                    Unused.Add(filePath);
+                    unused.Add(filePath);
                 }
             }
 
-            return Unused;
+            return unused;
         }
         protected void ModulesFromImports(List<Module> modules, List<string> modulePaths, string srcDir, List<Import> imports)
         {

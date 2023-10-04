@@ -18,11 +18,19 @@ namespace ElmX.Elm
 
                 ExposedModules.Add(module);
             }
+        }
 
-            foreach (string filePath in ExposedModules.Select(module => module.FilePath))
+        public Package FindAllFiles()
+        {
+            FileList = FindAllFiles("src");
+
+            return this;
+        }
+
+        public new List<string> FindUnusedModules()
+        {
+            foreach (Module module in ExposedModules)
             {
-                Module module = new(filePath);
-
                 module.ParseImports();
 
                 foreach (Import import in module.Imports)
@@ -34,18 +42,8 @@ namespace ElmX.Elm
             }
 
             ModulesFromImports(Modules, ModulePaths, "src", Imports);
-        }
 
-        public Package FindAllFiles()
-        {
-            FileList = FindAllFiles("src");
-
-            return this;
-        }
-
-        public List<string> FindUnusedModules()
-        {
-            return FindUnusedModules(new List<string>() { "src" }, FileList, ModulePaths, ExcludeDirs, ExcludeFiles);
+            return base.FindUnusedModules();
         }
     }
 }
