@@ -117,20 +117,70 @@ namespace ElmX.Commands.UnusedModules
 
             if (ElmJson.json.projectType == ProjectType.Application && ElmJson.json.Application != null)
             {
-                Elm.Application application = new(ElmJson.json.Application, ElmX_Json);
+                Elm.Application app = new(ElmJson.json.Application, ElmX_Json);
 
-                return Modules.FindUnused(application);
+                return FindUnused(app.SourceDirs, app.FileList, app.ModulePaths, app.ExcludeDirs, app.ExcludeFiles);
             }
             else if (ElmJson.json.projectType == ProjectType.Package && ElmJson.json.Package != null)
             {
-                Elm.Package package = new(ElmJson.json.Package, ElmX_Json);
+                Elm.Package pkg = new(ElmJson.json.Package, ElmX_Json);
 
-                return Modules.FindUnused(package);
+                return FindUnused(new List<string>() { "src" }, pkg.FileList, pkg.ModulePaths, pkg.ExcludeDirs, pkg.ExcludeFiles); ;
             }
             else
             {
                 return new();
             }
+        }
+        private List<string> FindUnused(List<string> srcDirs, List<string> fileList, List<string> modulePaths, List<string> excludeDirs, List<string> excludeFiles)
+        {
+            WriteSummary(srcDirs, excludeDirs, excludeFiles, modulePaths, fileList);
+
+            List<string> Unused = new();
+
+            foreach (var filePath in fileList)
+            {
+                bool found = false;
+                foreach (var importPath in modulePaths)
+                {
+                    if (filePath == importPath)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                {
+                    Unused.Add(filePath);
+                }
+            }
+
+            int lineNumberToWriteAt = 10 + srcDirs.Count() + excludeDirs.Count() + excludeFiles.Count();
+
+            Writer.WriteAt($"Found: {Unused.Count} unused files", 0, lineNumberToWriteAt);
+            Writer.EmptyLine();
+
+            return Unused;
+        }
+
+        static private void WriteSummary(List<string> sourceDirs, List<string> excludeDirs, List<string> excludeFiles, List<string> modulePaths, List<string> allFiles)
+        {
+            Writer.EmptyLine();
+            Writer.WriteLine("Searching Dirs:");
+            Writer.WriteLines("\t", sourceDirs);
+            Writer.EmptyLine();
+
+            Writer.WriteLine("Exclude Dirs:");
+            Writer.WriteLines("\t", excludeDirs);
+            Writer.EmptyLine();
+
+            Writer.WriteLine("Exclude Files:");
+            Writer.WriteLines("\t", excludeFiles);
+            Writer.EmptyLine();
+
+            Writer.WriteLine($"Found: {modulePaths.Count()} unique imports");
+            Writer.WriteLine($"Found: {allFiles.Count()} files");
         }
 
         private void DeleteUnusedModules(List<string> files)

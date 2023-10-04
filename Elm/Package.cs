@@ -19,6 +19,23 @@ namespace ElmX.Elm
                 ExposedModules.Add(module);
             }
 
+            foreach (string filePath in ExposedModules.Select(module => module.FilePath))
+            {
+                Module module = new(filePath);
+
+                module.ParseImports();
+
+                foreach (Import import in module.Imports)
+                {
+                    Imports.Add(import);
+                }
+
+                ModulePaths.Add(module.FilePath);
+            }
+
+            ModulesFromImports(Modules, ModulePaths, "src", Imports);
+
+
             FileList = FindAllFiles("src");
         }
     }

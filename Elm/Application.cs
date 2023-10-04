@@ -29,6 +29,16 @@ namespace ElmX.Elm
 
             ModulePaths.Add(EntryModule.FilePath);
 
+            foreach (Import import in EntryModule.Imports)
+            {
+                Imports.Add(import);
+            }
+
+            foreach (string srcDir in SourceDirs)
+            {
+                ModulesFromImports(Modules, ModulePaths, srcDir, Imports);
+            }
+
             FileList = FindAllFiles(SourceDirs);
         }
     }

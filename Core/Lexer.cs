@@ -1,6 +1,6 @@
 using ElmX.Core.Console;
 
-namespace ElmX.Elm
+namespace ElmX.Core
 {
     public class Lexer
     {

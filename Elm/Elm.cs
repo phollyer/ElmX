@@ -1,5 +1,6 @@
 using ElmX.Core.Console;
 using ElmX.Elm.Code;
+using ElmX.Core;
 
 namespace ElmX.Elm
 {
@@ -16,6 +17,56 @@ namespace ElmX.Elm
         public List<Import> Imports { get; private set; } = new();
 
         public List<string> FileList { get; protected set; } = new();
+
+        protected void ModulesFromImports(List<Module> modules, List<string> modulePaths, string srcDir, List<Import> imports)
+        {
+            foreach (Import import in imports)
+            {
+                string modulePath = ModulePathFromDotNotation(srcDir, import.Name);
+
+                if (File.Exists(modulePath))
+                {
+                    Module module = ModuleFromPath(modulePath);
+
+                    modules.Add(module);
+
+                    modulePaths.Add(module.FilePath);
+
+                    CreateModuleList(modules, modulePaths, srcDir, module);
+                }
+            }
+
+            modulePaths.Sort();
+        }
+
+        private Module ModuleFromPath(string path)
+        {
+            Module module = new(path);
+
+            module.ParseImports();
+
+            return module;
+        }
+
+        private void CreateModuleList(List<Module> list, List<string> paths, string srcDir, Module module)
+        {
+            foreach (Import import in module.Imports)
+            {
+                string modulePath = ModulePathFromDotNotation(srcDir, import.Name);
+
+                if (paths.IndexOf(modulePath) == -1 && File.Exists(modulePath))
+                {
+                    Module _module = ModuleFromPath(modulePath);
+
+                    list.Add(_module);
+
+                    paths.Add(modulePath);
+
+                    CreateModuleList(list, paths, srcDir, _module);
+                }
+            }
+        }
+
 
         protected List<string> FindAllFiles(List<string> sourceDirectories)
         {
@@ -61,6 +112,12 @@ namespace ElmX.Elm
 
             return files;
         }
+
+        private string ModulePathFromDotNotation(string srcDir, string dotNotation)
+        {
+            return System.IO.Path.Join(srcDir, Core.Path.FromDotNotation(dotNotation));
+        }
+
         private bool IsNotExcludedDirectory(string filePath)
         {
             foreach (string excludedDir in ExcludeDirs)
