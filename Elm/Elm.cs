@@ -46,57 +46,110 @@ namespace ElmX.Elm
 
         protected Dictionary<string, List<string>> FindUnusedImports()
         {
+            ModulesFromPaths();
+
             Dictionary<string, List<string>> unused = new();
+
+            foreach (Module module in Modules)
+            {
+                module.ParseImports();
+                module.ParseTypeAliases();
+            }
 
             return unused;
         }
-        protected void ModulesFromImports(List<Module> modules, List<string> modulePaths, string srcDir, List<Import> imports)
+        protected void ModulesFromImports(string srcDir)
         {
-            foreach (Import import in imports)
+            foreach (Import import in Imports)
             {
                 string modulePath = ModulePathFromDotNotation(srcDir, import.Name);
 
                 if (File.Exists(modulePath))
                 {
                     Module module = ModuleFromPath(modulePath);
+                    module.ParseImports();
 
-                    modules.Add(module);
+                    Modules.Add(module);
 
-                    modulePaths.Add(module.FilePath);
+                    ModulePaths.Add(module.FilePath);
 
-                    CreateModuleList(modules, modulePaths, srcDir, module);
+                    CreateModuleList(srcDir, module);
                 }
             }
 
-            modulePaths.Sort();
+            ModulePaths.Sort();
+        }
+
+        protected void ModulesFromPaths()
+        {
+            foreach (string filePath in FileList)
+            {
+                Module module = new(filePath);
+
+                Modules.Add(module);
+            }
         }
 
         private Module ModuleFromPath(string path)
         {
             Module module = new(path);
 
-            module.ParseImports();
-
             return module;
         }
 
-        private void CreateModuleList(List<Module> list, List<string> paths, string srcDir, Module module)
+        private void CreateModuleList(string srcDir, Module module)
         {
             foreach (Import import in module.Imports)
             {
                 string modulePath = ModulePathFromDotNotation(srcDir, import.Name);
 
-                if (paths.IndexOf(modulePath) == -1 && File.Exists(modulePath))
+                if (ModulePaths.IndexOf(modulePath) == -1 && File.Exists(modulePath))
                 {
                     Module _module = ModuleFromPath(modulePath);
+                    _module.ParseImports();
 
-                    list.Add(_module);
+                    Modules.Add(_module);
 
-                    paths.Add(modulePath);
+                    ModulePaths.Add(modulePath);
 
-                    CreateModuleList(list, paths, srcDir, _module);
+                    CreateModuleList(srcDir, _module);
                 }
             }
+        }
+        private bool ImportIsUsedByName(string content, string name)
+        {
+            return
+                content.Contains($": {name} ")
+                || content.Contains($"-> {name}\n")
+                || content.Contains($"\n{name} ")
+                || content.Contains($"\n{name}\n")
+                ;
+        }
+        private bool ImportIsUsedAsName(string content, string _as)
+        {
+            return
+            // followed by a space
+                content.Contains($": {_as} ")
+                || content.Contains($"-> {_as} ")
+                || content.Contains($"\t{_as} ")
+
+            // followed by a dot
+                || content.Contains($": {_as}.")
+                || content.Contains($"-> {_as}.")
+                || content.Contains($" {_as}.")
+                || content.Contains($"\t{_as}.")
+                || content.Contains($"\n{_as}.");
+            ;
+        }
+
+        private bool ImportIsUsedByExposing(string content, List<string> exposing)
+        {
+            foreach (string func in exposing)
+            {
+
+            }
+
+            return false;
         }
 
 

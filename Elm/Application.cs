@@ -1,3 +1,4 @@
+using ElmX.Core.Console;
 using ElmX.Elm.Code;
 
 namespace ElmX.Elm
@@ -47,14 +48,13 @@ namespace ElmX.Elm
 
             foreach (string srcDir in SourceDirs)
             {
-                ModulesFromImports(Modules, ModulePaths, srcDir, Imports);
+                ModulesFromImports(srcDir);
             }
             return base.FindUnusedModules();
         }
 
         public new Dictionary<string, List<string>> FindUnusedImports()
         {
-
             return base.FindUnusedImports();
         }
     }

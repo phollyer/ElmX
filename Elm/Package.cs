@@ -41,7 +41,7 @@ namespace ElmX.Elm
                 ModulePaths.Add(module.FilePath);
             }
 
-            ModulesFromImports(Modules, ModulePaths, "src", Imports);
+            ModulesFromImports("src");
 
             return base.FindUnusedModules();
         }

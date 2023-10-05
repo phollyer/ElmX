@@ -35,6 +35,9 @@ namespace ElmX.Elm.Code
             if (File.Exists(FilePath))
             {
                 Lexer = new(FilePath);
+
+                RawContent = Lexer.Content;
+
                 Lexer.Lex();
 
                 ParseModuleStatement();
@@ -90,6 +93,23 @@ namespace ElmX.Elm.Code
             {
                 Import Import = new(token.Value);
                 Imports.Add(Import);
+            }
+        }
+
+        public void ParseTypeAliases()
+        {
+            List<Token> tokens = Lexer?.GetTypeAliases() ?? new();
+            if (Name == "App.Api")
+            {
+                foreach (Token token in tokens)
+                {
+                    Writer.WriteLine($"Module: {Name}");
+
+                    TypeAlias typeAlias = new(token.Value);
+                    TypeAliases.Add(typeAlias);
+
+                    Writer.WriteLine($"ToString():\n{typeAlias.ToString()}");
+                }
             }
         }
         public override string ToString()

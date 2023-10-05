@@ -1,13 +1,11 @@
 using ElmX.Core.Console;
-using ElmX.Elm.Code;
-using System.Linq;
 
 namespace ElmX.Core
 {
     public class Lexer
     {
 
-        private string Content { get; set; } = "";
+        public string Content { get; set; } = "";
 
         private List<Token> Tokens { get; set; } = new List<Token>();
 
@@ -51,6 +49,11 @@ namespace ElmX.Core
                     t.Type == TokenType.CommentedImportStatement)
                 .ToList()
                 ;
+        }
+
+        public List<Token> GetTypeAliases()
+        {
+            return Tokens.Where(t => t.Type == TokenType.TypeAlias).ToList();
         }
         private Lexer EvaluateComments()
         {
@@ -210,13 +213,13 @@ namespace ElmX.Core
                                 break;
 
                             case (true, false, true):
-                                exposing = ExtractInner(('(', ')'), import[i..]);
+                                exposing = String.ExtractInner(('(', ')'), import[i..]);
                                 i = import.Length;
 
                                 break;
 
                             case (true, true, true):
-                                exposing = ExtractInner(('(', ')'), import[i..]);
+                                exposing = String.ExtractInner(('(', ')'), import[i..]);
                                 i = import.Length;
 
                                 break;
@@ -245,34 +248,6 @@ namespace ElmX.Core
             }
 
             return this;
-        }
-
-        private string ExtractInner((char first, char last) enclosing, string content)
-        {
-            return ExtractInner(enclosing, content, (0, 0), (0, -1));
-        }
-
-        private string ExtractInner((char first, char last) enclosing, string content, (int start, int end) counter, (int current, int start) indexer)
-        {
-            if (content[indexer.current] == enclosing.first)
-            {
-                if (indexer.start == -1)
-                {
-                    indexer.start = indexer.current + 1;
-                }
-                counter.start++;
-            }
-            else if (content[indexer.current] == enclosing.last)
-            {
-                counter.end++;
-            }
-
-            if (counter.start == counter.end)
-            {
-                return content[indexer.start..indexer.current];
-            }
-
-            return ExtractInner(enclosing, content, counter, (indexer.current + 1, indexer.start));
         }
 
         private int Evaluate(int index, string content)

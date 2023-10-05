@@ -120,17 +120,21 @@ namespace ElmX.Commands.UnusedImports
                 Writer.WriteLine("You asked me to show you the unused imports. I will do that now.");
                 Writer.EmptyLine();
 
-                Writer.WriteLine($"Found: {unusedImports.Count} file(s) with unused imports");
-                foreach (KeyValuePair<string, List<string>> unused in unusedImports)
+                if (unusedImports.ContainsKey("elm/App.elm"))
                 {
-                    Writer.EmptyLine();
-                    Writer.WriteLine($"File: {unused.Key}");
-                    Writer.WriteLine($"Found: {unused.Value.Count} unused imports");
-                    foreach (string unusedImport in unused.Value)
-                    {
-                        Writer.WriteLine($"\t{unusedImport}");
-                    }
+                    Writer.WriteLine("elm/App.elm");
+                    Writer.WriteLines("\t", unusedImports["elm/App.elm"]);
                 }
+                //foreach (KeyValuePair<string, List<string>> unused in unusedImports)
+                //{
+                //    Writer.EmptyLine();
+                //    Writer.WriteLine($"File: {unused.Key}");
+                //    Writer.WriteLine($"Found: {unused.Value.Count} unused imports");
+                //    foreach (string unusedImport in unused.Value)
+                //    {
+                //        Writer.WriteLine($"\t{unusedImport}");
+                //    }
+                //}
 
                 Environment.Exit(0);
             }
@@ -142,7 +146,13 @@ namespace ElmX.Commands.UnusedImports
             {
                 Elm.Application app = new(ElmJson.json.Application, ElmX_Json);
 
-                Dictionary<string, List<string>> unused = app.FindUnusedImports();
+                Dictionary<string, List<string>> unused =
+                    app
+                    .FindAllFiles()
+                    .FindUnusedImports()
+                    ;
+
+                WriteSummary(unused, app.SourceDirs, app.ExcludeDirs, app.ExcludeFiles, app.ModulePaths, app.FileList);
 
                 return unused;
 
