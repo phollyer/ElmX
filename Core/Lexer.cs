@@ -1,4 +1,6 @@
 using ElmX.Core.Console;
+using ElmX.Elm.Code;
+using System.Linq;
 
 namespace ElmX.Core
 {
@@ -30,6 +32,7 @@ namespace ElmX.Core
         {
             EvaluateComments()
             .RemoveComments()
+            .EvaluateImportsFromComments()
             .Evaluate()
             ;
         }
@@ -41,7 +44,13 @@ namespace ElmX.Core
 
         public List<Token> GetImportStatements()
         {
-            return Tokens.Where(t => t.Type == TokenType.ImportStatement).ToList();
+            return
+                Tokens
+                .Where(t =>
+                    t.Type == TokenType.ImportStatement ||
+                    t.Type == TokenType.CommentedImportStatement)
+                .ToList()
+                ;
         }
         private Lexer EvaluateComments()
         {
@@ -107,15 +116,168 @@ namespace ElmX.Core
         {
             for (int charIndex = 0; charIndex < Content.Length; charIndex++)
             {
-                charIndex = Evaluate(charIndex);
+                charIndex = Evaluate(charIndex, Content);
             }
 
             return this;
         }
 
-        private int Evaluate(int index)
+        private Lexer EvaluateImportsFromComments()
         {
-            char c = Content[index];
+            List<string> comments = new();
+
+            comments.AddRange(
+                from token in Tokens
+                where token.Type == TokenType.InlineComment
+                where token.Value.Contains(" import ")
+                let import = token.Value.Replace("-- ", "")
+                select new { import }
+                into importObj
+                select importObj.import);
+
+            comments.AddRange(
+                from token in Tokens
+                where token.Type == TokenType.MultilineComment
+                where token.Value.Contains(" import ")
+                let import = token.Value.Replace("{- ", "--").Replace("\n", " ")
+                select new { import }
+                into importObj
+                select importObj.import);
+
+            foreach (string comment in comments)
+            {
+                List<string> importStatements = comment.Split("import ")[1..].ToList();
+
+                foreach (string import in importStatements)
+                {
+                    bool foundName = false;
+                    string name = "";
+
+                    bool foundAs = false;
+                    string asName = "";
+
+                    bool foundExposing = false;
+                    string exposing = "";
+
+                    for (int i = 0; i < import.Length; i++)
+                    {
+                        switch ((foundName, foundAs, foundExposing))
+                        {
+                            case (false, false, false):
+                                if (Char.IsUpper(import[i]))
+                                {
+                                    foundName = true;
+                                    name += import[i];
+                                }
+                                break;
+
+                            case (true, false, false):
+                                if (Char.IsLetterOrDigit(import[i]) || import[i] == '_' || import[i] == '.')
+                                {
+                                    name += import[i];
+                                }
+                                else if (import.Contains(" as "))
+                                {
+                                    i = import.IndexOf(" as ") + 3;
+                                    foundAs = true;
+                                }
+                                else if (import.Contains(" exposing "))
+                                {
+                                    i = import.IndexOf(" exposing ") + 9;
+                                    foundExposing = true;
+                                }
+                                else
+                                {
+                                    i = import.Length;
+                                }
+
+                                break;
+
+                            case (true, true, false):
+                                if (Char.IsLetterOrDigit(import[i]) || import[i] == '_' || import[i] == '.')
+                                {
+                                    asName += import[i];
+                                }
+                                else if (import.Contains(" exposing "))
+                                {
+                                    i = import.IndexOf(" exposing ") + 9;
+                                    foundExposing = true;
+                                }
+                                else
+                                {
+                                    i = import.Length;
+                                }
+                                break;
+
+                            case (true, false, true):
+                                exposing = ExtractInner(('(', ')'), import[i..]);
+                                i = import.Length;
+
+                                break;
+
+                            case (true, true, true):
+                                exposing = ExtractInner(('(', ')'), import[i..]);
+                                i = import.Length;
+
+                                break;
+
+
+                        }
+                    }
+
+                    if (foundName)
+                    {
+                        string importStatement = $"import {name}";
+
+                        if (foundAs)
+                        {
+                            importStatement += $" as {asName}";
+                        }
+
+                        if (foundExposing)
+                        {
+                            importStatement += $" exposing ({exposing})";
+                        }
+
+                        Tokens.Add(new Token(importStatement, TokenType.CommentedImportStatement, 0, 0));
+                    }
+                }
+            }
+
+            return this;
+        }
+
+        private string ExtractInner((char first, char last) enclosing, string content)
+        {
+            return ExtractInner(enclosing, content, (0, 0), (0, -1));
+        }
+
+        private string ExtractInner((char first, char last) enclosing, string content, (int start, int end) counter, (int current, int start) indexer)
+        {
+            if (content[indexer.current] == enclosing.first)
+            {
+                if (indexer.start == -1)
+                {
+                    indexer.start = indexer.current + 1;
+                }
+                counter.start++;
+            }
+            else if (content[indexer.current] == enclosing.last)
+            {
+                counter.end++;
+            }
+
+            if (counter.start == counter.end)
+            {
+                return content[indexer.start..indexer.current];
+            }
+
+            return ExtractInner(enclosing, content, counter, (indexer.current + 1, indexer.start));
+        }
+
+        private int Evaluate(int index, string content)
+        {
+            char c = content[index];
             Evaluator result;
 
             switch (c)
@@ -124,7 +286,7 @@ namespace ElmX.Core
                     if (!ModuleStatementFound)
                     {
                         result =
-                            new Evaluator(index, false, Content)
+                            new Evaluator(index, false, content)
                                 .ShouldBeModuleStatement();
 
                         if (result.Token?.Type == TokenType.ModuleStatement)
@@ -135,7 +297,7 @@ namespace ElmX.Core
                     else
                     {
                         result =
-                            new Evaluator(index, false, Content)
+                            new Evaluator(index, false, content)
                                 .ShouldBeAFunction();
                     }
                     break;
@@ -143,13 +305,13 @@ namespace ElmX.Core
                     if (!AllImportsFound)
                     {
                         result =
-                            new Evaluator(index, false, Content)
+                            new Evaluator(index, false, content)
                                 .MaybeImportStatement();
                     }
                     else
                     {
                         result =
-                            new Evaluator(index, false, Content)
+                            new Evaluator(index, false, content)
                                 .ShouldBeAFunction();
                     }
 
@@ -158,7 +320,7 @@ namespace ElmX.Core
                     break;
                 case 't':
                     result =
-                        new Evaluator(index, false, Content)
+                        new Evaluator(index, false, content)
                             .MaybeTypeStatement()
                             .ShouldBeAFunction();
 
@@ -166,17 +328,17 @@ namespace ElmX.Core
 
                 case '\n':
                     result =
-                        new Evaluator(index, false, Content);
+                        new Evaluator(index, false, content);
                     break;
 
                 case ' ':
                     result =
-                        new Evaluator(index, false, Content);
+                        new Evaluator(index, false, content);
                     break;
 
                 default:
                     result =
-                        new Evaluator(index, false, Content)
+                        new Evaluator(index, false, content)
                             .ShouldBeAFunction();
 
                     break;
@@ -332,7 +494,7 @@ namespace ElmX.Core
 
                 func = $"{value}\n{body}";
             }
-            else
+            else if (IsFunctionHead(value))
             {
                 func = value;
             }
@@ -369,6 +531,14 @@ namespace ElmX.Core
             }
 
             return isAnnotation;
+        }
+
+        private bool IsFunctionHead(string value)
+        {
+            string head = value.Split('\n')[0];
+
+            return head.EndsWith("=\n");
+
         }
 
         private int FindEndOfStatement(int index)
@@ -487,6 +657,7 @@ namespace ElmX.Core
         None,
 
         ImportStatement,
+        CommentedImportStatement,
         InlineComment,
         ModuleStatement,
         MultilineComment,
