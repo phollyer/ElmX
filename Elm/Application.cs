@@ -51,5 +51,11 @@ namespace ElmX.Elm
             }
             return base.FindUnusedModules();
         }
+
+        public new Dictionary<string, List<string>> FindUnusedImports()
+        {
+
+            return base.FindUnusedImports();
+        }
     }
 }

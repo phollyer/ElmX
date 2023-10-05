@@ -140,20 +140,49 @@ namespace ElmX.Commands.UnusedImports
         {
             if (ElmJson.json.projectType == ProjectType.Application && ElmJson.json.Application != null)
             {
-                Elm.Application application = new(ElmJson.json.Application, ElmX_Json);
+                Elm.Application app = new(ElmJson.json.Application, ElmX_Json);
 
-                return Imports.FindUnused(application);
+                Dictionary<string, List<string>> unused = app.FindUnusedImports();
+
+                return unused;
+
             }
             else if (ElmJson.json.projectType == ProjectType.Package && ElmJson.json.Package != null)
             {
-                Elm.Package package = new(ElmJson.json.Package, ElmX_Json);
+                Elm.Package pkg = new(ElmJson.json.Package, ElmX_Json);
 
-                return Imports.FindUnused(package);
+                Dictionary<string, List<string>> unused = pkg.FindUnusedImports();
+
+                return unused;
             }
             else
             {
                 return new();
             }
+        }
+
+        static private void WriteSummary(Dictionary<string, List<string>> unused, List<string> sourceDirs, List<string> excludeDirs, List<string> excludeFiles, List<string> modulePaths, List<string> allFiles)
+        {
+            Writer.EmptyLine();
+            Writer.WriteLine("Searching Dirs:");
+            Writer.WriteLines("\t", sourceDirs);
+            Writer.EmptyLine();
+
+            Writer.WriteLine("Exclude Dirs:");
+            Writer.WriteLines("\t", excludeDirs);
+            Writer.EmptyLine();
+
+            Writer.WriteLine("Exclude Files:");
+            Writer.WriteLines("\t", excludeFiles);
+            Writer.EmptyLine();
+
+            Writer.WriteLine($"Found: {modulePaths.Count()} unique imports");
+            Writer.WriteLine($"Found: {allFiles.Count()} files");
+
+            int lineNumberToWriteAt = 10 + sourceDirs.Count() + excludeDirs.Count() + excludeFiles.Count();
+
+            Writer.WriteAt($"Found: {unused.Count} files with unused imports", 0, lineNumberToWriteAt);
+            Writer.EmptyLine();
         }
 
         static private void DeleteUnusedImports(Dictionary<string, List<string>> unusedImports)
