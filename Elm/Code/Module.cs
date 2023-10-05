@@ -99,17 +99,11 @@ namespace ElmX.Elm.Code
         public void ParseTypeAliases()
         {
             List<Token> tokens = Lexer?.GetTypeAliases() ?? new();
-            if (Name == "App.Api")
+
+            foreach (Token token in tokens)
             {
-                foreach (Token token in tokens)
-                {
-                    Writer.WriteLine($"Module: {Name}");
-
-                    TypeAlias typeAlias = new(token.Value);
-                    TypeAliases.Add(typeAlias);
-
-                    Writer.WriteLine($"ToString():\n{typeAlias.ToString()}");
-                }
+                TypeAlias typeAlias = new(token.Value);
+                TypeAliases.Add(typeAlias);
             }
         }
         public override string ToString()
@@ -131,16 +125,16 @@ namespace ElmX.Elm.Code
                 str += $"    {import.ToString()}\n";
             }
 
+            str += $"Type Aliases:\n";
+            foreach (TypeAlias typeAlias in TypeAliases)
+            {
+                str += $"    {typeAlias.ToString()}\n";
+            }
+
             //str += $"Union Types:\n";
             //foreach (UnionType unionType in UnionTypes)
             //{
             //str += $"    {unionType.Name}\n";
-            //}
-            //
-            //str += $"Type Aliases:\n";
-            //foreach (TypeAlias typeAlias in TypeAliases)
-            //{
-            //str += $"    {typeAlias.Name}\n";
             //}
             //
             //str += $"Functions:\n";
