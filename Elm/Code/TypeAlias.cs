@@ -47,6 +47,8 @@ namespace ElmX.Elm.Code
                 .Trim()
                 ;
 
+            Writer.WriteLine(Name);
+
             return parts[1];
         }
 

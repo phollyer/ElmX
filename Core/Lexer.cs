@@ -55,6 +55,11 @@ namespace ElmX.Core
         {
             return Tokens.Where(t => t.Type == TokenType.TypeAlias).ToList();
         }
+
+        public List<Token> GetUnionTypes()
+        {
+            return Tokens.Where(t => t.Type == TokenType.TypeEnum).ToList();
+        }
         private Lexer EvaluateComments()
         {
             for (int charIndex = 0; charIndex < Content.Length; charIndex++)
@@ -454,6 +459,7 @@ namespace ElmX.Core
             }
 
             int endIndex = FindEndOfStatement(Index);
+
             string value = Content[Index..endIndex];
 
             int startOfFuncBodyIndex = endIndex + 1;
@@ -472,6 +478,7 @@ namespace ElmX.Core
             else if (IsFunctionHead(value))
             {
                 func = value;
+
             }
             Token = new(func, TokenType.Function, Index, endOfFunctionBodyIndex);
             Found = true;
@@ -512,7 +519,7 @@ namespace ElmX.Core
         {
             string head = value.Split('\n')[0];
 
-            return head.EndsWith("=\n");
+            return head.EndsWith("=");
 
         }
 

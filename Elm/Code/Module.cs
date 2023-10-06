@@ -100,6 +100,8 @@ namespace ElmX.Elm.Code
         {
             List<Token> tokens = Lexer?.GetTypeAliases() ?? new();
 
+            Writer.WriteLine($"Found {tokens.Count} type aliases.");
+
             foreach (Token token in tokens)
             {
                 TypeAlias typeAlias = new(token.Value);

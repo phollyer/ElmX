@@ -52,8 +52,13 @@ namespace ElmX.Elm
 
             foreach (Module module in Modules)
             {
-                module.ParseImports();
-                module.ParseTypeAliases();
+                if (module.Name == "App")
+                {
+                    Writer.WriteLine($"Parsing: {module.Name}");
+                    module.ParseImports();
+                    module.ParseTypeAliases();
+                }
+
             }
 
             return unused;
