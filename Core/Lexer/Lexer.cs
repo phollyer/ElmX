@@ -1,9 +1,15 @@
 using ElmX.Core.Console;
 
-namespace ElmX.Core
+namespace ElmX.Core.Lexer
 {
     public class Lexer
     {
+
+        private readonly List<string> ReservedWords = new()
+        {
+            "module",
+            "import"
+        };
 
         public string Content { get; set; } = "";
 
@@ -30,7 +36,7 @@ namespace ElmX.Core
         {
             EvaluateComments()
             .RemoveComments()
-            .EvaluateImportsFromComments()
+            //.EvaluateImportsFromComments()
             .Evaluate()
             ;
         }
@@ -122,9 +128,23 @@ namespace ElmX.Core
 
         private Lexer Evaluate()
         {
-            for (int charIndex = 0; charIndex < Content.Length; charIndex++)
+            string content = Content.Trim();
+
+            Writer.WriteLine($"{content}");
+
+            int counter = 0;
+
+            Writer.WriteLine($"Content Length:\t{content.Length}");
+
+            string token = "";
+
+            while (counter < content.Length)
             {
-                charIndex = Evaluate(charIndex, Content);
+                Writer.WriteLine($"Before:\t{counter}\t ->{token}<-");
+
+                counter = Evaluate(counter, content, token);
+
+                Writer.WriteLine($"After:\t{counter}\t ->{token}<-");
             }
 
             return this;
@@ -255,82 +275,119 @@ namespace ElmX.Core
             return this;
         }
 
-        private int Evaluate(int index, string content)
+        private int HandleToken(string token, int index, string content)
         {
-            char c = content[index];
-            Evaluator result;
+            int endIndex = index + token.Length;
 
-            switch (c)
+            switch (token)
             {
-                case 'm':
-                    if (!ModuleStatementFound)
+                case "module":
+                    if (content[index + 1] == ' ' || content[index + 1] == '\n')
                     {
-                        result =
-                            new Evaluator(index, false, content)
-                                .ShouldBeModuleStatement();
-
-                        if (result.Token?.Type == TokenType.ModuleStatement)
-                        {
-                            ModuleStatementFound = true;
-                        }
+                        //string remainder = HandleModuleStatement(index, content);
                     }
                     else
                     {
-                        result =
-                            new Evaluator(index, false, content)
-                                .ShouldBeAFunction();
+                        Tokens.Add(new Token(token, TokenType.Function, index, endIndex));
                     }
-                    break;
-                case 'i':
-                    if (!AllImportsFound)
-                    {
-                        result =
-                            new Evaluator(index, false, content)
-                                .MaybeImportStatement();
-                    }
-                    else
-                    {
-                        result =
-                            new Evaluator(index, false, content)
-                                .ShouldBeAFunction();
-                    }
-
-                    AllImportsFound = result.AllImportsFound;
-
-                    break;
-                case 't':
-                    result =
-                        new Evaluator(index, false, content)
-                            .MaybeTypeStatement()
-                            .ShouldBeAFunction();
-
-                    break;
-
-                case '\n':
-                    result =
-                        new Evaluator(index, false, content);
-                    break;
-
-                case ' ':
-                    result =
-                        new Evaluator(index, false, content);
-                    break;
-
-                default:
-                    result =
-                        new Evaluator(index, false, content)
-                            .ShouldBeAFunction();
-
                     break;
             }
 
-            if (result.Token != null)
+            return endIndex;
+        }
+
+        private int Evaluate(int index, string content, string token)
+        {
+            for (int i = index; i < content.Length; i++)
             {
-                index = result.Index;
-                Tokens.Add(result.Token);
-            }
+                token += content[i];
 
-            return index;
+                Writer.WriteLine($"{token}");
+
+                if (ReservedWords.Contains(token))
+                {
+                    Writer.WriteLine($"{token}");
+                    index = HandleToken(token, i, content);
+                    return index;
+                }
+
+                index = i;
+            }
+            return index + 1;
+            //char c = content[index];
+            //Evaluator result;
+            //
+            //switch (c)
+            //{
+            //    case 'm':
+            //        if (!ModuleStatementFound)
+            //        {
+            //            result =
+            //                new Evaluator(index, false, content)
+            //                    .ShouldBeModuleStatement();
+            //
+            //            if (result.Token?.Type == TokenType.ModuleStatement)
+            //            {
+            //                ModuleStatementFound = true;
+            //            }
+            //        }
+            //        else
+            //        {
+            //            result =
+            //                new Evaluator(index, false, content)
+            //                    .ShouldBeAFunction();
+            //        }
+            //        break;
+            //    case 'i':
+            //        if (!AllImportsFound)
+            //        {
+            //            result =
+            //                new Evaluator(index, false, content)
+            //                    .MaybeImportStatement();
+            //        }
+            //        else
+            //        {
+            //            result =
+            //                new Evaluator(index, false, content)
+            //                    .ShouldBeAFunction();
+            //        }
+            //
+            //        AllImportsFound = result.AllImportsFound;
+            //
+            //        break;
+            //    case 't':
+            //        result =
+            //            new Evaluator(index, false, content)
+            //                .MaybeTypeStatement()
+            //                .ShouldBeAFunction();
+            //
+            //        break;
+            //
+            //    case '\n':
+            //        result =
+            //            new Evaluator(index, false, content);
+            //        break;
+            //
+            //    case ' ':
+            //        result =
+            //            new Evaluator(index, false, content);
+            //        break;
+            //
+            //    default:
+            //        result =
+            //            new Evaluator(index, false, content)
+            //                .ShouldBeAFunction();
+            //
+            //        break;
+            //}
+
+            //if (result.Token != null)
+            //{
+            //    index = result.Index;
+            //    Tokens.Add(result.Token);
+            //}
+            //
+            //return index;
         }
     }
 

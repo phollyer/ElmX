@@ -26,6 +26,8 @@ namespace ElmX.Elm
             string entryFile = elmxJson.AppJson.EntryFile;
 
             EntryModule = new(entryFile);
+
+            Environment.Exit(0);
         }
 
         public Application FindAllFiles()

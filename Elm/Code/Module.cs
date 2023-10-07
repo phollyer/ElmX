@@ -24,7 +24,7 @@ namespace ElmX.Elm.Code
 
         public string RawContent { get; set; } = "";
 
-        public Lexer? Lexer { get; private set; }
+        public Core.Lexer.Lexer? Lexer { get; private set; }
 
         public Dictionary<int, string> Content { get; private set; } = new();
 
@@ -41,6 +41,8 @@ namespace ElmX.Elm.Code
                 Lexer.Lex();
 
                 ParseModuleStatement();
+
+                Environment.Exit(0);
             }
             else
             {
@@ -55,7 +57,7 @@ namespace ElmX.Elm.Code
 
         public void ParseModuleStatement()
         {
-            Token? token = Lexer?.GetModuleStatement();
+            Core.Lexer.Token? token = Lexer?.GetModuleStatement();
 
             if (token is not null)
             {
@@ -87,9 +89,9 @@ namespace ElmX.Elm.Code
 
         public void ParseImports()
         {
-            List<Token> tokens = Lexer?.GetImportStatements() ?? new();
+            List<Core.Lexer.Token> tokens = Lexer?.GetImportStatements() ?? new();
 
-            foreach (Token token in tokens)
+            foreach (Core.Lexer.Token token in tokens)
             {
                 Import Import = new(token.Value);
                 Imports.Add(Import);
@@ -98,11 +100,11 @@ namespace ElmX.Elm.Code
 
         public void ParseTypeAliases()
         {
-            List<Token> tokens = Lexer?.GetTypeAliases() ?? new();
+            List<Core.Lexer.Token> tokens = Lexer?.GetTypeAliases() ?? new();
 
             Writer.WriteLine($"Found {tokens.Count} type aliases.");
 
-            foreach (Token token in tokens)
+            foreach (Core.Lexer.Token token in tokens)
             {
                 TypeAlias typeAlias = new(token.Value);
                 TypeAliases.Add(typeAlias);
