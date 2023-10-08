@@ -55,8 +55,8 @@ namespace ElmX.Elm
                 if (module.Name == "App")
                 {
                     Writer.WriteLine($"Parsing: {module.Name}");
-                    module.ParseImports();
-                    module.ParseTypeAliases();
+                    //module.ParseImports();
+                    //module.ParseTypeAliases();
                 }
 
             }
@@ -72,7 +72,7 @@ namespace ElmX.Elm
                 if (File.Exists(modulePath))
                 {
                     Module module = ModuleFromPath(modulePath);
-                    module.ParseImports();
+                    //module.ParseImports();
 
                     Modules.Add(module);
 
@@ -111,7 +111,7 @@ namespace ElmX.Elm
                 if (ModulePaths.IndexOf(modulePath) == -1 && File.Exists(modulePath))
                 {
                     Module _module = ModuleFromPath(modulePath);
-                    _module.ParseImports();
+                    //_module.ParseImports();
 
                     Modules.Add(_module);
 

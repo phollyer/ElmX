@@ -31,7 +31,7 @@ namespace ElmX.Elm
         {
             foreach (Module module in ExposedModules)
             {
-                module.ParseImports();
+                //module.ParseImports();
 
                 foreach (Import import in module.Imports)
                 {

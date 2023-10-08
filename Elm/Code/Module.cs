@@ -1,6 +1,5 @@
-using ElmX.Core;
+using ElmX.Core.Parser;
 using ElmX.Core.Console;
-using ElmX.Elm;
 
 namespace ElmX.Elm.Code
 {
@@ -24,7 +23,7 @@ namespace ElmX.Elm.Code
 
         public string RawContent { get; set; } = "";
 
-        public Core.Lexer.Lexer? Lexer { get; private set; }
+        public Core.Parser.Parser Parser { get; private set; }
 
         public Dictionary<int, string> Content { get; private set; } = new();
 
@@ -34,13 +33,11 @@ namespace ElmX.Elm.Code
 
             if (File.Exists(FilePath))
             {
-                Lexer = new(FilePath);
+                Parser = new(FilePath);
 
-                RawContent = Lexer.Content;
+                RawContent = Parser.Content;
 
-                Lexer.Lex();
-
-                ParseModuleStatement();
+                Parser.Parse();
 
                 Environment.Exit(0);
             }
@@ -52,62 +49,6 @@ namespace ElmX.Elm.Code
                 Writer.WriteLine("Exiting...");
                 Writer.EmptyLine();
                 Environment.Exit(0);
-            }
-        }
-
-        public void ParseModuleStatement()
-        {
-            Core.Lexer.Token? token = Lexer?.GetModuleStatement();
-
-            if (token is not null)
-            {
-                string[] parts =
-                    token.Value
-                    .Replace('\n', ' ')
-                    .Replace("module", "")
-                    .Trim()
-                    .Split("exposing");
-
-                Name = parts[0].Trim();
-
-                ParseExposing(parts[1]);
-
-            }
-        }
-        private void ParseExposing(string exposing)
-        {
-            exposing = exposing.Trim();
-            exposing = exposing[1..^1];
-
-            string[] parts = exposing.Split(',');
-
-            foreach (string part in parts)
-            {
-                Exposing.Add(part.Trim());
-            }
-        }
-
-        public void ParseImports()
-        {
-            List<Core.Lexer.Token> tokens = Lexer?.GetImportStatements() ?? new();
-
-            foreach (Core.Lexer.Token token in tokens)
-            {
-                Import Import = new(token.Value);
-                Imports.Add(Import);
-            }
-        }
-
-        public void ParseTypeAliases()
-        {
-            List<Core.Lexer.Token> tokens = Lexer?.GetTypeAliases() ?? new();
-
-            Writer.WriteLine($"Found {tokens.Count} type aliases.");
-
-            foreach (Core.Lexer.Token token in tokens)
-            {
-                TypeAlias typeAlias = new(token.Value);
-                TypeAliases.Add(typeAlias);
             }
         }
         public override string ToString()

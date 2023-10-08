@@ -26,8 +26,6 @@ namespace ElmX.Elm
             string entryFile = elmxJson.AppJson.EntryFile;
 
             EntryModule = new(entryFile);
-
-            Environment.Exit(0);
         }
 
         public Application FindAllFiles()
@@ -39,7 +37,7 @@ namespace ElmX.Elm
 
         public new List<string> FindUnusedModules()
         {
-            EntryModule.ParseImports();
+            //EntryModule.ParseImports();
 
             ModulePaths.Add(EntryModule.FilePath);
 
