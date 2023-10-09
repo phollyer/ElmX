@@ -35,11 +35,7 @@ namespace ElmX.Elm.Code
             {
                 Parser = new(FilePath);
 
-                RawContent = Parser.Content;
-
                 Parser.Parse();
-
-                Environment.Exit(0);
             }
             else
             {

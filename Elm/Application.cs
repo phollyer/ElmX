@@ -37,8 +37,6 @@ namespace ElmX.Elm
 
         public new List<string> FindUnusedModules()
         {
-            //EntryModule.ParseImports();
-
             ModulePaths.Add(EntryModule.FilePath);
 
             foreach (Import import in EntryModule.Imports)

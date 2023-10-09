@@ -1,3 +1,4 @@
+using System.Numerics;
 using ElmX.Core.Console;
 using ElmX.Core.Parser.Whitespace;
 
@@ -54,6 +55,11 @@ namespace ElmX.Core.Parser
             {
                 Writer.WriteLine(ModuleStatement.ToString());
             }
+
+            foreach (ImportStatement importStatement in ImportStatements)
+            {
+                Writer.WriteLine(importStatement.ToString());
+            }
         }
 
         private int Parse(int index, string content, string token)
@@ -76,7 +82,7 @@ namespace ElmX.Core.Parser
 
                 if (Tokens.Contains(token))
                 {
-                    index = HandleToken(token, i, content);
+                    index = ParseToken(token, i, content);
                     return index;
                 }
 
@@ -84,33 +90,41 @@ namespace ElmX.Core.Parser
             }
             return index + 1;
         }
-        private int HandleToken(string token, int index, string content)
+        private int ParseToken(string token, int index, string content)
         {
             int endIndex = 0;
 
             switch (token)
             {
                 case "--":
-                    endIndex = HandleComment(token, index, content);
-
-                    break;
-
                 case "{-":
-                    endIndex = HandleComment(token, index, content);
+                    (Comment comment, int commentEndIndex)? commentResult = Comment.Parse(token, index, content);
+
+                    if (commentResult != null)
+                    {
+                        Comments.Add(commentResult.Value.comment);
+
+                        endIndex = commentResult.Value.commentEndIndex;
+                    }
 
                     break;
 
                 case "module":
                     if (content[index + 1] == ' ' || content[index + 1] == '\n' || content[index + 1] == '{')
                     {
-                        endIndex = HandleModuleStatement(index + 1, content);
+                        (ModuleStatement moduleStatement, int moduleStatementEndIndex) moduleStatementResult = ModuleStatement.Parse(index + 1, content);
+
+                        ModuleStatement = moduleStatementResult.moduleStatement;
+                        endIndex = moduleStatementResult.moduleStatementEndIndex;
                     }
                     break;
 
                 case "import":
                     if (content[index + 1] == ' ' || content[index + 1] == '\n' || content[index + 1] == '{')
                     {
-                        endIndex = HandleModuleStatement(index + 1, content);
+                        (ImportStatement importStatement, int importStatementEndIndex) = ImportStatement.Parse(index + 1, content);
+                        ImportStatements.Add(importStatement);
+                        endIndex = importStatementEndIndex;
                     }
                     break;
 
@@ -121,133 +135,6 @@ namespace ElmX.Core.Parser
 
             return endIndex;
         }
-
-        private int HandleComment(string token, int index, string content)
-        {
-            string comment;
-            int startOfComment = index - 1;
-            int endOfComment;
-
-            switch (token)
-            {
-                case "--":
-
-                    endOfComment = content.IndexOf('\n', index);
-
-                    comment = content[startOfComment..endOfComment];
-
-                    Comments.Add(new Comment(CommentType.SingleLine, comment, startOfComment));
-
-                    return endOfComment;
-
-                case "{-":
-                    comment = "{" + String.ExtractInner(('{', '}'), content[startOfComment..]) + "}";
-
-                    endOfComment = index + comment.Length - 1;
-
-                    CommentType type = CommentType.MultiLine;
-
-                    if (comment.StartsWith("{-|"))
-                    {
-                        type = CommentType.Documentation;
-                    }
-
-                    Comments.Add(new Comment(type, comment, startOfComment));
-
-                    return endOfComment;
-
-                default:
-                    return index;
-            }
-        }
-
-        private int HandleModuleStatement(int index, string content)
-        {
-            ModuleStatement moduleStatement = new();
-
-            bool statementComplete = false;
-
-            string name = "";
-            bool nameFound = false;
-            bool nameComplete = false;
-
-            for (int i = index; i < content.Length; i++)
-            {
-                switch (content[i])
-                {
-
-                    case '{':
-                        string commentContent = String.ExtractInner(('{', '}'), content[i..]);
-                        string comment = "{" + commentContent + "}";
-                        moduleStatement.Comments.Add(new Comment(CommentType.MultiLine, comment, i));
-
-                        if (nameFound && !nameComplete)
-                        {
-                            nameComplete = true;
-                            moduleStatement.Name = name;
-                        }
-                        i = i + comment.Length - 1;
-                        break;
-
-                    case '(':
-                        string exposingContent = String.ExtractInner(('(', ')'), content[i..]);
-                        string exposing = "(" + exposingContent + ")";
-                        moduleStatement.Exposing = exposing;
-
-                        statementComplete = true;
-                        i = i + exposing.Length - 1;
-                        break;
-
-                    case ' ':
-                        moduleStatement.Spaces.Add(new Space(i));
-                        if (nameFound && !nameComplete)
-                        {
-                            nameComplete = true;
-                            moduleStatement.Name = name;
-                        }
-                        break;
-
-                    case '\n':
-                        moduleStatement.Newlines.Add(new Newline(i));
-                        if (nameFound && !nameComplete)
-                        {
-                            nameComplete = true;
-                            moduleStatement.Name = name;
-                        }
-                        break;
-
-                    default:
-                        if (!nameFound)
-                        {
-                            if (Char.IsUpper(content[i]))
-                            {
-                                nameFound = true;
-                                name += $"{content[i]}";
-                            }
-                        }
-                        else if (nameFound && !nameComplete)
-                        {
-                            if (Char.IsLetterOrDigit(content[i]) || content[i] == '_' || content[i] == '.')
-                            {
-                                name += content[i];
-                            }
-                        }
-                        break;
-                }
-
-                if (statementComplete)
-                {
-                    index = i;
-                    break;
-                }
-            }
-
-            ModuleStatement = moduleStatement;
-
-
-            return index;
-        }
-
     }
 
     public class Evaluator
