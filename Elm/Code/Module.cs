@@ -31,26 +31,14 @@ namespace ElmX.Elm.Code
         {
             FilePath = filePath;
 
-            if (File.Exists(FilePath))
-            {
-                Parser = new(FilePath);
+            Parser = new(FilePath);
 
-                Parser.Parse();
+            Parser.Parse();
 
-                foreach (ImportStatement importStatement in Parser.ImportStatements)
-                {
-                    Import import = new(importStatement);
-                    Imports.Add(import);
-                }
-            }
-            else
+            foreach (ImportStatement importStatement in Parser.ImportStatements)
             {
-                Writer.EmptyLine();
-                Writer.WriteLine($"File Not Found:\t{FilePath}");
-                Writer.EmptyLine();
-                Writer.WriteLine("Exiting...");
-                Writer.EmptyLine();
-                Environment.Exit(0);
+                Import import = new(importStatement);
+                Imports.Add(import);
             }
         }
         public override string ToString()
