@@ -36,6 +36,12 @@ namespace ElmX.Elm.Code
                 Parser = new(FilePath);
 
                 Parser.Parse();
+
+                foreach (ImportStatement importStatement in Parser.ImportStatements)
+                {
+                    Import import = new(importStatement);
+                    Imports.Add(import);
+                }
             }
             else
             {

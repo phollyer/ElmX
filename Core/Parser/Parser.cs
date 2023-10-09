@@ -50,16 +50,6 @@ namespace ElmX.Core.Parser
             {
                 counter = Parse(counter, Content, token);
             }
-
-            if (ModuleStatement != null)
-            {
-                Writer.WriteLine(ModuleStatement.ToString());
-            }
-
-            foreach (ImportStatement importStatement in ImportStatements)
-            {
-                Writer.WriteLine(importStatement.ToString());
-            }
         }
 
         private int Parse(int index, string content, string token)

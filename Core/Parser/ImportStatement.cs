@@ -9,7 +9,7 @@ namespace ElmX.Core.Parser
 
         public string As { get; set; } = "";
 
-        public string Exposing { get; set; } = "";
+        public List<string> Exposing { get; set; } = new();
 
         public List<Comment> Comments { get; set; } = new();
 
@@ -26,8 +26,6 @@ namespace ElmX.Core.Parser
             string statementContent = content[index..startOfNextStatement].TrimEnd();
 
             int endIndex = index + statementContent.Length;
-
-            Writer.WriteLine($"Statement Content: {content[index..endIndex]}");
 
             bool extractingName = false;
             bool nameComplete = false;
@@ -50,8 +48,8 @@ namespace ElmX.Core.Parser
 
                     case '(':
                         string exposingContent = String.ExtractInner(('(', ')'), content[i..]);
+                        importStatement.Exposing = exposingContent.Split(',').Select(f => f.Trim()).ToList();
                         string exposing = "(" + exposingContent + ")";
-                        importStatement.Exposing = exposing;
                         i = i + exposing.Length - 1;
                         break;
 
@@ -109,8 +107,6 @@ namespace ElmX.Core.Parser
                 }
 
             }
-
-            Writer.WriteLine(importStatement.ToString());
 
             return (importStatement, endIndex);
         }

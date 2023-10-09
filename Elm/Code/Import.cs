@@ -1,4 +1,5 @@
 using ElmX.Core.Console;
+using ElmX.Core.Parser;
 
 namespace ElmX.Elm.Code
 {
@@ -10,54 +11,12 @@ namespace ElmX.Elm.Code
 
         public List<string> Exposing { get; set; } = new List<string>();
 
-        public Import(string statement)
+        public Import(ImportStatement statement)
         {
-            string[] parts =
-                statement
-                .Replace('\n', ' ')
-                .Replace("import", "")
-                .Trim()
-                .Split(' ');
-
-            Name = parts[0];
-
-            for (int i = 1; i < parts.Length; i++)
-            {
-                switch (parts[i])
-                {
-                    case "as":
-                        As = parts[i + 1];
-                        break;
-                    case "exposing":
-                        int start = i + 1;
-                        int end = parts.Length;
-
-                        if (start == end)
-                        {
-                            ParseExposing(parts[start]);
-                        }
-                        else
-                        {
-                            ParseExposing(string.Join(" ", parts[start..end]));
-                        }
-                        break;
-                }
-            }
+            Name = statement.Name;
+            As = statement.As;
+            Exposing = statement.Exposing;
         }
-
-        private void ParseExposing(string exposingParts)
-        {
-            exposingParts = exposingParts.Trim();
-            exposingParts = exposingParts[1..^1];
-
-            string[] parts = exposingParts.Split(',');
-
-            foreach (string part in parts)
-            {
-                Exposing.Add(part.Trim());
-            }
-        }
-
 
         public override string ToString()
         {
