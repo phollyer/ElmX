@@ -71,7 +71,7 @@ namespace ElmX.Core.Parser
 
                 if (Tokens.Contains(token))
                 {
-                    pointer = ParseToken(token, index, Content);
+                    pointer = ParseToken(token, index);
                     return pointer;
                 }
 
@@ -79,17 +79,17 @@ namespace ElmX.Core.Parser
             }
             return pointer + 1;
         }
-        private int ParseToken(string token, int index, string content)
+        private int ParseToken(string token, int index)
         {
             int endIndex = 0;
 
-            Char nextChar = content[index + 1];
+            Char nextChar = Content[index + 1];
 
             switch (token)
             {
                 case "--":
                 case "{-":
-                    (Comment comment, int commentEndIndex)? commentResult = Comment.Parse(token, index, content);
+                    (Comment comment, int commentEndIndex)? commentResult = Comment.Parse(token, index, Content);
 
                     if (commentResult != null)
                     {
@@ -103,7 +103,7 @@ namespace ElmX.Core.Parser
                 case "module":
                     if (nextChar == ' ' || nextChar == '\n' || nextChar == '{')
                     {
-                        (ModuleStatement moduleStatement, int moduleStatementEndIndex) moduleStatementResult = ModuleStatement.Parse(index + 1, content);
+                        (ModuleStatement moduleStatement, int moduleStatementEndIndex) moduleStatementResult = ModuleStatement.Parse(index + 1, Content);
 
                         ModuleStatement = moduleStatementResult.moduleStatement;
                         endIndex = moduleStatementResult.moduleStatementEndIndex;
@@ -113,7 +113,7 @@ namespace ElmX.Core.Parser
                 case "import":
                     if (nextChar == ' ' || nextChar == '\n' || nextChar == '{')
                     {
-                        (ImportStatement importStatement, int importStatementEndIndex) = ImportStatement.Parse(index + 1, content);
+                        (ImportStatement importStatement, int importStatementEndIndex) = ImportStatement.Parse(index + 1, Content);
                         ImportStatements.Add(importStatement);
                         endIndex = importStatementEndIndex;
                     }
