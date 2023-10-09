@@ -84,6 +84,8 @@ namespace ElmX.Core.Parser
         {
             int endIndex = 0;
 
+            Char nextChar = content[index + 1];
+
             switch (token)
             {
                 case "--":
@@ -100,7 +102,7 @@ namespace ElmX.Core.Parser
                     break;
 
                 case "module":
-                    if (content[index + 1] == ' ' || content[index + 1] == '\n' || content[index + 1] == '{')
+                    if (nextChar == ' ' || nextChar == '\n' || nextChar == '{')
                     {
                         (ModuleStatement moduleStatement, int moduleStatementEndIndex) moduleStatementResult = ModuleStatement.Parse(index + 1, content);
 
@@ -110,7 +112,7 @@ namespace ElmX.Core.Parser
                     break;
 
                 case "import":
-                    if (content[index + 1] == ' ' || content[index + 1] == '\n' || content[index + 1] == '{')
+                    if (nextChar == ' ' || nextChar == '\n' || nextChar == '{')
                     {
                         (ImportStatement importStatement, int importStatementEndIndex) = ImportStatement.Parse(index + 1, content);
                         ImportStatements.Add(importStatement);
