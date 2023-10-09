@@ -71,13 +71,10 @@ namespace ElmX.Core.Parser
 
                 if (Tokens.Contains(token))
                 {
-                    pointer = ParseToken(token, index);
-                    return pointer;
+                    return ParseToken(token, index);
                 }
-
-                pointer = index;
             }
-            return pointer + 1;
+            return Content.Length;
         }
         private int ParseToken(string token, int index)
         {
