@@ -34,7 +34,7 @@ namespace ElmX.Core.Parser
             }
             else
             {
-                Writer.WriteLine($"ElmX.Elm.Lexer:\tThe file '{filePath}' does not exist.");
+                Writer.WriteLine($"ElmX.Core.Parser:\tThe file '{filePath}' does not exist.");
                 Environment.Exit(0);
             }
         }
