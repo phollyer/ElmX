@@ -100,10 +100,10 @@ namespace ElmX.Core.Parser
                 case "module":
                     if (nextChar == ' ' || nextChar == '\n' || nextChar == '{')
                     {
-                        (ModuleStatement moduleStatement, int moduleStatementEndIndex) moduleStatementResult = ModuleStatement.Parse(index + 1, Content);
+                        (ModuleStatement moduleStatement, int moduleStatementEndIndex) = ModuleStatement.Parse(index + 1, Content);
 
-                        ModuleStatement = moduleStatementResult.moduleStatement;
-                        endIndex = moduleStatementResult.moduleStatementEndIndex;
+                        ModuleStatement = moduleStatement;
+                        endIndex = moduleStatementEndIndex;
                     }
                     break;
 
