@@ -11,12 +11,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Handle nested comments correctly.
 
     ```elm
-    {- 
-        import Module1 {- some comments 
-        {- followed by -} 
-        {- some more {- nested comments -} -}     
-        -} exposing (foo, bar) 
-    -}
+    import Module1 {- some comments 
+    {- followed by -} 
+    {- some more {- nested comments -} -}     
+    -} exposing (foo, bar) 
     ```
 
 ## [1.1.1] - 2023-09-26
