@@ -16,7 +16,7 @@ namespace ElmX.Core.Parser
         }
         static public (Comment, int)? Parse(string token, int index, string content)
         {
-            string comment = "";
+            string comment;
             int startOfComment = index - 1;
             int endOfComment;
 
