@@ -41,43 +41,43 @@ namespace ElmX.Core.Parser
 
         public void Parse()
         {
-            int counter = 0;
+            int pointer = 0;
 
-            string token = "";
-
-            while (counter < Content.Length)
+            while (pointer < Content.Length)
             {
-                counter = Parse(counter, Content, token);
+                pointer = Parse(pointer, Content);
             }
         }
 
-        private int Parse(int index, string content, string token)
+        private int Parse(int pointer, string content)
         {
-            for (int i = index; i < content.Length; i++)
+            string token = "";
+
+            for (int index = pointer; index < content.Length; index++)
             {
-                if (content[i] == '\n')
+                if (content[index] == '\n')
                 {
-                    Newlines.Add(new Newline(i));
-                    return i + 1;
+                    Newlines.Add(new Newline(index));
+                    return index + 1;
                 }
 
-                if (content[i] == ' ')
+                if (content[index] == ' ')
                 {
-                    Spaces.Add(new Space(i));
-                    return i + 1;
+                    Spaces.Add(new Space(index));
+                    return index + 1;
                 }
 
-                token += content[i];
+                token += content[index];
 
                 if (Tokens.Contains(token))
                 {
-                    index = ParseToken(token, i, content);
-                    return index;
+                    pointer = ParseToken(token, index, content);
+                    return pointer;
                 }
 
-                index = i;
+                pointer = index;
             }
-            return index + 1;
+            return pointer + 1;
         }
         private int ParseToken(string token, int index, string content)
         {
